@@ -5,15 +5,15 @@
   },
   "rewrites": [
     {
-      "source": "/:net/short",
+      "source": "short/:net",
       "destination": "/api/stats/:net/short"
     },
     {
-      "source": "/:net/full",
+      "source": "full/:net",
       "destination": "/api/stats/:net/full"
     },
     {
-      "source": "/:net/quotients",
+      "source": "/quotients/:net",
       "destination": "/api/stats/:net/quotients"
     },
     {
