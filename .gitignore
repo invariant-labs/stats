@@ -1,0 +1,4 @@
+.vercel
+package-lock.json
+.env
+node_modules
