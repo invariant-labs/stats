@@ -5,18 +5,6 @@
   },
   "rewrites": [
     {
-      "source": "short/:net",
-      "destination": "/api/stats/:net/short"
-    },
-    {
-      "source": "full/:net",
-      "destination": "/api/stats/:net/full"
-    },
-    {
-      "source": "/quotients/:net",
-      "destination": "/api/stats/:net/quotients"
-    },
-    {
       "source": "/(.*)",
       "destination": "/api/$1"
     }
