@@ -100,7 +100,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
         rewardInUSD: 0,
         tokenXprice: xPrices[incentive.pool.toString()],
         duration:
-          incentive.endTime.v.toNumber() - incentive.startTime.v.toNumber(),
+          Math.floor(
+            (incentive.endTime.v.toNumber() -
+              incentive.startTime.v.toNumber()) /
+              60 /
+              60 /
+              24
+          ) *
+          60 *
+          60 *
+          24,
       });
     }
   });
