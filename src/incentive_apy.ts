@@ -97,7 +97,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       apy[incentive.publicKey.toString()] = rewardsAPY({
         ticksPreviousSnapshot: prevSnap.ticks,
         ticksCurrentSnapshot: currentSnap.ticks,
-        rewardInUSD: 0,
+        rewardInUSD: 100000,
         tokenXprice: xPrices[incentive.pool.toString()],
         duration:
           Math.floor(
