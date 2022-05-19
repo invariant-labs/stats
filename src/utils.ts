@@ -188,6 +188,8 @@ export interface QuotientSnapshot {
 export interface TicksSnapshot {
   timestamp: number;
   ticks: Tick[];
+  volumeX: string;
+  volumeY: string;
 }
 
 export const jsonToTicks = (data: Record<string, any[]>) => {
@@ -219,6 +221,8 @@ export const jsonToTicks = (data: Record<string, any[]>) => {
       snaps[address].push({
         timestamp: snap.timestamp,
         ticks,
+        volumeX: snap.volumeX,
+        volumeY: snap.volumeY
       });
     });
   });

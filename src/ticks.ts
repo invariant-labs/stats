@@ -43,10 +43,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
       const address = await pair.getAddress(market.program.programId);
       const ticks = await market.getAllTicks(pair);
+      const { volumeX, volumeY } = await market.getVolume(pair)
 
       return {
         address: address.toString(),
         ticks,
+        volumeX,
+        volumeY
       };
     })
   );
@@ -54,7 +57,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const now = Date.now();
   const timestamp = Math.floor(now / (1000 * 60 * 60)) * (1000 * 60 * 60);
 
-  poolsData.forEach(({ address, ticks }) => {
+  poolsData.forEach(({ address, ticks, volumeX, volumeY }) => {
     if (!snaps[address]) {
       snaps[address] = [];
     }
@@ -62,6 +65,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
     snaps[address].push({
       timestamp,
       ticks,
+      volumeX: volumeX.toString(),
+      volumeY: volumeY.toString()
     });
 
     snaps[address] = snaps[address].slice(
