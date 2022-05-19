@@ -5,8 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "snap": "ts-node ./src/snap.ts",
-    "apyData": "ts-node ./src/ticks.ts && ts-node ./src/pool_apy.ts",
-    "quotients": "ts-node ./src/quotients.ts"
+    "apyData": "ts-node ./src/ticks.ts && ts-node ./src/pool_apy.ts"
   },
   "author": "",
   "license": "ISC",

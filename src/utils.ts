@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { MOCK_TOKENS } from "@invariant-labs/sdk";
+import { MOCK_TOKENS, Network } from "@invariant-labs/sdk";
+import { Network as StakerNetwork } from "@invariant-labs/staker-sdk";
 import { Tick } from "@invariant-labs/sdk/lib/market";
 import { DECIMAL } from "@invariant-labs/sdk/lib/utils";
 import { BN } from "@project-serum/anchor";
@@ -222,10 +223,21 @@ export const jsonToTicks = (data: Record<string, any[]>) => {
         timestamp: snap.timestamp,
         ticks,
         volumeX: snap.volumeX,
-        volumeY: snap.volumeY
+        volumeY: snap.volumeY,
       });
     });
   });
 
   return snaps;
+};
+
+export const marketToStakerNetwork = (network: Network): StakerNetwork => {
+  switch (network) {
+    case Network.DEV:
+      return StakerNetwork.DEV;
+    // case Network.MAIN:
+    //   return StakerNetwork.MAIN;
+    default:
+      return StakerNetwork.DEV;
+  }
 };
