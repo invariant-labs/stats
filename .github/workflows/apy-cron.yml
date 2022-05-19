@@ -1,4 +1,4 @@
-name: 'Create snapshot of pool tokens prices quotients'
+name: 'Create snapshot of pool and farms apy'
 
 on:
   schedule:
@@ -27,9 +27,9 @@ jobs:
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
           npm install
-          npm run quotients
+          npm run apyData
           git add ./data
-          git commit -m "Snapshot of quotients done!"
+          git commit -m "Snapshot of apy done!"
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.6.0
         with:
