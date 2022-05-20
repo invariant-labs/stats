@@ -2,7 +2,7 @@ name: 'Create snapshot of stats'
 
 on:
   schedule:
-    - cron: '0 12 * * *'
+    - cron: '30 11 * * *'
 
 env:
   solana_version: 1.9.14
