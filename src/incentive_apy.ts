@@ -109,23 +109,33 @@ export const createSnapshotForNetwork = async (network: Network) => {
         ? coingeckoPrices[rewardToken.coingeckoId] ?? 0
         : 0;
 
-      apy[incentive.publicKey.toString()] = rewardsAPY({
-        ticksPreviousSnapshot: prevSnap.ticks,
-        ticksCurrentSnapshot: currentSnap.ticks,
-        rewardInUSD: typeof incentiveRewardData === "undefined" ? 0 : rewardTokenPrice * incentiveRewardData.total,
-        tokenXprice: xPrices[incentive.pool.toString()],
-        duration:
-          Math.floor(
-            (incentive.endTime.v.toNumber() -
-              incentive.startTime.v.toNumber()) /
-              60 /
-              60 /
-              24
-          ) *
-          60 *
-          60 *
-          24,
-      });
+      try {
+        const incentiveApy = rewardsAPY({
+          ticksPreviousSnapshot: prevSnap.ticks,
+          ticksCurrentSnapshot: currentSnap.ticks,
+          rewardInUSD:
+            typeof incentiveRewardData === "undefined"
+              ? 0
+              : rewardTokenPrice * incentiveRewardData.total,
+          tokenXprice: xPrices[incentive.pool.toString()],
+          duration:
+            Math.floor(
+              (incentive.endTime.v.toNumber() -
+                incentive.startTime.v.toNumber()) /
+                60 /
+                60 /
+                24
+            ) *
+            60 *
+            60 *
+            24,
+        });
+
+        apy[incentive.publicKey.toString()] =
+          isNaN(incentiveApy) || !incentiveApy ? 0 : incentiveApy;
+      } catch (_error) {
+        apy[incentive.publicKey.toString()] = 0;
+      }
     }
   });
 

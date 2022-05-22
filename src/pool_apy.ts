@@ -49,17 +49,26 @@ export const createSnapshotForNetwork = async (network: Network) => {
       if (snaps[address.toString()].length < 25) {
         apy[address.toString()] = 0;
       } else {
-        const len = snaps[address.toString()].length
-        const currentSnap = snaps[address.toString()][len - 1]
-        const prevSnap = snaps[address.toString()][len - 25]
+        const len = snaps[address.toString()].length;
+        const currentSnap = snaps[address.toString()][len - 1];
+        const prevSnap = snaps[address.toString()][len - 25];
 
-        apy[address.toString()] = poolAPY({
-          feeTier: { fee: pool.fee.v },
-          volumeX: +((new BN(currentSnap.volumeX)).sub(new BN(prevSnap.volumeX)).toString()),
-          volumeY: +((new BN(currentSnap.volumeY)).sub(new BN(prevSnap.volumeY)).toString()),
-          ticksPreviousSnapshot: prevSnap.ticks,
-          ticksCurrentSnapshot: currentSnap.ticks
-        });
+        try {
+          const poolApy = poolAPY({
+            feeTier: { fee: pool.fee.v },
+            volumeX: +new BN(currentSnap.volumeX)
+              .sub(new BN(prevSnap.volumeX))
+              .toString(),
+            volumeY: +new BN(currentSnap.volumeY)
+              .sub(new BN(prevSnap.volumeY))
+              .toString(),
+            ticksPreviousSnapshot: prevSnap.ticks,
+            ticksCurrentSnapshot: currentSnap.ticks,
+          });
+          apy[address.toString()] = isNaN(poolApy) || !poolApy ? 0 : poolApy;
+        } catch (_error) {
+          apy[address.toString()] = 0;
+        }
       }
     })
   );
