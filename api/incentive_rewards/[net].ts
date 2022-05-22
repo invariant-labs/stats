@@ -26,8 +26,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   if (net === "devnet") {
     apyData = DEVNET_APY;
     rewardsData = DEVNET_REWARDS;
-  }
-  if (net === "mainnet") {
+  } else if (net === "mainnet") {
     apyData = MAINNET_APY;
     rewardsData = MAINNET_REWARDS;
   } else {
