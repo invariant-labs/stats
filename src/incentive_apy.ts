@@ -1,11 +1,13 @@
 import { Network, Market, getMarketAddress, Pair } from "@invariant-labs/sdk";
-import { poolAPY, rewardsAPY } from "@invariant-labs/sdk/lib/utils";
+import { rewardsAPY } from "@invariant-labs/sdk/lib/utils";
 import { Staker } from "@invariant-labs/staker-sdk";
-import { BN, Provider } from "@project-serum/anchor";
+import { Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import DEVNET_TICKS from "../data/ticks_devnet.json";
 import MAINNET_TICKS from "../data/ticks_mainnet.json";
+import DEVNET_REWARDS from "../data/rewards_data_devnet.json";
+import MAINNET_REWARDS from "../data/rewards_data_mainnet.json";
 import {
   TicksSnapshot,
   jsonToTicks,
@@ -14,6 +16,7 @@ import {
   getTokensData,
   TokenData,
   getTokensPrices,
+  RewardsData,
 } from "./utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -23,6 +26,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let provider: Provider;
   let fileName: string;
   let snaps: Record<string, TicksSnapshot[]>;
+  let rewardsData: Record<string, RewardsData>;
   let tokensData: Record<string, TokenData>;
 
   switch (network) {
@@ -30,6 +34,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       provider = Provider.local("https://ssc-dao.genesysgo.net");
       fileName = "./data/incentive_apy_mainnet.json";
       snaps = jsonToTicks(MAINNET_TICKS);
+      rewardsData = MAINNET_REWARDS;
       tokensData = await getTokensData();
       break;
     case Network.DEV:
@@ -37,6 +42,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       provider = Provider.local("https://api.devnet.solana.com");
       fileName = "./data/incentive_apy_devnet.json";
       snaps = jsonToTicks(DEVNET_TICKS);
+      rewardsData = DEVNET_REWARDS;
       tokensData = devnetTokensData;
   }
 
@@ -94,10 +100,19 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const currentSnap = snaps[incentive.pool.toString()][len - 1];
       const prevSnap = snaps[incentive.pool.toString()][len - 25];
 
+      const incentiveRewardData = rewardsData?.[incentive.publicKey.toString()];
+      const rewardToken =
+        typeof incentiveRewardData === "undefined"
+          ? { decimals: 0 }
+          : tokensData?.[incentiveRewardData.token] ?? { decimals: 0 };
+      const rewardTokenPrice = rewardToken.coingeckoId
+        ? coingeckoPrices[rewardToken.coingeckoId] ?? 0
+        : 0;
+
       apy[incentive.publicKey.toString()] = rewardsAPY({
         ticksPreviousSnapshot: prevSnap.ticks,
         ticksCurrentSnapshot: currentSnap.ticks,
-        rewardInUSD: 100000,
+        rewardInUSD: typeof incentiveRewardData === "undefined" ? 0 : rewardTokenPrice * incentiveRewardData.total,
         tokenXprice: xPrices[incentive.pool.toString()],
         duration:
           Math.floor(

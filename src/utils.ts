@@ -241,3 +241,8 @@ export const marketToStakerNetwork = (network: Network): StakerNetwork => {
       return StakerNetwork.DEV;
   }
 };
+
+export interface RewardsData {
+  token: string
+  total: number
+}
