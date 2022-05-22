@@ -65,7 +65,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
             ticksPreviousSnapshot: prevSnap.ticks,
             ticksCurrentSnapshot: currentSnap.ticks,
           });
-          apy[address.toString()] = isNaN(poolApy) || !poolApy ? 0 : poolApy;
+          apy[address.toString()] =
+            isNaN(poolApy) || typeof poolApy !== "number" ? 0 : poolApy;
         } catch (_error) {
           apy[address.toString()] = 0;
         }

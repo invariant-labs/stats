@@ -132,7 +132,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
         });
 
         apy[incentive.publicKey.toString()] =
-          isNaN(incentiveApy) || !incentiveApy ? 0 : incentiveApy;
+          isNaN(incentiveApy) || typeof incentiveApy !== "number"
+            ? 0
+            : incentiveApy;
       } catch (_error) {
         apy[incentive.publicKey.toString()] = 0;
       }
