@@ -40,7 +40,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   Object.entries(apyData).forEach(([address, apy]) => {
     data[address] = {
       apy,
-      total: rewardsData[address].total,
+      ...rewardsData[address]
     };
   });
 
