@@ -32,9 +32,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const data = {};
 
   Object.entries(apyData).forEach(([address, apy]) => {
-    data[address] = {
-      apy: apy.apy,
-    };
+    data[address] = apy.apy;
   });
 
   res.json(data);
