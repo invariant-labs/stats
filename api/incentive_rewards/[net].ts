@@ -1,7 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import DEVNET_APY from "../../data/incentive_apy_devnet.json";
 import MAINNET_APY from "../../data/incentive_apy_mainnet.json";
-import { RewardsData } from "../../src/utils";
+import { ApySnapshot, RewardsData } from "../../src/utils";
 import DEVNET_REWARDS from "../../data/rewards_data_devnet.json";
 import MAINNET_REWARDS from "../../data/rewards_data_mainnet.json";
 
@@ -19,7 +19,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
 
-  let apyData: Record<string, number>;
+  let apyData: Record<string, ApySnapshot>;
   let rewardsData: Record<string, RewardsData>;
 
   const { net } = req.query;
@@ -38,8 +38,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   Object.entries(apyData).forEach(([address, apy]) => {
     data[address] = {
-      apy,
-      ...rewardsData[address]
+      apy: apy.apy,
+      ...rewardsData[address],
     };
   });
 

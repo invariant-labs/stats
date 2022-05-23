@@ -246,3 +246,8 @@ export interface RewardsData {
   token: string
   total: number
 }
+
+export interface ApySnapshot {
+  apy: number
+  weeklyFactor: number
+}

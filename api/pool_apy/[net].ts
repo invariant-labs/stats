@@ -1,6 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import DEVNET_APY from "../../data/pool_apy_devnet.json";
 import MAINNET_APY from "../../data/pool_apy_mainnet.json";
+import { ApySnapshot } from "../../src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -16,14 +17,25 @@ export default function (req: VercelRequest, res: VercelResponse) {
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
 
+  let apyData: Record<string, ApySnapshot>;
+
   const { net } = req.query;
   if (net === "devnet") {
-    res.json(DEVNET_APY);
+    apyData = DEVNET_APY;
+  } else if (net === "mainnet") {
+    apyData = MAINNET_APY;
+  } else {
+    res.status(400).send("INVALID NETWORK");
     return;
   }
-  if (net === "mainnet") {
-    res.json(MAINNET_APY);
-    return;
-  }
-  res.status(400).send("INVALID NETWORK");
+
+  const data = {};
+
+  Object.entries(apyData).forEach(([address, apy]) => {
+    data[address] = {
+      apy: apy.apy,
+    };
+  });
+
+  res.json(data);
 }

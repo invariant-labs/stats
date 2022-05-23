@@ -8,6 +8,8 @@ import DEVNET_TICKS from "../data/ticks_devnet.json";
 import MAINNET_TICKS from "../data/ticks_mainnet.json";
 import DEVNET_REWARDS from "../data/rewards_data_devnet.json";
 import MAINNET_REWARDS from "../data/rewards_data_mainnet.json";
+import DEVNET_APY from "../data/incentive_apy_devnet.json";
+import MAINNET_APY from "../data/incentive_apy_mainnet.json";
 import {
   TicksSnapshot,
   jsonToTicks,
@@ -17,6 +19,7 @@ import {
   TokenData,
   getTokensPrices,
   RewardsData,
+  ApySnapshot,
 } from "./utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -28,6 +31,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let snaps: Record<string, TicksSnapshot[]>;
   let rewardsData: Record<string, RewardsData>;
   let tokensData: Record<string, TokenData>;
+  let apySnaps: Record<string, ApySnapshot>;
 
   switch (network) {
     case Network.MAIN:
@@ -36,6 +40,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       snaps = jsonToTicks(MAINNET_TICKS);
       rewardsData = MAINNET_REWARDS;
       tokensData = await getTokensData();
+      apySnaps = MAINNET_APY;
       break;
     case Network.DEV:
     default:
@@ -44,6 +49,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       snaps = jsonToTicks(DEVNET_TICKS);
       rewardsData = DEVNET_REWARDS;
       tokensData = devnetTokensData;
+      apySnaps = DEVNET_APY;
   }
 
   const idsList: string[] = [];
@@ -75,7 +81,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const allIncentives = await staker.getAllIncentive();
 
   const xPrices: Record<string, number> = {};
-  const apy: Record<string, number> = {};
+  const apy: Record<string, ApySnapshot> = {};
 
   await Promise.all(
     allPools.map(async (pool) => {
@@ -94,7 +100,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   allIncentives.forEach((incentive) => {
     if (snaps[incentive.pool.toString()].length < 25) {
-      apy[incentive.publicKey.toString()] = 0;
+      apy[incentive.publicKey.toString()] = {
+        apy: 0,
+        weeklyFactor: 0.01,
+      };
     } else {
       const len = snaps[incentive.pool.toString()].length;
       const currentSnap = snaps[incentive.pool.toString()][len - 1];
@@ -129,14 +138,29 @@ export const createSnapshotForNetwork = async (network: Network) => {
             60 *
             60 *
             24,
+          weeklyFactor:
+            apySnaps?.[incentive.publicKey.toString()]?.weeklyFactor ?? 0.01,
+          tokenDecimal: rewardToken.decimals,
         });
+        console.log(incentiveApy)
 
-        apy[incentive.publicKey.toString()] =
-          isNaN(incentiveApy) || typeof incentiveApy !== "number"
-            ? 0
-            : incentiveApy;
+        apy[incentive.publicKey.toString()] = {
+          apy:
+            isNaN(incentiveApy.reward) ||
+            typeof incentiveApy.reward !== "number"
+              ? 0
+              : incentiveApy.reward,
+          weeklyFactor:
+            isNaN(incentiveApy.rewardFactor) ||
+            typeof incentiveApy.rewardFactor !== "number"
+              ? 0.01
+              : incentiveApy.rewardFactor,
+        };
       } catch (_error) {
-        apy[incentive.publicKey.toString()] = 0;
+        apy[incentive.publicKey.toString()] = {
+          apy: 0,
+          weeklyFactor: 0.01,
+        };
       }
     }
   });
