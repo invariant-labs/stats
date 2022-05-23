@@ -33,6 +33,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let tokensData: Record<string, TokenData>;
   let apySnaps: Record<string, ApySnapshot>;
 
+  let inputFilename: string;
+
   switch (network) {
     case Network.MAIN:
       provider = Provider.local("https://ssc-dao.genesysgo.net");
@@ -41,6 +43,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       rewardsData = MAINNET_REWARDS;
       tokensData = await getTokensData();
       apySnaps = MAINNET_APY;
+      inputFilename = "./data/incentive_apy_mainnet_input.json";
       break;
     case Network.DEV:
     default:
@@ -50,6 +53,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       rewardsData = DEVNET_REWARDS;
       tokensData = devnetTokensData;
       apySnaps = DEVNET_APY;
+
+      inputFilename = "./data/incentive_apy_devnet_input.json";
   }
 
   const idsList: string[] = [];
@@ -82,6 +87,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const xPrices: Record<string, number> = {};
   const apy: Record<string, ApySnapshot> = {};
+
+  const input: Record<string, any> = {};
 
   await Promise.all(
     allPools.map(async (pool) => {
@@ -142,7 +149,30 @@ export const createSnapshotForNetwork = async (network: Network) => {
             apySnaps?.[incentive.publicKey.toString()]?.weeklyFactor ?? 0.01,
           tokenDecimal: rewardToken.decimals,
         });
-        console.log(incentiveApy)
+
+        input[incentive.publicKey.toString()] = {
+          ticksPreviousSnapshot: prevSnap.ticks,
+          ticksCurrentSnapshot: currentSnap.ticks,
+          rewardInUSD:
+            typeof incentiveRewardData === "undefined"
+              ? 0
+              : rewardTokenPrice * incentiveRewardData.total,
+          tokenXprice: xPrices[incentive.pool.toString()],
+          duration:
+            Math.floor(
+              (incentive.endTime.v.toNumber() -
+                incentive.startTime.v.toNumber()) /
+                60 /
+                60 /
+                24
+            ) *
+            60 *
+            60 *
+            24,
+          weeklyFactor:
+            apySnaps?.[incentive.publicKey.toString()]?.weeklyFactor ?? 0.01,
+          tokenDecimal: rewardToken.decimals,
+        };
 
         apy[incentive.publicKey.toString()] = {
           apy:
@@ -166,6 +196,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
   });
 
   fs.writeFile(fileName, JSON.stringify(apy), (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+
+  fs.writeFile(inputFilename, JSON.stringify(input), (err) => {
     if (err) {
       throw err;
     }
