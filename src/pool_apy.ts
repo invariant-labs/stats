@@ -100,13 +100,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
           apy[address.toString()] = {
             apy:
-              isNaN(poolApy.apy) ||
+              isNaN(+poolApy.apy) ||
               poolApy.apy === null ||
               typeof poolApy.apy !== "number"
                 ? 0
                 : poolApy.apy,
             weeklyFactor:
-              isNaN(poolApy.apyFactor) ||
+              isNaN(+poolApy.apyFactor) ||
               poolApy.apyFactor === null ||
               typeof poolApy.apyFactor !== "number"
                 ? 0.01

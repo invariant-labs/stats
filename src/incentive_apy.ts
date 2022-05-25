@@ -182,13 +182,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
         apy[incentive.publicKey.toString()] = {
           apy:
-            isNaN(incentiveApy.reward) ||
+            isNaN(+incentiveApy.reward) ||
             incentiveApy.reward === null ||
             typeof incentiveApy.reward !== "number"
               ? 0
               : incentiveApy.reward,
           weeklyFactor:
-            isNaN(incentiveApy.rewardFactor) ||
+            isNaN(+incentiveApy.rewardFactor) ||
             incentiveApy.rewardFactor === null ||
             typeof incentiveApy.rewardFactor !== "number"
               ? 0.01
