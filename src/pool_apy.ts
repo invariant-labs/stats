@@ -81,6 +81,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             ticksPreviousSnapshot: prevSnap.ticks,
             ticksCurrentSnapshot: currentSnap.ticks,
             weeklyFactor: apySnaps?.[address.toString()]?.weeklyFactor ?? 0.01,
+            currentTickIndex: pool.currentTickIndex,
           });
 
           input[address.toString()] = {
@@ -94,15 +95,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
             ticksPreviousSnapshot: prevSnap.ticks,
             ticksCurrentSnapshot: currentSnap.ticks,
             weeklyFactor: apySnaps?.[address.toString()]?.weeklyFactor ?? 0.01,
+            currentTickIndex: pool.currentTickIndex,
           };
 
           apy[address.toString()] = {
             apy:
-              isNaN(poolApy.apy) || typeof poolApy.apy !== "number"
+              isNaN(poolApy.apy) ||
+              poolApy.apy === null ||
+              typeof poolApy.apy !== "number"
                 ? 0
                 : poolApy.apy,
             weeklyFactor:
-              isNaN(poolApy.apyFactor) || typeof poolApy.apyFactor !== "number"
+              isNaN(poolApy.apyFactor) ||
+              poolApy.apyFactor === null ||
+              typeof poolApy.apyFactor !== "number"
                 ? 0.01
                 : poolApy.apyFactor,
           };

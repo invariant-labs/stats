@@ -86,6 +86,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const allIncentives = await staker.getAllIncentive();
 
   const xPrices: Record<string, number> = {};
+  const currentTickIndexes: Record<string, number> = {};
   const apy: Record<string, ApySnapshot> = {};
 
   const input: Record<string, any> = {};
@@ -102,6 +103,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         : 0;
 
       xPrices[address.toString()] = tokenXPrice;
+      currentTickIndexes[address.toString()] = pool.currentTickIndex;
     })
   );
 
@@ -133,7 +135,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             typeof incentiveRewardData === "undefined"
               ? 0
               : rewardTokenPrice * incentiveRewardData.total,
-          tokenXprice: xPrices[incentive.pool.toString()],
+          tokenXprice: xPrices?.[incentive.pool.toString()] ?? 0,
           duration:
             Math.floor(
               (incentive.endTime.v.toNumber() -
@@ -148,6 +150,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
           weeklyFactor:
             apySnaps?.[incentive.publicKey.toString()]?.weeklyFactor ?? 0.01,
           tokenDecimal: rewardToken.decimals,
+          currentTickIndex:
+            currentTickIndexes?.[incentive.pool.toString()] ?? 0,
         });
 
         input[incentive.publicKey.toString()] = {
@@ -157,7 +161,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             typeof incentiveRewardData === "undefined"
               ? 0
               : rewardTokenPrice * incentiveRewardData.total,
-          tokenXprice: xPrices[incentive.pool.toString()],
+          tokenXprice: xPrices?.[incentive.pool.toString()] ?? 0,
           duration:
             Math.floor(
               (incentive.endTime.v.toNumber() -
@@ -172,16 +176,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
           weeklyFactor:
             apySnaps?.[incentive.publicKey.toString()]?.weeklyFactor ?? 0.01,
           tokenDecimal: rewardToken.decimals,
+          currentTickIndex:
+            currentTickIndexes?.[incentive.pool.toString()] ?? 0,
         };
 
         apy[incentive.publicKey.toString()] = {
           apy:
             isNaN(incentiveApy.reward) ||
+            incentiveApy.reward === null ||
             typeof incentiveApy.reward !== "number"
               ? 0
               : incentiveApy.reward,
           weeklyFactor:
             isNaN(incentiveApy.rewardFactor) ||
+            incentiveApy.rewardFactor === null ||
             typeof incentiveApy.rewardFactor !== "number"
               ? 0.01
               : incentiveApy.rewardFactor,
