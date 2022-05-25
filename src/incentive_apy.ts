@@ -180,6 +180,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
             currentTickIndexes?.[incentive.pool.toString()] ?? 0,
         };
 
+        console.log(incentiveApy);
+
         apy[incentive.publicKey.toString()] = {
           apy: isNaN(+JSON.stringify(incentiveApy.reward))
             ? 0
