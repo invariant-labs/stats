@@ -181,18 +181,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
         };
 
         apy[incentive.publicKey.toString()] = {
-          apy:
-            isNaN(+incentiveApy.reward) ||
-            incentiveApy.reward === null ||
-            typeof incentiveApy.reward !== "number"
-              ? 0
-              : incentiveApy.reward,
-          weeklyFactor:
-            isNaN(+incentiveApy.rewardFactor) ||
-            incentiveApy.rewardFactor === null ||
-            typeof incentiveApy.rewardFactor !== "number"
-              ? 0.01
-              : incentiveApy.rewardFactor,
+          apy: isNaN(+JSON.stringify(incentiveApy.reward))
+            ? 0
+            : incentiveApy.reward,
+          weeklyFactor: isNaN(+JSON.stringify(incentiveApy.rewardFactor))
+            ? 0.01
+            : incentiveApy.rewardFactor,
         };
       } catch (_error) {
         apy[incentive.publicKey.toString()] = {

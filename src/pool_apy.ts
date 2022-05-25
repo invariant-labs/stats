@@ -99,18 +99,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
           };
 
           apy[address.toString()] = {
-            apy:
-              isNaN(+poolApy.apy) ||
-              poolApy.apy === null ||
-              typeof poolApy.apy !== "number"
-                ? 0
-                : poolApy.apy,
-            weeklyFactor:
-              isNaN(+poolApy.apyFactor) ||
-              poolApy.apyFactor === null ||
-              typeof poolApy.apyFactor !== "number"
-                ? 0.01
-                : poolApy.apyFactor,
+            apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
+            weeklyFactor: isNaN(+JSON.stringify(poolApy.apyFactor))
+              ? 0.01
+              : poolApy.apyFactor,
           };
         } catch (_error) {
           apy[address.toString()] = {
