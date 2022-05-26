@@ -161,7 +161,7 @@ export const devnetTokensData = {
   },
   [MOCK_TOKENS.USDT]: {
     decimals: 6,
-    coingeckoId: "thether",
+    coingeckoId: "tether",
   },
   [MOCK_TOKENS.SOL]: {
     decimals: 9,
