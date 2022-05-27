@@ -18,16 +18,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let snaps: Record<string, TicksSnapshot[]>;
   let apySnaps: Record<string, ApySnapshot>;
 
-  let inputFilename: string;
-
   switch (network) {
     case Network.MAIN:
       provider = Provider.local("https://ssc-dao.genesysgo.net");
       fileName = "./data/pool_apy_mainnet.json";
       snaps = jsonToTicks(MAINNET_TICKS);
       apySnaps = MAINNET_APY;
-
-      inputFilename = "./data/pool_apy_mainnet_input.json";
       break;
     case Network.DEV:
     default:
@@ -35,8 +31,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       fileName = "./data/pool_apy_devnet.json";
       snaps = jsonToTicks(DEVNET_TICKS);
       apySnaps = DEVNET_APY;
-
-      inputFilename = "./data/pool_apy_devnet_input.json";
   }
 
   const connection = provider.connection;
@@ -51,8 +45,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const allPools = await market.getAllPools();
 
   const apy: Record<string, ApySnapshot> = {};
-
-  const input: Record<string, any> = {};
 
   await Promise.all(
     allPools.map(async (pool) => {
@@ -84,20 +76,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
             currentTickIndex: pool.currentTickIndex,
           });
 
-          input[address.toString()] = {
-            feeTier: { fee: pool.fee.v },
-            volumeX: +new BN(currentSnap.volumeX)
-              .sub(new BN(prevSnap.volumeX))
-              .toString(),
-            volumeY: +new BN(currentSnap.volumeY)
-              .sub(new BN(prevSnap.volumeY))
-              .toString(),
-            ticksPreviousSnapshot: prevSnap.ticks,
-            ticksCurrentSnapshot: currentSnap.ticks,
-            weeklyFactor: apySnaps?.[address.toString()]?.weeklyFactor ?? 0.01,
-            currentTickIndex: pool.currentTickIndex,
-          };
-
           apy[address.toString()] = {
             apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
             weeklyFactor: isNaN(+JSON.stringify(poolApy.apyFactor))
@@ -115,12 +93,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
   );
 
   fs.writeFile(fileName, JSON.stringify(apy), (err) => {
-    if (err) {
-      throw err;
-    }
-  });
-
-  fs.writeFile(inputFilename, JSON.stringify(input), (err) => {
     if (err) {
       throw err;
     }
