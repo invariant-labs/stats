@@ -71,13 +71,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
           );
         }
       );
-
-      return {
-        address: address.toString(),
-        ticks,
-        volumeX,
-        volumeY,
-      };
     })
   );
 };
