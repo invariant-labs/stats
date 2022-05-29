@@ -243,11 +243,45 @@ export const marketToStakerNetwork = (network: Network): StakerNetwork => {
 };
 
 export interface RewardsData {
-  token: string
-  total: number
+  token: string;
+  total: number;
 }
 
 export interface ApySnapshot {
-  apy: number
-  weeklyFactor: number
+  apy: number;
+  weeklyFactor: number;
 }
+
+export const jsonArrayToTicks = (address: string, data: any[]) => {
+  const snaps: TicksSnapshot[] = [];
+
+  data.forEach((snap) => {
+    const ticks: Tick[] = [];
+
+    snap.ticks.forEach((tick) => {
+      ticks.push({
+        index: tick.index,
+        sign: tick.sign,
+        bump: tick.bump,
+        liquidityChange: { v: new BN(tick.liquidityChange.v, "hex") },
+        liquidityGross: { v: new BN(tick.liquidityGross.v, "hex") },
+        sqrtPrice: { v: new BN(tick.sqrtPrice.v, "hex") },
+        feeGrowthOutsideX: { v: new BN(tick.feeGrowthOutsideX.v, "hex") },
+        feeGrowthOutsideY: { v: new BN(tick.feeGrowthOutsideY.v, "hex") },
+        secondsPerLiquidityOutside: {
+          v: new BN(tick.secondsPerLiquidityOutside.v, "hex"),
+        },
+        pool: new PublicKey(address),
+      });
+    });
+
+    snaps[address].push({
+      timestamp: snap.timestamp,
+      ticks,
+      volumeX: snap.volumeX,
+      volumeY: snap.volumeY,
+    });
+  });
+
+  return snaps;
+};
