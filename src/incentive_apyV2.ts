@@ -97,12 +97,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
     })
   );
 
-  allIncentives.forEach((incentive) => {
-    fs.readFile(
-      ticksFolder + incentive.pool.toString() + ".json",
-      "utf-8",
-      (err, data) => {
-        if (!err) {
+  await Promise.all(
+    allIncentives.map(async (incentive) => {
+      return await fs.promises
+        .readFile(ticksFolder + incentive.pool.toString() + ".json", "utf-8")
+        .then((data) => {
           const snaps = jsonArrayToTicks(
             incentive.pool.toString(),
             JSON.parse(data)
@@ -171,17 +170,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
               };
             }
           }
-        } else {
+        })
+        .catch(() => {
           apy[incentive.publicKey.toString()] = {
             apy: 0,
             weeklyFactor: 0.01,
           };
-        }
-
-        console.log(apy[incentive.publicKey.toString()])
-      }
-    );
-  });
+        });
+    })
+  );
 
   fs.writeFile(fileName, JSON.stringify(apy), (err) => {
     if (err) {

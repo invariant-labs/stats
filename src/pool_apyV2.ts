@@ -49,63 +49,57 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
       const address = await pair.getAddress(market.program.programId);
 
-      fs.readFile(
-        ticksFolder + address.toString() + ".json",
-        "utf-8",
-        (err, data) => {
-          if (!err) {
-            const snaps = jsonArrayToTicks(
-              address.toString(),
-              JSON.parse(data)
-            );
+      return await fs.promises
+        .readFile(ticksFolder + address.toString() + ".json", "utf-8")
+        .then((data) => {
+          const snaps = jsonArrayToTicks(address.toString(), JSON.parse(data));
 
-            if (snaps.length < 25) {
-              apy[address.toString()] = {
-                apy: 0,
-                weeklyFactor: 0.01,
-              };
-            } else {
-              const len = snaps.length;
-              const currentSnap = snaps[len - 1];
-              const prevSnap = snaps[len - 25];
-
-              try {
-                const poolApy = poolAPY({
-                  feeTier: { fee: pool.fee.v },
-                  volumeX: +new BN(currentSnap.volumeX)
-                    .sub(new BN(prevSnap.volumeX))
-                    .toString(),
-                  volumeY: +new BN(currentSnap.volumeY)
-                    .sub(new BN(prevSnap.volumeY))
-                    .toString(),
-                  ticksPreviousSnapshot: prevSnap.ticks,
-                  ticksCurrentSnapshot: currentSnap.ticks,
-                  weeklyFactor:
-                    apySnaps?.[address.toString()]?.weeklyFactor ?? 0.01,
-                  currentTickIndex: pool.currentTickIndex,
-                });
-
-                apy[address.toString()] = {
-                  apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
-                  weeklyFactor: isNaN(+JSON.stringify(poolApy.apyFactor))
-                    ? 0.01
-                    : poolApy.apyFactor,
-                };
-              } catch (_error) {
-                apy[address.toString()] = {
-                  apy: 0,
-                  weeklyFactor: 0.01,
-                };
-              }
-            }
-          } else {
+          if (snaps.length < 25) {
             apy[address.toString()] = {
               apy: 0,
               weeklyFactor: 0.01,
             };
+          } else {
+            const len = snaps.length;
+            const currentSnap = snaps[len - 1];
+            const prevSnap = snaps[len - 25];
+
+            try {
+              const poolApy = poolAPY({
+                feeTier: { fee: pool.fee.v },
+                volumeX: +new BN(currentSnap.volumeX)
+                  .sub(new BN(prevSnap.volumeX))
+                  .toString(),
+                volumeY: +new BN(currentSnap.volumeY)
+                  .sub(new BN(prevSnap.volumeY))
+                  .toString(),
+                ticksPreviousSnapshot: prevSnap.ticks,
+                ticksCurrentSnapshot: currentSnap.ticks,
+                weeklyFactor:
+                  apySnaps?.[address.toString()]?.weeklyFactor ?? 0.01,
+                currentTickIndex: pool.currentTickIndex,
+              });
+
+              apy[address.toString()] = {
+                apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
+                weeklyFactor: isNaN(+JSON.stringify(poolApy.apyFactor))
+                  ? 0.01
+                  : poolApy.apyFactor,
+              };
+            } catch (_error) {
+              apy[address.toString()] = {
+                apy: 0,
+                weeklyFactor: 0.01,
+              };
+            }
           }
-        }
-      );
+        })
+        .catch(() => {
+          apy[address.toString()] = {
+            apy: 0,
+            weeklyFactor: 0.01,
+          };
+        });
     })
   );
 
