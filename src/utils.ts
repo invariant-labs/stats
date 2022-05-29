@@ -275,7 +275,7 @@ export const jsonArrayToTicks = (address: string, data: any[]) => {
       });
     });
 
-    snaps[address].push({
+    snaps.push({
       timestamp: snap.timestamp,
       ticks,
       volumeX: snap.volumeX,
