@@ -177,6 +177,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
             weeklyFactor: 0.01,
           };
         }
+
+        console.log(apy[incentive.publicKey.toString()])
       }
     );
   });
