@@ -2,29 +2,23 @@ import { Network, Market, Pair, getMarketAddress } from "@invariant-labs/sdk";
 import { Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
-import DEVNET_TICKS from "../data/ticks_devnet.json";
-import MAINNET_TICKS from "../data/ticks_mainnet.json";
-import { jsonToTicks, TicksSnapshot } from "./utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: Provider;
-  let fileName: string;
-  let snaps: Record<string, TicksSnapshot[]>;
+  let folderName: string;
 
   switch (network) {
     case Network.MAIN:
       provider = Provider.local("https://ssc-dao.genesysgo.net");
-      fileName = "./data/ticks_mainnet.json";
-      snaps = jsonToTicks(MAINNET_TICKS);
+      folderName = "./data/ticks/mainnet/";
       break;
     case Network.DEV:
     default:
       provider = Provider.local("https://api.devnet.solana.com");
-      fileName = "./data/ticks_devnet.json";
-      snaps = jsonToTicks(DEVNET_TICKS);
+      folderName = "./data/ticks/devnet/";
   }
 
   const connection = provider.connection;
@@ -36,50 +30,49 @@ export const createSnapshotForNetwork = async (network: Network) => {
     new PublicKey(getMarketAddress(network))
   );
 
+  const now = Date.now();
+  const timestamp = Math.floor(now / (1000 * 60 * 60)) * (1000 * 60 * 60);
+
   const allPools = await market.getAllPools();
 
-  const poolsData = await Promise.all(
+  await Promise.all(
     allPools.map(async (pool) => {
       const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
       const address = await pair.getAddress(market.program.programId);
       const ticks = await market.getAllTicks(pair);
-      const { volumeX, volumeY } = await market.getVolume(pair)
+      const { volumeX, volumeY } = await market.getVolume(pair);
 
-      return {
-        address: address.toString(),
-        ticks,
-        volumeX,
-        volumeY
-      };
+      fs.readFile(
+        folderName + address.toString() + ".json",
+        "utf-8",
+        (err, data) => {
+          let snaps: any[] = [];
+          if (!err) {
+            snaps = JSON.parse(data);
+          }
+
+          snaps.push({
+            timestamp,
+            ticks,
+            volumeX: volumeX.toString(),
+            volumeY: volumeY.toString(),
+          });
+
+          snaps = snaps.slice(Math.max(snaps.length - 25, 0), snaps.length);
+
+          fs.writeFile(
+            folderName + address + ".json",
+            JSON.stringify(snaps),
+            (err) => {
+              if (err) {
+                console.log(err);
+              }
+            }
+          );
+        }
+      );
     })
   );
-
-  const now = Date.now();
-  const timestamp = Math.floor(now / (1000 * 60 * 60)) * (1000 * 60 * 60);
-
-  poolsData.forEach(({ address, ticks, volumeX, volumeY }) => {
-    if (!snaps[address]) {
-      snaps[address] = [];
-    }
-
-    snaps[address].push({
-      timestamp,
-      ticks,
-      volumeX: volumeX.toString(),
-      volumeY: volumeY.toString()
-    });
-
-    snaps[address] = snaps[address].slice(
-      Math.max(snaps[address].length - 25, 0),
-      snaps[address].length
-    );
-  });
-
-  fs.writeFile(fileName, JSON.stringify(snaps), (err) => {
-    if (err) {
-      throw err;
-    }
-  });
 };
 
 createSnapshotForNetwork(Network.DEV).then(

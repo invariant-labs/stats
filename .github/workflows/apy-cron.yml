@@ -44,18 +44,3 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: "--prod"
           scope: ${{ secrets.VERCEL_ORG_ID }}
-      - name: do a v2 snapshot
-        run: |
-          git config --global user.email stats@invariant.app
-          git config --global user.name invariantStats
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
-          npm install
-          npm run apyDataV2
-          git add ./data
-          git commit -m "Snapshot of apy v2 done!"
-      - name: GitHub Push
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
