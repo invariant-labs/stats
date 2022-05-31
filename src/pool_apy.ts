@@ -43,6 +43,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const allPools = await market.getAllPools();
 
   const apy: Record<string, ApySnapshot> = {};
+  const input: Record<string, any> = {};
 
   await Promise.all(
     allPools.map(async (pool) => {
@@ -80,6 +81,21 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 currentTickIndex: pool.currentTickIndex,
               });
 
+              input[address.toString()] = {
+                feeTier: { fee: pool.fee.v },
+                volumeX: +new BN(currentSnap.volumeX)
+                  .sub(new BN(prevSnap.volumeX))
+                  .toString(),
+                volumeY: +new BN(currentSnap.volumeY)
+                  .sub(new BN(prevSnap.volumeY))
+                  .toString(),
+                ticksPreviousSnapshot: prevSnap.ticks,
+                ticksCurrentSnapshot: currentSnap.ticks,
+                weeklyFactor:
+                  apySnaps?.[address.toString()]?.weeklyFactor ?? 0.01,
+                currentTickIndex: pool.currentTickIndex,
+              };
+
               apy[address.toString()] = {
                 apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
                 weeklyFactor: isNaN(+JSON.stringify(poolApy.apyFactor))
@@ -102,6 +118,18 @@ export const createSnapshotForNetwork = async (network: Network) => {
         });
     })
   );
+
+  if (network === Network.MAIN) {
+    fs.writeFile(
+      "./data/input_mainnet_pool_apy.json",
+      JSON.stringify(input),
+      (err) => {
+        if (err) {
+          throw err;
+        }
+      }
+    );
+  }
 
   fs.writeFile(fileName, JSON.stringify(apy), (err) => {
     if (err) {
