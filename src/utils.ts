@@ -235,8 +235,8 @@ export const marketToStakerNetwork = (network: Network): StakerNetwork => {
   switch (network) {
     case Network.DEV:
       return StakerNetwork.DEV;
-    // case Network.MAIN:
-    //   return StakerNetwork.MAIN;
+    case Network.MAIN:
+      return StakerNetwork.MAIN;
     default:
       return StakerNetwork.DEV;
   }

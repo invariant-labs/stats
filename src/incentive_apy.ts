@@ -196,11 +196,11 @@ createSnapshotForNetwork(Network.DEV).then(
   }
 );
 
-// createSnapshotForNetwork(Network.MAIN).then(
-//   () => {
-//     console.log("Mainnet incentive apy snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("Mainnet incentive apy snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
