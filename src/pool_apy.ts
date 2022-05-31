@@ -82,15 +82,41 @@ export const createSnapshotForNetwork = async (network: Network) => {
               });
 
               input[address.toString()] = {
-                feeTier: { fee: pool.fee.v },
+                feeTier: { fee: pool.fee.v.toString() },
                 volumeX: +new BN(currentSnap.volumeX)
                   .sub(new BN(prevSnap.volumeX))
                   .toString(),
                 volumeY: +new BN(currentSnap.volumeY)
                   .sub(new BN(prevSnap.volumeY))
                   .toString(),
-                ticksPreviousSnapshot: prevSnap.ticks,
-                ticksCurrentSnapshot: currentSnap.ticks,
+                ticksPreviousSnapshot: prevSnap.ticks.map((tick) => ({
+                  index: tick.index,
+                  sign: tick.sign,
+                  bump: tick.bump,
+                  liquidityChange: { v: tick.liquidityChange.v.toString() },
+                  liquidityGross: { v: tick.liquidityGross.v.toString() },
+                  sqrtPrice: { v: tick.sqrtPrice.v.toString() },
+                  feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.v.toString() },
+                  feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.v.toString() },
+                  secondsPerLiquidityOutside: {
+                    v: tick.secondsPerLiquidityOutside.v.toString(),
+                  },
+                  pool: tick.pool.toString(),
+                })),
+                ticksCurrentSnapshot: currentSnap.ticks.map((tick) => ({
+                  index: tick.index,
+                  sign: tick.sign,
+                  bump: tick.bump,
+                  liquidityChange: { v: tick.liquidityChange.v.toString() },
+                  liquidityGross: { v: tick.liquidityGross.v.toString() },
+                  sqrtPrice: { v: tick.sqrtPrice.v.toString() },
+                  feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.v.toString() },
+                  feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.v.toString() },
+                  secondsPerLiquidityOutside: {
+                    v: tick.secondsPerLiquidityOutside.v.toString(),
+                  },
+                  pool: tick.pool.toString(),
+                })),
                 weeklyFactor:
                   apySnaps?.[address.toString()]?.weeklyFactor ?? 0.01,
                 currentTickIndex: pool.currentTickIndex,
