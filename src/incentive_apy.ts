@@ -110,7 +110,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
           if (snaps.length < 25) {
             apy[incentive.publicKey.toString()] = {
               apy: 0,
-              weeklyFactor: 0.01,
+              weeklyFactor: 0,
             };
           } else {
             const len = snaps.length;
@@ -149,7 +149,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   24,
                 weeklyFactor:
                   apySnaps?.[incentive.publicKey.toString()]?.weeklyFactor ??
-                  0.01,
+                  0,
                 tokenDecimal: rewardToken.decimals,
                 currentTickIndex:
                   currentTickIndexes?.[incentive.pool.toString()] ?? 0,
@@ -160,13 +160,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   ? 0
                   : incentiveApy.reward,
                 weeklyFactor: isNaN(+JSON.stringify(incentiveApy.rewardFactor))
-                  ? 0.01
+                  ? 0
                   : incentiveApy.rewardFactor,
               };
             } catch (_error) {
               apy[incentive.publicKey.toString()] = {
                 apy: 0,
-                weeklyFactor: 0.01,
+                weeklyFactor: 0,
               };
             }
           }
@@ -174,7 +174,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         .catch(() => {
           apy[incentive.publicKey.toString()] = {
             apy: 0,
-            weeklyFactor: 0.01,
+            weeklyFactor: 0,
           };
         });
     })

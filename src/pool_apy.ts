@@ -58,7 +58,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
           if (snaps.length < 25) {
             apy[address.toString()] = {
               apy: 0,
-              weeklyFactor: 0.01,
+              weeklyFactor: 0,
             };
           } else {
             const len = snaps.length;
@@ -77,7 +77,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 ticksPreviousSnapshot: prevSnap.ticks,
                 ticksCurrentSnapshot: currentSnap.ticks,
                 weeklyFactor:
-                  apySnaps?.[address.toString()]?.weeklyFactor ?? 0.01,
+                  apySnaps?.[address.toString()]?.weeklyFactor ?? 0,
                 currentTickIndex: pool.currentTickIndex,
               });
 
@@ -118,20 +118,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   pool: tick.pool.toString(),
                 })),
                 weeklyFactor:
-                  apySnaps?.[address.toString()]?.weeklyFactor ?? 0.01,
+                  apySnaps?.[address.toString()]?.weeklyFactor ?? 0,
                 currentTickIndex: pool.currentTickIndex,
               };
 
               apy[address.toString()] = {
                 apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
                 weeklyFactor: isNaN(+JSON.stringify(poolApy.apyFactor))
-                  ? 0.01
+                  ? 0
                   : poolApy.apyFactor,
               };
             } catch (_error) {
               apy[address.toString()] = {
                 apy: 0,
-                weeklyFactor: 0.01,
+                weeklyFactor: 0,
               };
             }
           }
@@ -139,7 +139,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         .catch(() => {
           apy[address.toString()] = {
             apy: 0,
-            weeklyFactor: 0.01,
+            weeklyFactor: 0,
           };
         });
     })
