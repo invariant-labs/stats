@@ -107,7 +107,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
             JSON.parse(data)
           );
 
-          if (snaps.length < 25) {
+          if (
+            !snaps.length ||
+            (snaps[snaps.length - 1].timestamp - snaps[0].timestamp) /
+              (1000 * 60 * 60) <
+              24
+          ) {
             apy[incentive.publicKey.toString()] = {
               apy: 0,
               weeklyFactor: 0,
@@ -115,7 +120,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
           } else {
             const len = snaps.length;
             const currentSnap = snaps[len - 1];
-            const prevSnap = snaps[len - 25];
+
+            let index = 0;
+            for (let i = 0; i < len; i++) {
+              if (
+                (snaps[snaps.length - 1].timestamp - snaps[i].timestamp) /
+                  (1000 * 60 * 60) >=
+                24
+              ) {
+                index = i;
+              } else {
+                break;
+              }
+            }
+            const prevSnap = snaps[index];
 
             const incentiveRewardData =
               rewardsData?.[incentive.publicKey.toString()];
@@ -148,8 +166,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   60 *
                   24,
                 weeklyFactor:
-                  apySnaps?.[incentive.publicKey.toString()]?.weeklyFactor ??
-                  0,
+                  apySnaps?.[incentive.publicKey.toString()]?.weeklyFactor ?? 0,
                 tokenDecimal: rewardToken.decimals,
                 currentTickIndex:
                   currentTickIndexes?.[incentive.pool.toString()] ?? 0,

@@ -55,7 +55,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
         .then((data) => {
           const snaps = jsonArrayToTicks(address.toString(), JSON.parse(data));
 
-          if (snaps.length < 25) {
+          if (
+            !snaps.length ||
+            (snaps[snaps.length - 1].timestamp - snaps[0].timestamp) /
+              (1000 * 60 * 60) <
+              24
+          ) {
             apy[address.toString()] = {
               apy: 0,
               weeklyFactor: 0,
@@ -63,7 +68,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
           } else {
             const len = snaps.length;
             const currentSnap = snaps[len - 1];
-            const prevSnap = snaps[len - 25];
+
+            let index = 0;
+            for (let i = 0; i < len; i++) {
+              if (
+                (snaps[snaps.length - 1].timestamp - snaps[i].timestamp) /
+                  (1000 * 60 * 60) >=
+                24
+              ) {
+                index = i;
+              } else {
+                break;
+              }
+            }
+            const prevSnap = snaps[index];
 
             try {
               const poolApy = poolAPY({
@@ -76,8 +94,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   .toString(),
                 ticksPreviousSnapshot: prevSnap.ticks,
                 ticksCurrentSnapshot: currentSnap.ticks,
-                weeklyFactor:
-                  apySnaps?.[address.toString()]?.weeklyFactor ?? 0,
+                weeklyFactor: apySnaps?.[address.toString()]?.weeklyFactor ?? 0,
                 currentTickIndex: pool.currentTickIndex,
               });
 
@@ -117,8 +134,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   },
                   pool: tick.pool.toString(),
                 })),
-                weeklyFactor:
-                  apySnaps?.[address.toString()]?.weeklyFactor ?? 0,
+                weeklyFactor: apySnaps?.[address.toString()]?.weeklyFactor ?? 0,
                 currentTickIndex: pool.currentTickIndex,
               };
 
