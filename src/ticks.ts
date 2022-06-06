@@ -31,7 +31,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
   );
 
   const now = Date.now();
-  const timestamp = Math.floor(now / (1000 * 60 * 60)) * (1000 * 60 * 60);
+  const timestamp =
+    Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
+    1000 * 60 * 60 * 12;
 
   const allPools = await market.getAllPools();
 

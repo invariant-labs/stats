@@ -2,7 +2,7 @@ name: "Create snapshot of pool and farms apy"
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "45 11 * * *"
 
 env:
   solana_version: 1.9.14
