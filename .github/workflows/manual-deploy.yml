@@ -7,20 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-      - name: do a snapshot
-        run: |
-          git config --global user.email stats@invariant.app
-          git config --global user.name invariantStats
-          git add ./data
-          git commit -m "Manual deploy"
-      - name: GitHub Push
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
       - name: Deploy to Production
         uses: amondnet/vercel-action@v20
         id: deploy-vercel-production
