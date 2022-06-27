@@ -249,7 +249,7 @@ export interface RewardsData {
 
 export interface ApySnapshot {
   apy: number;
-  weeklyFactor: number;
+  weeklyFactor: number[];
 }
 
 export const jsonArrayToTicks = (address: string, data: any[]) => {

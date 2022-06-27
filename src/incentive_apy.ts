@@ -115,7 +115,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
           ) {
             apy[incentive.publicKey.toString()] = {
               apy: 0,
-              weeklyFactor: 0,
+              weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
             };
           } else {
             const len = snaps.length;
@@ -176,14 +176,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 apy: isNaN(+JSON.stringify(incentiveApy.reward))
                   ? 0
                   : incentiveApy.reward,
-                weeklyFactor: isNaN(+JSON.stringify(incentiveApy.rewardFactor))
-                  ? 0
-                  : incentiveApy.rewardFactor,
+                weeklyFactor: incentiveApy.newWeeklyFactor,
               };
             } catch (_error) {
               apy[incentive.publicKey.toString()] = {
                 apy: 0,
-                weeklyFactor: 0,
+                weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
               };
             }
           }
@@ -191,7 +189,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         .catch(() => {
           apy[incentive.publicKey.toString()] = {
             apy: 0,
-            weeklyFactor: 0,
+            weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
           };
         });
     })

@@ -5,14 +5,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "snap": "ts-node ./src/snap.ts",
-    "apyData": "ts-node ./src/ticks.ts && ts-node ./src/pool_apy.ts && ts-node ./src/incentive_apy.ts",
+    "apyData": "ts-node ./src/pool_apy.ts && ts-node ./src/incentive_apy.ts",
     "recalcAPY": "ts-node ./src/pool_apy.ts && ts-node ./src/incentive_apy.ts",
     "totalMainnetVolume": "ts-node ./src/calcTotalMainnetVolume.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@invariant-labs/sdk": "0.9.11",
+    "@invariant-labs/sdk": "0.9.12",
     "@invariant-labs/staker-sdk": "0.2.3",
     "@project-serum/anchor": "0.21.0",
     "@solana/spl-token": "0.1.6",

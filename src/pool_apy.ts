@@ -63,7 +63,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
           ) {
             apy[address.toString()] = {
               apy: 0,
-              weeklyFactor: 0,
+              weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
             };
           } else {
             const len = snaps.length;
@@ -140,14 +140,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
               apy[address.toString()] = {
                 apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
-                weeklyFactor: isNaN(+JSON.stringify(poolApy.apyFactor))
-                  ? 0
-                  : poolApy.apyFactor,
+                weeklyFactor: poolApy.newWeeklyFactor,
               };
             } catch (_error) {
               apy[address.toString()] = {
                 apy: 0,
-                weeklyFactor: 0,
+                weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
               };
             }
           }
@@ -155,7 +153,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         .catch(() => {
           apy[address.toString()] = {
             apy: 0,
-            weeklyFactor: 0,
+            weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
           };
         });
     })
