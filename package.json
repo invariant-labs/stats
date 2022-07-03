@@ -7,6 +7,7 @@
     "snap": "ts-node ./src/snap.ts",
     "apyData": "ts-node ./src/ticks.ts && ts-node ./src/pool_apy.ts && ts-node ./src/incentive_apy.ts",
     "recalcAPY": "ts-node ./src/pool_apy.ts && ts-node ./src/incentive_apy.ts",
+    "redoTicks": "ts-node ./src/ticks.ts",
     "totalMainnetVolume": "ts-node ./src/calcTotalMainnetVolume.ts"
   },
   "author": "",
