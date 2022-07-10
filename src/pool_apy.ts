@@ -18,7 +18,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = Provider.local("https://ssc-dao.genesysgo.net");
+      provider = Provider.local("https://rpc.nightly.app:8899/");
       fileName = "./data/pool_apy_mainnet.json";
       ticksFolder = "./data/ticks/mainnet/";
       apySnaps = MAINNET_APY;
