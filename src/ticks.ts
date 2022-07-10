@@ -12,7 +12,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = Provider.local("https://ssc-dao.genesysgo.net");
+      provider = Provider.local("https://rpc.nightly.app:8899/");
       folderName = "./data/ticks/mainnet/";
       break;
     case Network.DEV:
