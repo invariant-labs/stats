@@ -64,6 +64,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
             apy[address.toString()] = {
               apy: 0,
               weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+              weeklyRange: [
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+              ],
             };
           } else {
             const len = snaps.length;
@@ -94,7 +103,19 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   .toString(),
                 ticksPreviousSnapshot: prevSnap.ticks,
                 ticksCurrentSnapshot: currentSnap.ticks,
-                weeklyFactor: apySnaps?.[address.toString()]?.weeklyFactor ?? 0,
+                weeklyData: apySnaps?.[address.toString()] ?? {
+                  apy: 0,
+                  weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+                  weeklyRange: [
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                  ],
+                },
                 currentTickIndex: pool.currentTickIndex,
               });
 
@@ -134,18 +155,36 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   },
                   pool: tick.pool.toString(),
                 })),
-                weeklyFactor: apySnaps?.[address.toString()]?.weeklyFactor ?? 0,
+                weeklyData: apySnaps?.[address.toString()] ?? {
+                  apy: 0,
+                  weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+                  weeklyRange: [
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                    { tickLower: null, tickUpper: null },
+                  ],
+                },
                 currentTickIndex: pool.currentTickIndex,
               };
 
-              apy[address.toString()] = {
-                apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
-                weeklyFactor: poolApy.newWeeklyFactor,
-              };
+              apy[address.toString()] = poolApy;
             } catch (_error) {
               apy[address.toString()] = {
                 apy: 0,
                 weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+                weeklyRange: [
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                ],
               };
             }
           }
@@ -154,6 +193,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
           apy[address.toString()] = {
             apy: 0,
             weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+            weeklyRange: [
+              { tickLower: null, tickUpper: null },
+              { tickLower: null, tickUpper: null },
+              { tickLower: null, tickUpper: null },
+              { tickLower: null, tickUpper: null },
+              { tickLower: null, tickUpper: null },
+              { tickLower: null, tickUpper: null },
+              { tickLower: null, tickUpper: null },
+            ],
           };
         });
     })

@@ -15,8 +15,8 @@ import {
   TokenData,
   getTokensPrices,
   RewardsData,
-  ApySnapshot,
   jsonArrayToTicks,
+  IncentiveApySnapshot,
 } from "./utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -28,7 +28,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let ticksFolder: string;
   let rewardsData: Record<string, RewardsData>;
   let tokensData: Record<string, TokenData>;
-  let apySnaps: Record<string, ApySnapshot>;
+  let apySnaps: Record<string, IncentiveApySnapshot>;
 
   switch (network) {
     case Network.MAIN:
@@ -79,7 +79,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const xPrices: Record<string, number> = {};
   const currentTickIndexes: Record<string, number> = {};
-  const apy: Record<string, ApySnapshot> = {};
+  const apy: Record<string, IncentiveApySnapshot> = {};
 
   await Promise.all(
     allPools.map(async (pool) => {

@@ -2,7 +2,7 @@
 import { MOCK_TOKENS, Network } from "@invariant-labs/sdk";
 import { Network as StakerNetwork } from "@invariant-labs/staker-sdk";
 import { Tick } from "@invariant-labs/sdk/lib/market";
-import { DECIMAL } from "@invariant-labs/sdk/lib/utils";
+import { DECIMAL, Range } from "@invariant-labs/sdk/lib/utils";
 import { BN } from "@project-serum/anchor";
 import { TokenListProvider } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
@@ -248,6 +248,12 @@ export interface RewardsData {
 }
 
 export interface ApySnapshot {
+  apy: number;
+  weeklyFactor: number[];
+  weeklyRange: Range[]
+}
+
+export interface IncentiveApySnapshot {
   apy: number;
   weeklyFactor: number[];
 }
