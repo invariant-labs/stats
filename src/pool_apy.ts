@@ -51,7 +51,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const allPools = await market.getAllPools();
 
   const apy: Record<string, ApySnapshot> = {};
-  const archive: Record<string, PoolApyArchiveSnapshot[]> = {};
   const input: Record<string, any> = {};
 
   await Promise.all(
@@ -222,14 +221,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
     1000 * 60 * 60 * 12;
 
   Object.entries(apy).forEach(([address, data]) => {
-    archive[address] = [
-      ...apyArchive[address],
-      {
-        timestamp,
-        apy: data.apy,
-        range: data.weeklyRange[6],
-      },
-    ];
+    if (!apyArchive[address]) {
+      apyArchive[address] = [];
+    }
+    apyArchive[address].push({
+      timestamp,
+      apy: data.apy,
+      range: data.weeklyRange[6],
+    });
   });
 
   if (network === Network.MAIN) {
@@ -250,7 +249,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
   });
 
-  fs.writeFile(archiveFileName, JSON.stringify(archive), (err) => {
+  fs.writeFile(archiveFileName, JSON.stringify(apyArchive), (err) => {
     if (err) {
       throw err;
     }
