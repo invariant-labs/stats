@@ -227,7 +227,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     apyArchive[address].push({
       timestamp,
       apy: data.apy,
-      range: data.weeklyRange[6],
+      range: data.weeklyRange[data.weeklyRange.length - 1],
     });
   });
 
