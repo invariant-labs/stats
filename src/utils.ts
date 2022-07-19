@@ -291,3 +291,9 @@ export const jsonArrayToTicks = (address: string, data: any[]) => {
 
   return snaps;
 };
+
+export interface PoolApyArchiveSnapshot {
+  timestamp: number
+  apy: number
+  range: Range
+}

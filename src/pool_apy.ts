@@ -5,7 +5,9 @@ import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import DEVNET_APY from "../data/pool_apy_devnet.json";
 import MAINNET_APY from "../data/pool_apy_mainnet.json";
-import { ApySnapshot, jsonArrayToTicks } from "./utils";
+import DEVNET_ARCHIVE from "../data/pool_apy_archive_devnet.json";
+import MAINNET_ARCHIVE from "../data/pool_apy_archive_mainnet.json";
+import { ApySnapshot, jsonArrayToTicks, PoolApyArchiveSnapshot } from "./utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -13,22 +15,28 @@ require("dotenv").config();
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: Provider;
   let fileName: string;
+  let archiveFileName: string;
   let ticksFolder: string;
   let apySnaps: Record<string, ApySnapshot>;
+  let apyArchive: Record<string, PoolApyArchiveSnapshot[]>;
 
   switch (network) {
     case Network.MAIN:
       provider = Provider.local("https://rpc.nightly.app:8899/");
       fileName = "./data/pool_apy_mainnet.json";
+      archiveFileName = "./data/pool_apy_archive_mainnet.json";
       ticksFolder = "./data/ticks/mainnet/";
       apySnaps = MAINNET_APY;
+      apyArchive = MAINNET_ARCHIVE;
       break;
     case Network.DEV:
     default:
       provider = Provider.local("https://api.devnet.solana.com");
       fileName = "./data/pool_apy_devnet.json";
+      archiveFileName = "./data/pool_apy_archive_devnet.json";
       ticksFolder = "./data/ticks/devnet/";
       apySnaps = DEVNET_APY;
+      apyArchive = DEVNET_ARCHIVE;
   }
 
   const connection = provider.connection;
@@ -43,6 +51,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const allPools = await market.getAllPools();
 
   const apy: Record<string, ApySnapshot> = {};
+  const archive: Record<string, PoolApyArchiveSnapshot[]> = {};
   const input: Record<string, any> = {};
 
   await Promise.all(
@@ -207,6 +216,22 @@ export const createSnapshotForNetwork = async (network: Network) => {
     })
   );
 
+  const now = Date.now();
+  const timestamp =
+    Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
+    1000 * 60 * 60 * 12;
+
+  Object.entries(apy).forEach(([address, data]) => {
+    archive[address] = [
+      ...apyArchive[address],
+      {
+        timestamp,
+        apy: data.apy,
+        range: data.weeklyRange[6],
+      },
+    ];
+  });
+
   if (network === Network.MAIN) {
     fs.writeFile(
       "./data/input_mainnet_pool_apy.json",
@@ -220,6 +245,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
   }
 
   fs.writeFile(fileName, JSON.stringify(apy), (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+
+  fs.writeFile(archiveFileName, JSON.stringify(archive), (err) => {
     if (err) {
       throw err;
     }
