@@ -43,5 +43,14 @@ export default function (req: VercelRequest, res: VercelResponse) {
     };
   });
 
+  Object.entries(rewardsData).forEach(([address, rewards]) => {
+    if (!data[address]) {
+      data[address] = {
+        apy: 0,
+        ...rewards
+      };
+    }
+  });
+
   res.json(data);
 }
