@@ -1,5 +1,5 @@
 import { Network, Market, getMarketAddress, Pair } from "@invariant-labs/sdk";
-import { poolAPY } from "@invariant-labs/sdk/lib/utils";
+import { poolAPY, WeeklyData } from "@invariant-labs/sdk/lib/utils";
 import { BN, Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
@@ -7,7 +7,15 @@ import DEVNET_APY from "../data/pool_apy_devnet.json";
 import MAINNET_APY from "../data/pool_apy_mainnet.json";
 import DEVNET_ARCHIVE from "../data/pool_apy_archive_devnet.json";
 import MAINNET_ARCHIVE from "../data/pool_apy_archive_mainnet.json";
-import { ApySnapshot, jsonArrayToTicks, PoolApyArchiveSnapshot } from "./utils";
+import {
+  ApySnapshot,
+  devnetTokensData,
+  getTokensData,
+  jsonArrayToTicks,
+  PoolApyArchiveSnapshot,
+  TokenData,
+} from "./utils";
+import { PoolStructure } from "@invariant-labs/sdk/lib/market";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -19,6 +27,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let ticksFolder: string;
   let apySnaps: Record<string, ApySnapshot>;
   let apyArchive: Record<string, PoolApyArchiveSnapshot[]>;
+  let tokensData: Record<string, TokenData>;
 
   switch (network) {
     case Network.MAIN:
@@ -28,6 +37,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       ticksFolder = "./data/ticks/mainnet/";
       apySnaps = MAINNET_APY;
       apyArchive = MAINNET_ARCHIVE;
+      tokensData = await getTokensData();
       break;
     case Network.DEV:
     default:
@@ -37,6 +47,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       ticksFolder = "./data/ticks/devnet/";
       apySnaps = DEVNET_APY;
       apyArchive = DEVNET_ARCHIVE;
+      tokensData = devnetTokensData;
   }
 
   const connection = provider.connection;
@@ -50,13 +61,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const allPools = await market.getAllPools();
 
+  const weeklyData: Record<string, WeeklyData> = {};
   const apy: Record<string, ApySnapshot> = {};
+  const poolsData: Record<string, PoolStructure> = {};
   const input: Record<string, any> = {};
 
   await Promise.all(
     allPools.map(async (pool) => {
       const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
       const address = await pair.getAddress(market.program.programId);
+      poolsData[address.toString()] = pool;
 
       return await fs.promises
         .readFile(ticksFolder + address.toString() + ".json", "utf-8")
@@ -69,7 +83,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
               (1000 * 60 * 60) <
               24
           ) {
-            apy[address.toString()] = {
+            weeklyData[address.toString()] = {
               apy: 0,
               weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
               weeklyRange: [
@@ -81,6 +95,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 { tickLower: null, tickUpper: null },
                 { tickLower: null, tickUpper: null },
               ],
+              tokenXamount: new BN(0),
+              volumeX: 0,
             };
           } else {
             const len = snaps.length;
@@ -101,6 +117,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
             const prevSnap = snaps[index];
 
             try {
+              const lastWeeklyData =
+                typeof apySnaps?.[address.toString()] !== "undefined"
+                  ? {
+                      ...apySnaps?.[address.toString()],
+                      tokenXamount: new BN(0),
+                      volumeX: 0,
+                    }
+                  : undefined;
               const poolApy = poolAPY({
                 feeTier: { fee: pool.fee.v },
                 volumeX: +new BN(currentSnap.volumeX)
@@ -111,7 +135,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   .toString(),
                 ticksPreviousSnapshot: prevSnap.ticks,
                 ticksCurrentSnapshot: currentSnap.ticks,
-                weeklyData: apySnaps?.[address.toString()] ?? {
+                weeklyData: lastWeeklyData ?? {
                   apy: 0,
                   weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
                   weeklyRange: [
@@ -123,6 +147,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
                     { tickLower: null, tickUpper: null },
                     { tickLower: null, tickUpper: null },
                   ],
+                  tokenXamount: new BN(0),
+                  volumeX: 0,
                 },
                 currentTickIndex: pool.currentTickIndex,
               });
@@ -179,9 +205,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 currentTickIndex: pool.currentTickIndex,
               };
 
-              apy[address.toString()] = poolApy;
+              weeklyData[address.toString()] = poolApy;
             } catch (_error) {
-              apy[address.toString()] = {
+              weeklyData[address.toString()] = {
                 apy: 0,
                 weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
                 weeklyRange: [
@@ -193,12 +219,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   { tickLower: null, tickUpper: null },
                   { tickLower: null, tickUpper: null },
                 ],
+                tokenXamount: new BN(0),
+                volumeX: 0,
               };
             }
           }
         })
         .catch(() => {
-          apy[address.toString()] = {
+          weeklyData[address.toString()] = {
             apy: 0,
             weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
             weeklyRange: [
@@ -210,6 +238,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
               { tickLower: null, tickUpper: null },
               { tickLower: null, tickUpper: null },
             ],
+            tokenXamount: new BN(0),
+            volumeX: 0,
           };
         });
     })
@@ -220,7 +250,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
     1000 * 60 * 60 * 12;
 
-  Object.entries(apy).forEach(([address, data]) => {
+  Object.entries(weeklyData).forEach(([address, data]) => {
     if (!apyArchive[address]) {
       apyArchive[address] = [];
     }
@@ -228,7 +258,29 @@ export const createSnapshotForNetwork = async (network: Network) => {
       timestamp,
       apy: data.apy,
       range: data.weeklyRange[data.weeklyRange.length - 1],
+      weeklyFactor: data.weeklyFactor,
+      tokenXAmount: data.tokenXamount.toString(),
+      volumeX: data.volumeX,
+      tokenX: {
+        address: poolsData[address].tokenX.toString(),
+        ticker:
+          tokensData?.[poolsData[address].tokenX.toString()]?.ticker ?? "",
+        decimals:
+          tokensData?.[poolsData[address].tokenX.toString()].decimals ?? 0,
+      },
+      tokenY: {
+        address: poolsData[address].tokenY.toString(),
+        ticker:
+          tokensData?.[poolsData[address].tokenY.toString()]?.ticker ?? "",
+        decimals:
+          tokensData?.[poolsData[address].tokenY.toString()].decimals ?? 0,
+      },
     });
+    apy[address] = {
+      apy: data.apy,
+      weeklyFactor: data.weeklyFactor,
+      weeklyRange: data.weeklyRange,
+    };
   });
 
   if (network === Network.MAIN) {

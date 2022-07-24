@@ -91,6 +91,7 @@ export const printBNtoBN = (amount: string, decimals: number): BN => {
 };
 
 export interface TokenData {
+  ticker?: string;
   coingeckoId?: string;
   decimals: number;
 }
@@ -117,6 +118,7 @@ export const getTokensData = async (): Promise<Record<string, TokenData>> => {
       coingeckoId:
         coingeckoIdOverwrites?.[token.address.toString()] ??
         token.extensions?.coingeckoId,
+      ticker: token?.symbol,
     };
   });
 
@@ -158,26 +160,32 @@ export const devnetTokensData = {
   [MOCK_TOKENS.USDC]: {
     decimals: 6,
     coingeckoId: "usd-coin",
+    ticker: "USDC",
   },
   [MOCK_TOKENS.USDT]: {
     decimals: 6,
     coingeckoId: "tether",
+    ticker: "USDT",
   },
   [MOCK_TOKENS.SOL]: {
     decimals: 9,
     coingeckoId: "solana",
+    ticker: "SOL",
   },
   [MOCK_TOKENS.MSOL]: {
     decimals: 9,
     coingeckoId: "msol",
+    ticker: "mSOL",
   },
   [MOCK_TOKENS.BTC]: {
     decimals: 6,
     coingeckoId: "bitcoin",
+    ticker: "BTC",
   },
   [MOCK_TOKENS.REN_DOGE]: {
     decimals: 8,
     coingeckoId: "rendoge",
+    ticker: "renDOGE",
   },
 };
 
@@ -250,7 +258,7 @@ export interface RewardsData {
 export interface ApySnapshot {
   apy: number;
   weeklyFactor: number[];
-  weeklyRange: Range[]
+  weeklyRange: Range[];
 }
 
 export interface IncentiveApySnapshot {
@@ -293,7 +301,20 @@ export const jsonArrayToTicks = (address: string, data: any[]) => {
 };
 
 export interface PoolApyArchiveSnapshot {
-  timestamp: number
-  apy: number
-  range: Range
+  timestamp: number;
+  apy: number;
+  range: Range;
+  tokenXAmount?: string;
+  volumeX?: number;
+  weeklyFactor?: number[];
+  tokenX?: {
+    address: string;
+    ticker: string;
+    decimals: number;
+  };
+  tokenY?: {
+    address: string;
+    ticker: string;
+    decimals: number;
+  };
 }
