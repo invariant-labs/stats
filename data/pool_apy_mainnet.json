@@ -1,348 +1,349 @@
 {
-    "AvNeVrKZy1FaEG9suboRXNPgmnMwomiU5EvkF6jGxGrX": {
-      "apy": 228.92645159677235,
-      "weeklyFactor": [
-        0.0010681470120781197, 0.01222617050677507, 0.0010030449367161476,
-        0.0009963042365227022, 0.00603539103466247, 0.00011868300098432973,
-        0.0014241960163187697
-      ],
-      "weeklyRange": [
-        { "tickLower": -23040, "tickUpper": -16920 },
-        { "tickLower": -23040, "tickUpper": -16920 },
-        { "tickLower": -23040, "tickUpper": -16920 },
-        { "tickLower": -23040, "tickUpper": -16920 },
-        { "tickLower": -23040, "tickUpper": -16920 },
-        { "tickLower": -23040, "tickUpper": -16920 },
-        { "tickLower": -23040, "tickUpper": -16920 }
-      ]
-    },
-    "FeKSMTD9Z22kdnMLeNWAfaTXydbhVixUPcfZDW3QS1X4": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -1765, "tickUpper": -9 },
-        { "tickLower": -1765, "tickUpper": -9 },
-        { "tickLower": -1765, "tickUpper": -9 },
-        { "tickLower": -1765, "tickUpper": -9 },
-        { "tickLower": -1765, "tickUpper": -9 },
-        { "tickLower": -1765, "tickUpper": -9 },
-        { "tickLower": -1765, "tickUpper": -9 }
-      ]
-    },
-    "7drJL7kEdJfgNzeaEYKDqTkfmiG2ain3nEPtGHDZc6i2": {
-      "apy": 0.01689252961885046,
-      "weeklyFactor": [0, 0, 0, 0, 0.0000032393903649479015, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -14820, "tickUpper": -60 },
-        { "tickLower": -14820, "tickUpper": -60 },
-        { "tickLower": -14820, "tickUpper": -60 },
-        { "tickLower": -14820, "tickUpper": -60 },
-        { "tickLower": -14820, "tickUpper": -60 },
-        { "tickLower": -14820, "tickUpper": -60 },
-        { "tickLower": -14820, "tickUpper": -60 }
-      ]
-    },
-    "F2RieMDdnWyydUa8prEUz9Xv9k6Cny3kqF79ufTiiTTN": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 }
-      ]
-    },
-    "2SgUGxYDczrB6wUzXHPJH65pNhWkEzNMEx3km4xTYUTC": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": 21344, "tickUpper": 21354 },
-        { "tickLower": 21344, "tickUpper": 21354 },
-        { "tickLower": 21344, "tickUpper": 21354 },
-        { "tickLower": 21344, "tickUpper": 21354 },
-        { "tickLower": 21344, "tickUpper": 21354 },
-        { "tickLower": 21344, "tickUpper": 21354 },
-        { "tickLower": 21344, "tickUpper": 21354 }
-      ]
-    },
-    "HbMbeaDH8xtB1a8WpwjNqcXBBGraKJjJ2xFkXEdAy1rY": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -558, "tickUpper": 439 },
-        { "tickLower": -558, "tickUpper": 439 },
-        { "tickLower": -558, "tickUpper": 439 },
-        { "tickLower": -558, "tickUpper": 439 },
-        { "tickLower": -558, "tickUpper": 439 },
-        { "tickLower": -558, "tickUpper": 439 },
-        { "tickLower": -558, "tickUpper": 439 }
-      ]
-    },
-    "4FkGNJMvKFk9PFwn8TBtk1ShUKege6D5Au87ezwLWiqk": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -32, "tickUpper": -2 },
-        { "tickLower": -32, "tickUpper": -2 },
-        { "tickLower": -32, "tickUpper": -2 },
-        { "tickLower": -32, "tickUpper": -2 },
-        { "tickLower": -32, "tickUpper": -2 },
-        { "tickLower": -32, "tickUpper": -2 },
-        { "tickLower": -32, "tickUpper": -2 }
-      ]
-    },
-    "C7BLPzc1vzLL3Tm5udXELnHDRXeXkdd5f1oMKP8rwUNv": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null }
-      ]
-    },
-    "8W7q7xurgBaNqLzc5iNTm46An1fWPCRzhPTmJyy8QYuA": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 }
-      ]
-    },
-    "HYCzZYupXUyamfTQWNkULW1EFcNPCTA5urnEXCFXkLRh": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null }
-      ]
-    },
-    "FejEVPJBH5TEbgcpupNuRyiMRoeaCQwPvtVU6w3i2xRc": {
-      "apy": 5.259347068376008,
-      "weeklyFactor": [0, 0.000983081727500446, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -173, "tickUpper": 231 },
-        { "tickLower": -173, "tickUpper": 231 },
-        { "tickLower": -173, "tickUpper": 231 },
-        { "tickLower": -173, "tickUpper": 231 },
-        { "tickLower": -173, "tickUpper": 231 },
-        { "tickLower": -173, "tickUpper": 231 },
-        { "tickLower": -173, "tickUpper": 231 }
-      ]
-    },
-    "GmBMZ8BNeNR6mRFqu2ZaFvpxvGPXmc9Aa4a1GWFaxWMv": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null }
-      ]
-    },
-    "5dX3tkVDmbHBWMCQMerAHTmd9wsRvmtKLoQt6qv9fHy7": {
-      "apy": 17.558138007951698,
-      "weeklyFactor": [0, 0.001726059776755017, 0.001376928368457647, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": 2, "tickUpper": 3 },
-        { "tickLower": -5, "tickUpper": 4 },
-        { "tickLower": -1, "tickUpper": 1 },
-        { "tickLower": -1, "tickUpper": 1 },
-        { "tickLower": -1, "tickUpper": 1 },
-        { "tickLower": -1, "tickUpper": 1 },
-        { "tickLower": -1, "tickUpper": 1 }
-      ]
-    },
-    "DzCbrMZXNG3XpXuufhBp233LJXvV8Xq1C3q4ksrtbCPP": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": 32195, "tickUpper": 34045 },
-        { "tickLower": 32195, "tickUpper": 34045 },
-        { "tickLower": 32195, "tickUpper": 34045 },
-        { "tickLower": 32195, "tickUpper": 34045 },
-        { "tickLower": 32195, "tickUpper": 34045 },
-        { "tickLower": 32195, "tickUpper": 34045 },
-        { "tickLower": 32195, "tickUpper": 34045 }
-      ]
-    },
-    "EWZW9aJmY2LX6ZyV5RU8waHWKF1aGaxzbuBuRQp6G4j": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": 105435, "tickUpper": 106640 },
-        { "tickLower": 105435, "tickUpper": 106640 },
-        { "tickLower": 105435, "tickUpper": 106640 },
-        { "tickLower": 105435, "tickUpper": 106640 },
-        { "tickLower": 105435, "tickUpper": 106640 },
-        { "tickLower": 105435, "tickUpper": 106640 },
-        { "tickLower": 105435, "tickUpper": 106640 }
-      ]
-    },
-    "9bXJSJ3tGjkk8QVSykcGE6KnzdKznfjWP7YXicSRFTe8": {
-      "apy": 0,
-      "weeklyFactor": [0.032561119523647264, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": 46050, "tickUpper": 46055 },
-        { "tickLower": 46050, "tickUpper": 46055 },
-        { "tickLower": 46050, "tickUpper": 46055 },
-        { "tickLower": 46050, "tickUpper": 46055 },
-        { "tickLower": 46050, "tickUpper": 46055 },
-        { "tickLower": 46050, "tickUpper": 46055 },
-        { "tickLower": 46050, "tickUpper": 46055 }
-      ]
-    },
-    "2keDsfcMY6hLvfrmzDAfnMSudMqYczPVcb8MSkK59P9r": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -24090, "tickUpper": -22390 },
-        { "tickLower": -24090, "tickUpper": -22390 },
-        { "tickLower": -24090, "tickUpper": -22390 },
-        { "tickLower": -24090, "tickUpper": -22390 },
-        { "tickLower": -24090, "tickUpper": -22390 },
-        { "tickLower": -24090, "tickUpper": -22390 },
-        { "tickLower": -24090, "tickUpper": -22390 }
-      ]
-    },
-    "AXSXYioiHGFvQ1XF4zCvXjnVAcMY68WQ4RH5r5nAdah5": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -50, "tickUpper": 50 },
-        { "tickLower": -50, "tickUpper": 50 },
-        { "tickLower": -50, "tickUpper": 50 },
-        { "tickLower": -50, "tickUpper": 50 },
-        { "tickLower": -50, "tickUpper": 50 },
-        { "tickLower": -50, "tickUpper": 50 },
-        { "tickLower": -50, "tickUpper": 50 }
-      ]
-    },
-    "9fY5jLin2yYMK9Eee5diWzJRZqLaYgEUupUNsKVYAMhi": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -17, "tickUpper": 15 },
-        { "tickLower": -17, "tickUpper": 15 },
-        { "tickLower": -17, "tickUpper": 15 },
-        { "tickLower": -17, "tickUpper": 15 },
-        { "tickLower": -17, "tickUpper": 15 },
-        { "tickLower": -17, "tickUpper": 15 },
-        { "tickLower": -17, "tickUpper": 15 }
-      ]
-    },
-    "A5U2LbZhwc6GFZtYft6MtbGHFhYyZ1pzCRQkz7D2b2YS": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 },
-        { "tickLower": -10, "tickUpper": 10 }
-      ]
-    },
-    "FwiuNR91xfiUvWiBu4gieK4SFmh9qjMhYS9ebyYJ8PGj": {
-      "apy": 39.41,
-      "weeklyFactor": [
-        0.003312280716211031, 0.0003342061434910689, 0.028138262533705504,
-        0.02285744313998266, 0, 0.009452793774090681, 0
-      ],
-      "weeklyRange": [
-        { "tickLower": -10, "tickUpper": 5 },
-        { "tickLower": -10, "tickUpper": 5 },
-        { "tickLower": 10, "tickUpper": 19 },
-        { "tickLower": 2, "tickUpper": 19 },
-        { "tickLower": -1, "tickUpper": 10 },
-        { "tickLower": -1, "tickUpper": 10 },
-        { "tickLower": 2, "tickUpper": 8 }
-      ]
-    },
-    "B2Mq1fpJ2bZYxxtF4yz6nNvLJLaYzM3zQsHcs2oDqk3z": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -12, "tickUpper": 1246 },
-        { "tickLower": -12, "tickUpper": 1246 },
-        { "tickLower": -12, "tickUpper": 1246 },
-        { "tickLower": -12, "tickUpper": 1246 },
-        { "tickLower": -12, "tickUpper": 1246 },
-        { "tickLower": -12, "tickUpper": 1246 },
-        { "tickLower": -12, "tickUpper": 1246 }
-      ]
-    },
-    "5yKHz86cvHocaQnxv4mPJjftA4w7BbJzQQr5rG9miyZ3": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null }
-      ]
-    },
-    "6rvpVhL9fxm2WLMefNRaLwv6aNdivZadMi56teWfSkuU": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": 29960, "tickUpper": 221810 },
-        { "tickLower": 29960, "tickUpper": 221810 },
-        { "tickLower": 29960, "tickUpper": 221810 },
-        { "tickLower": 29960, "tickUpper": 221810 },
-        { "tickLower": 29960, "tickUpper": 221810 },
-        { "tickLower": 29960, "tickUpper": 221810 },
-        { "tickLower": 29960, "tickUpper": 221810 }
-      ]
-    },
-    "BGz6pBLvc4nuGNsbXYoAE7z466kSjZaoXKJMnEkZWkyD": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null },
-        { "tickLower": null, "tickUpper": null }
-      ]
-    },
-    "9PDif8wTTXbiJry8hviXtiiyCyyvLpqxWEJjPVSgEb73": {
-      "apy": 0,
-      "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
-      "weeklyRange": [
-        { "tickLower": -221790, "tickUpper": -95670 },
-        { "tickLower": -221790, "tickUpper": -95670 },
-        { "tickLower": -221790, "tickUpper": -95670 },
-        { "tickLower": -221790, "tickUpper": -95670 },
-        { "tickLower": -221790, "tickUpper": -95670 },
-        { "tickLower": -221790, "tickUpper": -95670 },
-        { "tickLower": -221790, "tickUpper": -95670 }
-      ]
-    }
+  "AvNeVrKZy1FaEG9suboRXNPgmnMwomiU5EvkF6jGxGrX": {
+    "apy": 228.92645159677235,
+    "weeklyFactor": [
+      0.000010681470120781197, 0.00012226170506775068, 0.000010030449367161476,
+      0.000009963042365227021, 0.0000603539103466247, 0.0000011868300098432972,
+      0.000014241960163187696
+    ],
+    "weeklyRange": [
+      { "tickLower": -23040, "tickUpper": -16920 },
+      { "tickLower": -23040, "tickUpper": -16920 },
+      { "tickLower": -23040, "tickUpper": -16920 },
+      { "tickLower": -23040, "tickUpper": -16920 },
+      { "tickLower": -23040, "tickUpper": -16920 },
+      { "tickLower": -23040, "tickUpper": -16920 },
+      { "tickLower": -23040, "tickUpper": -16920 }
+    ]
+  },
+  "FeKSMTD9Z22kdnMLeNWAfaTXydbhVixUPcfZDW3QS1X4": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -1765, "tickUpper": -9 },
+      { "tickLower": -1765, "tickUpper": -9 },
+      { "tickLower": -1765, "tickUpper": -9 },
+      { "tickLower": -1765, "tickUpper": -9 },
+      { "tickLower": -1765, "tickUpper": -9 },
+      { "tickLower": -1765, "tickUpper": -9 },
+      { "tickLower": -1765, "tickUpper": -9 }
+    ]
+  },
+  "7drJL7kEdJfgNzeaEYKDqTkfmiG2ain3nEPtGHDZc6i2": {
+    "apy": 0.01689252961885046,
+    "weeklyFactor": [0, 0, 0, 0, 3.2393903649479014e-8, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -14820, "tickUpper": -60 },
+      { "tickLower": -14820, "tickUpper": -60 },
+      { "tickLower": -14820, "tickUpper": -60 },
+      { "tickLower": -14820, "tickUpper": -60 },
+      { "tickLower": -14820, "tickUpper": -60 },
+      { "tickLower": -14820, "tickUpper": -60 },
+      { "tickLower": -14820, "tickUpper": -60 }
+    ]
+  },
+  "F2RieMDdnWyydUa8prEUz9Xv9k6Cny3kqF79ufTiiTTN": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 }
+    ]
+  },
+  "2SgUGxYDczrB6wUzXHPJH65pNhWkEzNMEx3km4xTYUTC": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": 21344, "tickUpper": 21354 },
+      { "tickLower": 21344, "tickUpper": 21354 },
+      { "tickLower": 21344, "tickUpper": 21354 },
+      { "tickLower": 21344, "tickUpper": 21354 },
+      { "tickLower": 21344, "tickUpper": 21354 },
+      { "tickLower": 21344, "tickUpper": 21354 },
+      { "tickLower": 21344, "tickUpper": 21354 }
+    ]
+  },
+  "HbMbeaDH8xtB1a8WpwjNqcXBBGraKJjJ2xFkXEdAy1rY": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -558, "tickUpper": 439 },
+      { "tickLower": -558, "tickUpper": 439 },
+      { "tickLower": -558, "tickUpper": 439 },
+      { "tickLower": -558, "tickUpper": 439 },
+      { "tickLower": -558, "tickUpper": 439 },
+      { "tickLower": -558, "tickUpper": 439 },
+      { "tickLower": -558, "tickUpper": 439 }
+    ]
+  },
+  "4FkGNJMvKFk9PFwn8TBtk1ShUKege6D5Au87ezwLWiqk": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -32, "tickUpper": -2 },
+      { "tickLower": -32, "tickUpper": -2 },
+      { "tickLower": -32, "tickUpper": -2 },
+      { "tickLower": -32, "tickUpper": -2 },
+      { "tickLower": -32, "tickUpper": -2 },
+      { "tickLower": -32, "tickUpper": -2 },
+      { "tickLower": -32, "tickUpper": -2 }
+    ]
+  },
+  "C7BLPzc1vzLL3Tm5udXELnHDRXeXkdd5f1oMKP8rwUNv": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null }
+    ]
+  },
+  "8W7q7xurgBaNqLzc5iNTm46An1fWPCRzhPTmJyy8QYuA": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 }
+    ]
+  },
+  "HYCzZYupXUyamfTQWNkULW1EFcNPCTA5urnEXCFXkLRh": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null }
+    ]
+  },
+  "FejEVPJBH5TEbgcpupNuRyiMRoeaCQwPvtVU6w3i2xRc": {
+    "apy": 5.259347068376008,
+    "weeklyFactor": [0, 0.00000983081727500446, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -173, "tickUpper": 231 },
+      { "tickLower": -173, "tickUpper": 231 },
+      { "tickLower": -173, "tickUpper": 231 },
+      { "tickLower": -173, "tickUpper": 231 },
+      { "tickLower": -173, "tickUpper": 231 },
+      { "tickLower": -173, "tickUpper": 231 },
+      { "tickLower": -173, "tickUpper": 231 }
+    ]
+  },
+  "GmBMZ8BNeNR6mRFqu2ZaFvpxvGPXmc9Aa4a1GWFaxWMv": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null }
+    ]
+  },
+  "5dX3tkVDmbHBWMCQMerAHTmd9wsRvmtKLoQt6qv9fHy7": {
+    "apy": 17.558138007951698,
+    "weeklyFactor": [
+      0, 0.000017260597767550168, 0.000013769283684576469, 0, 0, 0, 0
+    ],
+    "weeklyRange": [
+      { "tickLower": 2, "tickUpper": 3 },
+      { "tickLower": -5, "tickUpper": 4 },
+      { "tickLower": -1, "tickUpper": 1 },
+      { "tickLower": -1, "tickUpper": 1 },
+      { "tickLower": -1, "tickUpper": 1 },
+      { "tickLower": -1, "tickUpper": 1 },
+      { "tickLower": -1, "tickUpper": 1 }
+    ]
+  },
+  "DzCbrMZXNG3XpXuufhBp233LJXvV8Xq1C3q4ksrtbCPP": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": 32195, "tickUpper": 34045 },
+      { "tickLower": 32195, "tickUpper": 34045 },
+      { "tickLower": 32195, "tickUpper": 34045 },
+      { "tickLower": 32195, "tickUpper": 34045 },
+      { "tickLower": 32195, "tickUpper": 34045 },
+      { "tickLower": 32195, "tickUpper": 34045 },
+      { "tickLower": 32195, "tickUpper": 34045 }
+    ]
+  },
+  "EWZW9aJmY2LX6ZyV5RU8waHWKF1aGaxzbuBuRQp6G4j": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": 105435, "tickUpper": 106640 },
+      { "tickLower": 105435, "tickUpper": 106640 },
+      { "tickLower": 105435, "tickUpper": 106640 },
+      { "tickLower": 105435, "tickUpper": 106640 },
+      { "tickLower": 105435, "tickUpper": 106640 },
+      { "tickLower": 105435, "tickUpper": 106640 },
+      { "tickLower": 105435, "tickUpper": 106640 }
+    ]
+  },
+  "9bXJSJ3tGjkk8QVSykcGE6KnzdKznfjWP7YXicSRFTe8": {
+    "apy": 0,
+    "weeklyFactor": [0.0003256111952364726, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": 46050, "tickUpper": 46055 },
+      { "tickLower": 46050, "tickUpper": 46055 },
+      { "tickLower": 46050, "tickUpper": 46055 },
+      { "tickLower": 46050, "tickUpper": 46055 },
+      { "tickLower": 46050, "tickUpper": 46055 },
+      { "tickLower": 46050, "tickUpper": 46055 },
+      { "tickLower": 46050, "tickUpper": 46055 }
+    ]
+  },
+  "2keDsfcMY6hLvfrmzDAfnMSudMqYczPVcb8MSkK59P9r": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -24090, "tickUpper": -22390 },
+      { "tickLower": -24090, "tickUpper": -22390 },
+      { "tickLower": -24090, "tickUpper": -22390 },
+      { "tickLower": -24090, "tickUpper": -22390 },
+      { "tickLower": -24090, "tickUpper": -22390 },
+      { "tickLower": -24090, "tickUpper": -22390 },
+      { "tickLower": -24090, "tickUpper": -22390 }
+    ]
+  },
+  "AXSXYioiHGFvQ1XF4zCvXjnVAcMY68WQ4RH5r5nAdah5": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -50, "tickUpper": 50 },
+      { "tickLower": -50, "tickUpper": 50 },
+      { "tickLower": -50, "tickUpper": 50 },
+      { "tickLower": -50, "tickUpper": 50 },
+      { "tickLower": -50, "tickUpper": 50 },
+      { "tickLower": -50, "tickUpper": 50 },
+      { "tickLower": -50, "tickUpper": 50 }
+    ]
+  },
+  "9fY5jLin2yYMK9Eee5diWzJRZqLaYgEUupUNsKVYAMhi": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -17, "tickUpper": 15 },
+      { "tickLower": -17, "tickUpper": 15 },
+      { "tickLower": -17, "tickUpper": 15 },
+      { "tickLower": -17, "tickUpper": 15 },
+      { "tickLower": -17, "tickUpper": 15 },
+      { "tickLower": -17, "tickUpper": 15 },
+      { "tickLower": -17, "tickUpper": 15 }
+    ]
+  },
+  "A5U2LbZhwc6GFZtYft6MtbGHFhYyZ1pzCRQkz7D2b2YS": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 },
+      { "tickLower": -10, "tickUpper": 10 }
+    ]
+  },
+  "FwiuNR91xfiUvWiBu4gieK4SFmh9qjMhYS9ebyYJ8PGj": {
+    "apy": 39.41,
+    "weeklyFactor": [
+      0.00003312280716211031, 0.000003342061434910689, 0.00028138262533705503,
+      0.00022857443139982658, 0, 0.00009452793774090681, 0
+    ],
+    "weeklyRange": [
+      { "tickLower": -10, "tickUpper": 5 },
+      { "tickLower": -10, "tickUpper": 5 },
+      { "tickLower": 10, "tickUpper": 19 },
+      { "tickLower": 2, "tickUpper": 19 },
+      { "tickLower": -1, "tickUpper": 10 },
+      { "tickLower": -1, "tickUpper": 10 },
+      { "tickLower": 2, "tickUpper": 8 }
+    ]
+  },
+  "B2Mq1fpJ2bZYxxtF4yz6nNvLJLaYzM3zQsHcs2oDqk3z": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -12, "tickUpper": 1246 },
+      { "tickLower": -12, "tickUpper": 1246 },
+      { "tickLower": -12, "tickUpper": 1246 },
+      { "tickLower": -12, "tickUpper": 1246 },
+      { "tickLower": -12, "tickUpper": 1246 },
+      { "tickLower": -12, "tickUpper": 1246 },
+      { "tickLower": -12, "tickUpper": 1246 }
+    ]
+  },
+  "5yKHz86cvHocaQnxv4mPJjftA4w7BbJzQQr5rG9miyZ3": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null }
+    ]
+  },
+  "6rvpVhL9fxm2WLMefNRaLwv6aNdivZadMi56teWfSkuU": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": 29960, "tickUpper": 221810 },
+      { "tickLower": 29960, "tickUpper": 221810 },
+      { "tickLower": 29960, "tickUpper": 221810 },
+      { "tickLower": 29960, "tickUpper": 221810 },
+      { "tickLower": 29960, "tickUpper": 221810 },
+      { "tickLower": 29960, "tickUpper": 221810 },
+      { "tickLower": 29960, "tickUpper": 221810 }
+    ]
+  },
+  "BGz6pBLvc4nuGNsbXYoAE7z466kSjZaoXKJMnEkZWkyD": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null },
+      { "tickLower": null, "tickUpper": null }
+    ]
+  },
+  "9PDif8wTTXbiJry8hviXtiiyCyyvLpqxWEJjPVSgEb73": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0],
+    "weeklyRange": [
+      { "tickLower": -221790, "tickUpper": -95670 },
+      { "tickLower": -221790, "tickUpper": -95670 },
+      { "tickLower": -221790, "tickUpper": -95670 },
+      { "tickLower": -221790, "tickUpper": -95670 },
+      { "tickLower": -221790, "tickUpper": -95670 },
+      { "tickLower": -221790, "tickUpper": -95670 },
+      { "tickLower": -221790, "tickUpper": -95670 }
+    ]
   }
-  
+}
