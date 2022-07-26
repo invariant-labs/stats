@@ -266,14 +266,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
         ticker:
           tokensData?.[poolsData[address].tokenX.toString()]?.ticker ?? "",
         decimals:
-          tokensData?.[poolsData[address].tokenX.toString()].decimals ?? 0,
+          tokensData?.[poolsData[address].tokenX.toString()]?.decimals ?? 0,
       },
       tokenY: {
         address: poolsData[address].tokenY.toString(),
         ticker:
           tokensData?.[poolsData[address].tokenY.toString()]?.ticker ?? "",
         decimals:
-          tokensData?.[poolsData[address].tokenY.toString()].decimals ?? 0,
+          tokensData?.[poolsData[address].tokenY.toString()]?.decimals ?? 0,
       },
     });
     apy[address] = {
