@@ -1,10 +1,1 @@
-{
-  "EfAJjXZppDeQPRpfjkndsPjUrp6hjcMuACHhghNmYE1t": {
-    "apy": 237.26,
-    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0.0000011092610672728694]
-  },
-  "9yAstgXzyM2qG2JpXjr7yJ5RsYomJopxiPqhsbpjAtUw": {
-    "apy": 0,
-    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0]
-  }
-}
+{"EfAJjXZppDeQPRpfjkndsPjUrp6hjcMuACHhghNmYE1t":{"apy":0.006405595843350653,"weeklyFactor":[0,0,0,0,0,0.0000011092610672728694,2.59287930610383e-7]},"9yAstgXzyM2qG2JpXjr7yJ5RsYomJopxiPqhsbpjAtUw":{"apy":0,"weeklyFactor":[0,0,0,0,0,0,null]}}
