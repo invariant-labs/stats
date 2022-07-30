@@ -1,13 +1,1 @@
-{
-  "9yAstgXzyM2qG2JpXjr7yJ5RsYomJopxiPqhsbpjAtUw": {
-    "apy": 0,
-    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0]
-  },
-  "EfAJjXZppDeQPRpfjkndsPjUrp6hjcMuACHhghNmYE1t": {
-    "apy": 147.32,
-    "weeklyFactor": [
-      0, 0, 0, 0, 0.0000011092610672728694, 2.59287930610383e-7,
-      6.757429383968823e-8
-    ]
-  }
-}
+{"9yAstgXzyM2qG2JpXjr7yJ5RsYomJopxiPqhsbpjAtUw":{"apy":0,"weeklyFactor":[0,0,0,0,0,0,null]},"EfAJjXZppDeQPRpfjkndsPjUrp6hjcMuACHhghNmYE1t":{"apy":0.007338718998139981,"weeklyFactor":[0,0,0,0.0000011092610672728694,2.59287930610383e-7,6.757429383968823e-8,1.5714223846871596e-7]}}
