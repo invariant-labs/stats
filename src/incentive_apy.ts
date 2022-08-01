@@ -163,12 +163,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
               apy[incentive.publicKey.toString()] = {
                 apy: isNaN(+JSON.stringify(incentiveApy.apy))
                   ? 0
-                  : incentiveApy.apy,
+                  : incentiveApy.apy * 100,
                 apySingleTick: isNaN(
                   +JSON.stringify(incentiveApy.apySingleTick)
                 )
                   ? 0
-                  : incentiveApy.apySingleTick,
+                  : incentiveApy.apySingleTick * 100,
               };
             } catch (_error) {
               apy[incentive.publicKey.toString()] = {
