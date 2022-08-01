@@ -1,1 +1,13 @@
-{"9yAstgXzyM2qG2JpXjr7yJ5RsYomJopxiPqhsbpjAtUw":{"apy":0,"weeklyFactor":[0,0,0,0,0,0,null]},"EfAJjXZppDeQPRpfjkndsPjUrp6hjcMuACHhghNmYE1t":{"apy":0.008490452659937198,"weeklyFactor":[0,0.0000011092610672728694,2.59287930610383e-7,6.757429383968823e-8,1.5714223846871596e-7,3.361076694454418e-8,2.535033698822398e-7]}}
+{
+  "9yAstgXzyM2qG2JpXjr7yJ5RsYomJopxiPqhsbpjAtUw": {
+    "apy": 0,
+    "weeklyFactor": [0, 0, 0, 0, 0, 0, 0]
+  },
+  "EfAJjXZppDeQPRpfjkndsPjUrp6hjcMuACHhghNmYE1t": {
+    "apy": 95.44,
+    "weeklyFactor": [
+      0, 0.0000011092610672728694, 2.59287930610383e-7, 6.757429383968823e-8,
+      1.5714223846871596e-7, 3.361076694454418e-8, 2.535033698822398e-7
+    ]
+  }
+}
