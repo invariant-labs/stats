@@ -6,8 +6,6 @@ import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import DEVNET_REWARDS from "../data/rewards_data_devnet.json";
 import MAINNET_REWARDS from "../data/rewards_data_mainnet.json";
-import DEVNET_APY from "../data/incentive_apy_devnet.json";
-import MAINNET_APY from "../data/incentive_apy_mainnet.json";
 import {
   marketToStakerNetwork,
   devnetTokensData,
@@ -28,7 +26,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let ticksFolder: string;
   let rewardsData: Record<string, RewardsData>;
   let tokensData: Record<string, TokenData>;
-  let apySnaps: Record<string, IncentiveApySnapshot>;
 
   switch (network) {
     case Network.MAIN:
@@ -37,7 +34,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       ticksFolder = "./data/ticks/mainnet/";
       rewardsData = MAINNET_REWARDS;
       tokensData = await getTokensData();
-      apySnaps = MAINNET_APY;
       break;
     case Network.DEV:
     default:
@@ -46,7 +42,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       ticksFolder = "./data/ticks/devnet/";
       rewardsData = DEVNET_REWARDS;
       tokensData = devnetTokensData;
-      apySnaps = DEVNET_APY;
   }
 
   const idsList: string[] = [];
@@ -155,15 +150,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
                     : rewardTokenPrice * incentiveRewardData.total,
                 tokenPrice: xPrices?.[incentive.pool.toString()] ?? 0,
                 duration:
-                  Math.floor(
-                    (incentive.endTime.v.toNumber() -
-                      incentive.startTime.v.toNumber()) /
-                      60 /
-                      60 /
-                      24
-                  ) *
-                  60 *
-                  60 *
+                  (incentive.endTime.v.toNumber() -
+                    incentive.startTime.v.toNumber()) /
+                  60 /
+                  60 /
                   24,
                 tokenDecimal: rewardToken.decimals,
                 currentTickIndex:
