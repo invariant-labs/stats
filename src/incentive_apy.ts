@@ -115,7 +115,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
           ) {
             apy[incentive.publicKey.toString()] = {
               apy: 0,
-              weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+              apySingleTick: 0,
             };
           } else {
             const len = snaps.length;
@@ -149,11 +149,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
               const incentiveApy = rewardsAPY({
                 ticksPreviousSnapshot: prevSnap.ticks,
                 ticksCurrentSnapshot: currentSnap.ticks,
-                rewardInUSD:
+                rewardInUsd:
                   typeof incentiveRewardData === "undefined"
                     ? 0
                     : rewardTokenPrice * incentiveRewardData.total,
-                tokenXprice: xPrices?.[incentive.pool.toString()] ?? 0,
+                tokenPrice: xPrices?.[incentive.pool.toString()] ?? 0,
                 duration:
                   Math.floor(
                     (incentive.endTime.v.toNumber() -
@@ -165,23 +165,25 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   60 *
                   60 *
                   24,
-                weeklyFactor:
-                  apySnaps?.[incentive.publicKey.toString()]?.weeklyFactor ?? 0,
                 tokenDecimal: rewardToken.decimals,
                 currentTickIndex:
                   currentTickIndexes?.[incentive.pool.toString()] ?? 0,
               });
 
               apy[incentive.publicKey.toString()] = {
-                apy: isNaN(+JSON.stringify(incentiveApy.reward))
+                apy: isNaN(+JSON.stringify(incentiveApy.apy))
                   ? 0
-                  : incentiveApy.reward,
-                weeklyFactor: incentiveApy.newWeeklyFactor,
+                  : incentiveApy.apy,
+                apySingleTick: isNaN(
+                  +JSON.stringify(incentiveApy.apySingleTick)
+                )
+                  ? 0
+                  : incentiveApy.apySingleTick,
               };
             } catch (_error) {
               apy[incentive.publicKey.toString()] = {
                 apy: 0,
-                weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+                apySingleTick: 0,
               };
             }
           }
@@ -189,7 +191,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         .catch(() => {
           apy[incentive.publicKey.toString()] = {
             apy: 0,
-            weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+            apySingleTick: 0,
           };
         });
     })

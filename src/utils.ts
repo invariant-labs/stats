@@ -263,7 +263,7 @@ export interface ApySnapshot {
 
 export interface IncentiveApySnapshot {
   apy: number;
-  weeklyFactor: number[];
+  apySingleTick: number;
 }
 
 export const jsonArrayToTicks = (address: string, data: any[]) => {
