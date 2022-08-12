@@ -142,7 +142,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
             try {
               const incentiveApy = rewardsAPY({
-                ticksPreviousSnapshot: prevSnap.ticks,
                 ticksCurrentSnapshot: currentSnap.ticks,
                 rewardInUsd:
                   typeof incentiveRewardData === "undefined"
