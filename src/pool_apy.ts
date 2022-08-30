@@ -31,7 +31,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = Provider.local("https://tame-ancient-mountain.solana-mainnet.quiknode.pro/6a9a95bf7bbb108aea620e7ee4c1fd5e1b67cc62");
+      provider = Provider.local(
+        "https://tame-ancient-mountain.solana-mainnet.quiknode.pro/6a9a95bf7bbb108aea620e7ee4c1fd5e1b67cc62"
+      );
       fileName = "./data/pool_apy_mainnet.json";
       archiveFileName = "./data/pool_apy_archive_mainnet.json";
       ticksFolder = "./data/ticks/mainnet/";
@@ -70,6 +72,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     allPools.map(async (pool) => {
       const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
       const address = await pair.getAddress(market.program.programId);
+      const activeTokens = await market.getActiveLiquidityInTokens(
+        address,
+        pool.currentTickIndex
+      );
       poolsData[address.toString()] = pool;
 
       return await fs.promises
@@ -125,6 +131,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                       volumeX: 0,
                     }
                   : undefined;
+
               const poolApy = poolAPY({
                 feeTier: { fee: pool.fee.v },
                 volumeX: +new BN(currentSnap.volumeX)
@@ -151,6 +158,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   volumeX: 0,
                 },
                 currentTickIndex: pool.currentTickIndex,
+                activeTokens,
               });
 
               input[address.toString()] = {
@@ -203,6 +211,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   ],
                 },
                 currentTickIndex: pool.currentTickIndex,
+                activeTokens,
               };
 
               weeklyData[address.toString()] = poolApy;

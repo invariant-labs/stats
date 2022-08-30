@@ -1,7 +1,8 @@
 import { Network, Market, getMarketAddress, Pair } from "@invariant-labs/sdk";
+import { PoolStructure } from "@invariant-labs/sdk/lib/market";
 import { rewardsAPY } from "@invariant-labs/sdk/lib/utils";
 import { Staker } from "@invariant-labs/staker-sdk";
-import { Provider } from "@project-serum/anchor";
+import { BN, Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import DEVNET_REWARDS from "../data/rewards_data_devnet.json";
@@ -13,7 +14,6 @@ import {
   TokenData,
   getTokensPrices,
   RewardsData,
-  jsonArrayToTicks,
   IncentiveApySnapshot,
 } from "./utils";
 
@@ -29,7 +29,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = Provider.local("https://tame-ancient-mountain.solana-mainnet.quiknode.pro/6a9a95bf7bbb108aea620e7ee4c1fd5e1b67cc62");
+      provider = Provider.local(
+        "https://tame-ancient-mountain.solana-mainnet.quiknode.pro/6a9a95bf7bbb108aea620e7ee4c1fd5e1b67cc62"
+      );
       fileName = "./data/incentive_apy_mainnet.json";
       ticksFolder = "./data/ticks/mainnet/";
       rewardsData = MAINNET_REWARDS;
@@ -73,8 +75,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const allIncentives = await staker.getAllIncentive();
 
   const xPrices: Record<string, number> = {};
-  const currentTickIndexes: Record<string, number> = {};
   const apy: Record<string, IncentiveApySnapshot> = {};
+  const poolsData: Record<string, PoolStructure> = {};
+  const allLiquidity: Record<string, BN> = {};
 
   await Promise.all(
     allPools.map(async (pool) => {
@@ -88,101 +91,60 @@ export const createSnapshotForNetwork = async (network: Network) => {
         : 0;
 
       xPrices[address.toString()] = tokenXPrice;
-      currentTickIndexes[address.toString()] = pool.currentTickIndex;
+      poolsData[address.toString()] = pool;
+      allLiquidity[address.toString()] =
+        await market.getAllPoolLiquidityInTokens(address);
     })
   );
 
   await Promise.all(
     allIncentives.map(async (incentive) => {
-      return await fs.promises
-        .readFile(ticksFolder + incentive.pool.toString() + ".json", "utf-8")
-        .then((data) => {
-          const snaps = jsonArrayToTicks(
-            incentive.pool.toString(),
-            JSON.parse(data)
-          );
+      const incentiveRewardData = rewardsData?.[incentive.publicKey.toString()];
+      const rewardToken =
+        typeof incentiveRewardData === "undefined"
+          ? { decimals: 0 }
+          : tokensData?.[incentiveRewardData.token] ?? { decimals: 0 };
+      const rewardTokenPrice = rewardToken.coingeckoId
+        ? coingeckoPrices[rewardToken.coingeckoId] ?? 0
+        : 0;
 
-          if (
-            !snaps.length ||
-            (snaps[snaps.length - 1].timestamp - snaps[0].timestamp) /
-              (1000 * 60 * 60) <
-              24
-          ) {
-            apy[incentive.publicKey.toString()] = {
-              apy: 0,
-              apySingleTick: 0,
-            };
-          } else {
-            const len = snaps.length;
-            const currentSnap = snaps[len - 1];
-
-            let index = 0;
-            for (let i = 0; i < len; i++) {
-              if (
-                (snaps[snaps.length - 1].timestamp - snaps[i].timestamp) /
-                  (1000 * 60 * 60) >=
-                24
-              ) {
-                index = i;
-              } else {
-                break;
-              }
-            }
-            const prevSnap = snaps[index];
-
-            const incentiveRewardData =
-              rewardsData?.[incentive.publicKey.toString()];
-            const rewardToken =
-              typeof incentiveRewardData === "undefined"
-                ? { decimals: 0 }
-                : tokensData?.[incentiveRewardData.token] ?? { decimals: 0 };
-            const rewardTokenPrice = rewardToken.coingeckoId
-              ? coingeckoPrices[rewardToken.coingeckoId] ?? 0
-              : 0;
-
-            try {
-              const incentiveApy = rewardsAPY({
-                ticksCurrentSnapshot: currentSnap.ticks,
-                rewardInUsd:
-                  typeof incentiveRewardData === "undefined"
-                    ? 0
-                    : rewardTokenPrice * incentiveRewardData.total,
-                tokenPrice: xPrices?.[incentive.pool.toString()] ?? 0,
-                duration:
-                  (incentive.endTime.v.toNumber() -
-                    incentive.startTime.v.toNumber()) /
-                  60 /
-                  60 /
-                  24,
-                tokenDecimal: rewardToken.decimals,
-                currentTickIndex:
-                  currentTickIndexes?.[incentive.pool.toString()] ?? 0,
-              });
-
-              apy[incentive.publicKey.toString()] = {
-                apy: isNaN(+JSON.stringify(incentiveApy.apy))
-                  ? 0
-                  : incentiveApy.apy * 100,
-                apySingleTick: isNaN(
-                  +JSON.stringify(incentiveApy.apySingleTick)
-                )
-                  ? 0
-                  : incentiveApy.apySingleTick * 100,
-              };
-            } catch (_error) {
-              apy[incentive.publicKey.toString()] = {
-                apy: 0,
-                apySingleTick: 0,
-              };
-            }
-          }
-        })
-        .catch(() => {
-          apy[incentive.publicKey.toString()] = {
-            apy: 0,
-            apySingleTick: 0,
-          };
+      try {
+        const incentiveApy = rewardsAPY({
+          rewardInUsd:
+            typeof incentiveRewardData === "undefined"
+              ? 0
+              : rewardTokenPrice * incentiveRewardData.total,
+          tokenPrice: xPrices?.[incentive.pool.toString()] ?? 0,
+          duration:
+            (incentive.endTime.v.toNumber() -
+              incentive.startTime.v.toNumber()) /
+            60 /
+            60 /
+            24,
+          tokenDecimal: rewardToken.decimals,
+          currentTickIndex:
+            poolsData?.[incentive.pool.toString()]?.currentTickIndex ?? 0,
+          currentLiquidity:
+            poolsData?.[incentive.pool.toString()]?.liquidity?.v ?? new BN(0),
+          tickSpacing: poolsData?.[incentive.pool.toString()]?.tickSpacing ?? 1,
+          allLiquidityInTokens:
+            allLiquidity?.[incentive.pool.toString()] ?? new BN(0),
         });
+
+        apy[incentive.publicKey.toString()] = {
+          apy: isNaN(+JSON.stringify(incentiveApy.apy))
+            ? 0
+            : incentiveApy.apy * 100,
+          apySingleTick: isNaN(+JSON.stringify(incentiveApy.apySingleTick))
+            ? 0
+            : incentiveApy.apySingleTick * 100,
+        };
+      } catch (_error) {
+        apy[incentive.publicKey.toString()] = {
+          apy: 0,
+          apySingleTick: 0,
+        };
+      }
     })
   );
 
