@@ -214,7 +214,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 activeTokens,
               };
 
-              weeklyData[address.toString()] = poolApy;
+              weeklyData[address.toString()] = {
+                ...poolApy,
+                apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
+                weeklyFactor: poolApy.weeklyFactor.map((factor) =>
+                  isNaN(+JSON.stringify(factor)) ? 0 : factor
+                ),
+              };
             } catch (_error) {
               weeklyData[address.toString()] = {
                 apy: 0,
