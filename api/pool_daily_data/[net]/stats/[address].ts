@@ -125,6 +125,6 @@ export default function (req: VercelRequest, res: VercelResponse) {
   });
 
   res.json(
-    formattedData.slice(-(Number(limit) + Number(skip))).slice(Number(limit))
+    formattedData.slice(-(Number(limit) + Number(skip))).slice(0, Number(limit))
   );
 }
