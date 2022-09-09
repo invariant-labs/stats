@@ -61,12 +61,6 @@ export default function (req: VercelRequest, res: VercelResponse) {
             volumeY: {
               tokenBNFromBeginning: "0",
             },
-            liquidityX: {
-              tokenBNFromBeginning: "0",
-            },
-            liquidityY: {
-              tokenBNFromBeginning: "0",
-            },
             feeX: {
               tokenBNFromBeginning: "0",
             },
@@ -87,15 +81,11 @@ export default function (req: VercelRequest, res: VercelResponse) {
       addressData.tokenY.decimals
     );
     const liquidityX = +printBN(
-      new BN(snap.liquidityX.tokenBNFromBeginning).sub(
-        new BN(prevData.liquidityX.tokenBNFromBeginning)
-      ),
+      new BN(snap.liquidityX.tokenBNFromBeginning),
       addressData.tokenX.decimals
     );
     const liquidityY = +printBN(
-      new BN(snap.liquidityY.tokenBNFromBeginning).sub(
-        new BN(prevData.liquidityY.tokenBNFromBeginning)
-      ),
+      new BN(snap.liquidityY.tokenBNFromBeginning),
       addressData.tokenY.decimals
     );
     const feeX = +printBN(
