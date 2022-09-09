@@ -13,16 +13,6 @@ export interface SnapshotValueData {
   usdValue24: number;
 }
 
-export interface PoolSnapshotV1 {
-  timestamp: number;
-  volumeX: string;
-  volumeY: string;
-  liquidityX: string;
-  liquidityY: string;
-  feeX: string;
-  feeY: string;
-}
-
 export interface PoolSnapshot {
   timestamp: number;
   volumeX: SnapshotValueData;
@@ -31,6 +21,18 @@ export interface PoolSnapshot {
   liquidityY: SnapshotValueData;
   feeX: SnapshotValueData;
   feeY: SnapshotValueData;
+}
+
+export interface PoolStatsData {
+  snapshots: PoolSnapshot[]
+  tokenX: {
+    address: string
+    decimals: number
+  }
+  tokenY: {
+    address: string
+    decimals: number
+  }
 }
 
 export interface CoingeckoApiPriceData {
