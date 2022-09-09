@@ -2,7 +2,13 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import BN from "bn.js";
 import DEVNET_DATA from "../../../../data/devnet.json";
 import MAINNET_DATA from "../../../../data/mainnet.json";
-import { PoolStatsData, printBN } from "../../../../src/utils";
+import DEVNET_APY from "../../../../data/pool_apy_archive_devnet.json";
+import MAINNET_APY from "../../../../data/pool_apy_archive_mainnet.json";
+import {
+  PoolApyArchiveSnapshot,
+  PoolStatsData,
+  printBN,
+} from "../../../../src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -21,22 +27,32 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const { net, address, limit = "10", skip = "0" } = req.query;
 
   let data: Record<string, PoolStatsData>;
+  let apyArchive: Record<string, PoolApyArchiveSnapshot[]>;
 
   if (net === "devnet") {
     data = DEVNET_DATA;
+    apyArchive = DEVNET_APY;
   } else if (net === "mainnet") {
     data = MAINNET_DATA;
+    apyArchive = MAINNET_APY;
   } else {
     res.status(400).send("INVALID NETWORK");
     return;
   }
 
   const addressData = data?.[address as string];
+  const apyAddressData = apyArchive?.[address as string] ?? [];
 
   if (typeof addressData === "undefined") {
     res.json([]);
     return;
   }
+
+  const apyByTimestamp: Record<number, PoolApyArchiveSnapshot> = {};
+
+  apyAddressData.forEach((apyData) => {
+    apyByTimestamp[apyData.timestamp] = apyData;
+  });
 
   const formattedData = addressData.snapshots.map((snap, index) => {
     const prevData =
@@ -99,6 +115,11 @@ export default function (req: VercelRequest, res: VercelResponse) {
       liquidityY,
       feeX,
       feeY,
+      apy: apyByTimestamp?.[snap.timestamp]?.apy ?? 0,
+      tradingLowerTick:
+        apyByTimestamp?.[snap.timestamp]?.range?.tickLower ?? null,
+      tradingUpperTick:
+        apyByTimestamp?.[snap.timestamp]?.range?.tickUpper ?? null,
     };
   });
 
