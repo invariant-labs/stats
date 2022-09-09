@@ -38,71 +38,75 @@ export default function (req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const formattedData = addressData.snapshots.map((snap, index) => {
-    const prevData =
-      index > 0
-        ? addressData.snapshots[index - 1]
-        : {
-            volumeX: {
-              tokenBNFromBeginning: "0",
-            },
-            volumeY: {
-              tokenBNFromBeginning: "0",
-            },
-            feeX: {
-              tokenBNFromBeginning: "0",
-            },
-            feeY: {
-              tokenBNFromBeginning: "0",
-            },
-          };
-    const volumeX = +printBN(
-      new BN(snap.volumeX.tokenBNFromBeginning).sub(
-        new BN(prevData.volumeX.tokenBNFromBeginning)
-      ),
-      addressData.tokenX.decimals
-    );
-    const volumeY = +printBN(
-      new BN(snap.volumeY.tokenBNFromBeginning).sub(
-        new BN(prevData.volumeY.tokenBNFromBeginning)
-      ),
-      addressData.tokenY.decimals
-    );
-    const liquidityX = +printBN(
-      new BN(snap.liquidityX.tokenBNFromBeginning),
-      addressData.tokenX.decimals
-    );
-    const liquidityY = +printBN(
-      new BN(snap.liquidityY.tokenBNFromBeginning),
-      addressData.tokenY.decimals
-    );
-    const feeX = +printBN(
-      new BN(snap.feeX.tokenBNFromBeginning).sub(
-        new BN(prevData.feeX.tokenBNFromBeginning)
-      ),
-      addressData.tokenX.decimals
-    );
-    const feeY = +printBN(
-      new BN(snap.feeY.tokenBNFromBeginning).sub(
-        new BN(prevData.feeY.tokenBNFromBeginning)
-      ),
-      addressData.tokenY.decimals
-    );
-    return {
-      date: snap.timestamp,
-      volumeUsd: snap.volumeX.usdValue24 + snap.volumeY.usdValue24,
-      liquidityUsd: snap.liquidityX.usdValue24 + snap.liquidityY.usdValue24,
-      feeUsd: snap.feeX.usdValue24 + snap.feeY.usdValue24,
-      volumeX,
-      volumeY,
-      liquidityX,
-      liquidityY,
-      feeX,
-      feeY,
-    };
-  });
+  const formattedData = addressData.snapshots
+    .map((snap, index) => {
+      const prevData =
+        index > 0
+          ? addressData.snapshots[index - 1]
+          : {
+              volumeX: {
+                tokenBNFromBeginning: "0",
+              },
+              volumeY: {
+                tokenBNFromBeginning: "0",
+              },
+              feeX: {
+                tokenBNFromBeginning: "0",
+              },
+              feeY: {
+                tokenBNFromBeginning: "0",
+              },
+            };
+      const volumeX = +printBN(
+        new BN(snap.volumeX.tokenBNFromBeginning).sub(
+          new BN(prevData.volumeX.tokenBNFromBeginning)
+        ),
+        addressData.tokenX.decimals
+      );
+      const volumeY = +printBN(
+        new BN(snap.volumeY.tokenBNFromBeginning).sub(
+          new BN(prevData.volumeY.tokenBNFromBeginning)
+        ),
+        addressData.tokenY.decimals
+      );
+      const liquidityX = +printBN(
+        new BN(snap.liquidityX.tokenBNFromBeginning),
+        addressData.tokenX.decimals
+      );
+      const liquidityY = +printBN(
+        new BN(snap.liquidityY.tokenBNFromBeginning),
+        addressData.tokenY.decimals
+      );
+      const feeX = +printBN(
+        new BN(snap.feeX.tokenBNFromBeginning).sub(
+          new BN(prevData.feeX.tokenBNFromBeginning)
+        ),
+        addressData.tokenX.decimals
+      );
+      const feeY = +printBN(
+        new BN(snap.feeY.tokenBNFromBeginning).sub(
+          new BN(prevData.feeY.tokenBNFromBeginning)
+        ),
+        addressData.tokenY.decimals
+      );
+      return {
+        date: snap.timestamp,
+        volumeUsd: snap.volumeX.usdValue24 + snap.volumeY.usdValue24,
+        liquidityUsd: snap.liquidityX.usdValue24 + snap.liquidityY.usdValue24,
+        feeUsd: snap.feeX.usdValue24 + snap.feeY.usdValue24,
+        details: {
+          volumeX,
+          volumeY,
+          liquidityX,
+          liquidityY,
+          feeX,
+          feeY,
+        },
+      };
+    })
+    .slice(-(Number(limit) + Number(skip)));
 
   res.json(
-    formattedData.slice(-(Number(limit) + Number(skip))).slice(0, Number(limit))
+    formattedData.splice(formattedData.length - Number(skip), Number(skip))
   );
 }
