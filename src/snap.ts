@@ -95,7 +95,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       if (snaps?.[address.toString()]) {
         lastSnapshot =
-          snaps[address.toString()][
+          snaps[address.toString()].snapshots[
             snaps[address.toString()].snapshots.length - 1
           ];
       }
