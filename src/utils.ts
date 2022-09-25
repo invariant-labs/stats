@@ -4,9 +4,10 @@ import { Network as StakerNetwork } from "@invariant-labs/staker-sdk";
 import { Tick } from "@invariant-labs/sdk/lib/market";
 import { DECIMAL, Range } from "@invariant-labs/sdk/lib/utils";
 import { BN } from "@project-serum/anchor";
-import { TokenListProvider } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
+import MAINNET_TOKENS from "../data/mainnet_tokens.json";
+import { TokenInfo } from "@solana/spl-token-registry";
 
 export interface SnapshotValueData {
   tokenBNFromBeginning: string;
@@ -24,15 +25,15 @@ export interface PoolSnapshot {
 }
 
 export interface PoolStatsData {
-  snapshots: PoolSnapshot[]
+  snapshots: PoolSnapshot[];
   tokenX: {
-    address: string
-    decimals: number
-  }
+    address: string;
+    decimals: number;
+  };
   tokenY: {
-    address: string
-    decimals: number
-  }
+    address: string;
+    decimals: number;
+  };
 }
 
 export interface CoingeckoApiPriceData {
@@ -98,28 +99,13 @@ export interface TokenData {
   decimals: number;
 }
 
-const coingeckoIdOverwrites = {
-  "9vMJfxuKxXBoEa7rM12mYLMwTacLMLDJqHozw96WQL8i": "terrausd",
-  "7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj": "lido-staked-sol",
-  NRVwhjBQiUPYtfDT5zRBVJajzFQHaBUNtC7SNVvqRFa: "nirvana-nirv",
-};
-
 export const getTokensData = async (): Promise<Record<string, TokenData>> => {
-  const tokens = await new TokenListProvider().resolve();
-
-  const tokenList = tokens
-    .filterByClusterSlug("mainnet-beta")
-    .getList()
-    .filter((token) => token.chainId === 101);
-
   const tokensObj: Record<string, TokenData> = {};
 
-  tokenList.forEach((token) => {
+  (MAINNET_TOKENS as TokenInfo[]).forEach((token) => {
     tokensObj[token.address.toString()] = {
       decimals: token.decimals,
-      coingeckoId:
-        coingeckoIdOverwrites?.[token.address.toString()] ??
-        token.extensions?.coingeckoId,
+      coingeckoId: token.extensions?.coingeckoId,
       ticker: token?.symbol,
     };
   });
