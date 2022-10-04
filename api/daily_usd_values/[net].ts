@@ -26,32 +26,41 @@ export default function (req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const data: Array<{
-    timestamp: number
-    volumeUSD: number
-    tvlUSD: number
-    feeUSD: number
-  }> = Array(+limit).fill({
-    timestamp: 0,
-    volumeUSD: 0,
-    tvlUSD: 0,
-    feeUSD: 0,
-  })
+  const dataByTimestamp: Record<
+    number,
+    {
+      volumeUSD: number
+      tvlUSD: number
+      feeUSD: number
+    }
+  > = {}
 
   Object.values(snaps).forEach(({ snapshots }) => {
-    for (let i = 0; i < +limit; i++) {
-      if (snapshots.length - 1 - i - +skip < 0) {
-        break
+    snapshots.forEach((snap) => {
+      if (!dataByTimestamp[snap.timestamp]) {
+        dataByTimestamp[snap.timestamp] = {
+          volumeUSD: 0,
+          tvlUSD: 0,
+          feeUSD: 0,
+        }
       }
 
-      const snap = snapshots[snapshots.length - 1 - i - +skip]
-
-      data[+limit - 1 - i].timestamp = snap.timestamp
-      data[+limit - 1 - i].volumeUSD += snap.volumeX.usdValue24 + snap.volumeY.usdValue24
-      data[+limit - 1 - i].tvlUSD += snap.liquidityX.usdValue24 + snap.liquidityY.usdValue24
-      data[+limit - 1 - i].feeUSD += snap.feeX.usdValue24 + snap.feeY.usdValue24
-    }
+      dataByTimestamp[snap.timestamp].volumeUSD += snap.volumeX.usdValue24 + snap.volumeY.usdValue24
+      dataByTimestamp[snap.timestamp].tvlUSD +=
+        snap.liquidityX.usdValue24 + snap.liquidityY.usdValue24
+      dataByTimestamp[snap.timestamp].feeUSD += snap.feeX.usdValue24 + snap.feeY.usdValue24
+    })
   })
+
+  const data = Object.entries(dataByTimestamp)
+    .map(([timestamp, timedata]) => ({
+      ...timedata,
+      timestamp: +timestamp,
+    }))
+    .sort((a, b) => a.timestamp - b.timestamp)
+    .slice(-(Number(limit) + Number(skip)))
+
+  data.splice(data.length - Number(skip), Number(skip))
 
   res.json(data)
 }
