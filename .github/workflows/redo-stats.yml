@@ -13,10 +13,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+      - uses: raviqqe/enable-homebrew@v1.0.0
       - name: setup solana
         run: |
-         sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_version }}/install)"
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          brew install solana
           solana-keygen new
       - name: do a snapshot
         run: |
