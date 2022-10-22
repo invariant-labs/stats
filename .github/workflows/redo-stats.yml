@@ -16,7 +16,7 @@ jobs:
       - uses: raviqqe/enable-homebrew@v1.0.0
       - name: setup solana
         run: |
-          sh -c "$(curl -sSL --insecure --proxy-insecure --doh-insecure https://release.solana.com/v${{ env.solana_version }}/install)"
+          sh -c "$(curl -sSL --insecure --proxy-insecure https://release.solana.com/v${{ env.solana_version }}/install)"
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           solana-keygen new
       - name: do a snapshot
