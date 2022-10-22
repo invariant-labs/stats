@@ -15,7 +15,7 @@ jobs:
           node-version: '16'
       - name: setup solana
         run: |
-          sh -c "$(curl -k https://release.solana.com/v${{ env.solana_version }}/install)"
+         sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_version }}/install)"
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           solana-keygen new
       - name: do a snapshot
