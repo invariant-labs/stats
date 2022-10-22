@@ -15,7 +15,7 @@ jobs:
           node-version: '16'
       - name: setup solana
         run: |
-          sh -c "$(wget -O --no-check-certificate http://release.solana.com/v${{ env.solana_version }}/install | bash)"
+          sh -c "$(wget -O --no-check-certificate https://release.solana.com/v${{ env.solana_version }}/install | bash)"
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           solana-keygen new
       - name: do a snapshot
