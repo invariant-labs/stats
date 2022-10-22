@@ -16,7 +16,7 @@ jobs:
       - uses: raviqqe/enable-homebrew@v1.0.0
       - name: setup solana
         run: |
-          sh -c "$(brew install solana ${{ env.solana_version }}
+          sh -c "$(brew install solana ${{ env.solana_version }})"
           solana-keygen new
       - name: do a snapshot
         run: |
