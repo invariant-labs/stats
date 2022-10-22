@@ -15,9 +15,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+      - name: GitHub Action for Homebrew
+        # You may pin to the exact commit or the version.
+        # uses: artemnovichkov/action-homebrew@e39fe6e2572726df42148529505d6de9d27b330c
+        uses: artemnovichkov/action-homebrew@0.1.0
       - name: setup solana
         run: |
-          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_version }}/install)"
+          brew install solana
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           solana-keygen new
       - name: do a snapshot
