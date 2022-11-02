@@ -3,6 +3,7 @@ name: 'Create snapshot of stats'
 on:
   schedule:
     - cron: '30 11 * * *'
+  workflow_dispatch:
 
 env:
   solana_version: 1.9.14
@@ -44,4 +45,3 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
           scope: ${{ secrets.VERCEL_ORG_ID }}
-
