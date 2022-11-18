@@ -27,7 +27,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.MAIN:
       provider = Provider.local(
-        "hhttps://081a1nwnkvcz0slbfyn8fxvhpdqfxgrjtuspsa1l8wg85rbqkruxw4jmq3se5.xyz2.hyperplane.dev/"
+        "https://rpc.ankr.com/solana"
       );
       fileName = "./data/mainnet.json";
       snaps = MAINNET_DATA;
