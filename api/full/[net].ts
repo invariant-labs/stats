@@ -9,7 +9,7 @@ const onlySnaps = (
   const newData: Record<string, PoolSnapshot[]> = {};
 
   Object.entries(data).forEach(([address, pool]) => {
-    newData[address] = pool.snapshots;
+    newData[address] = pool.snapshots.slice(-31);
   });
 
   return newData;
