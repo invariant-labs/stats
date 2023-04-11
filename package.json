@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@invariant-labs/sdk": "0.9.34",
+    "@invariant-labs/sdk": "0.9.35",
     "@invariant-labs/staker-sdk": "0.2.11",
     "@project-serum/anchor": "0.21.0",
     "@solana/spl-token": "0.1.6",
