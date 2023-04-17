@@ -75,7 +75,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const poolsData: Record<string, PoolStructure> = {}
   const allLiquidity: Record<string, BN> = {}
 
-  await Promise.allSettled(
+  await Promise.all(
     allPools.map(async (pool) => {
       const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v })
       const address = await pair.getAddress(market.program.programId)
@@ -90,7 +90,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     })
   )
 
-  await Promise.allSettled(
+  await Promise.all(
     allIncentives.map(async (incentive) => {
       const incentiveRewardData = rewardsData?.[incentive.publicKey.toString()]
       const rewardToken =

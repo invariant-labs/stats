@@ -1,4 +1,4 @@
-import { Network, Market, Pair, getMarketAddress } from '@invariant-labs/sdk'
+import { Network, Market, Pair, getMarketAddress, sleep } from '@invariant-labs/sdk'
 import { PoolStructure } from '@invariant-labs/sdk/lib/market'
 import { BN, Provider } from '@project-serum/anchor'
 import { PublicKey } from '@solana/web3.js'
@@ -27,7 +27,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.MAIN:
       provider = Provider.local(
-        'https://081a13gougoozkk51v1ekgzu5jsjrcidg1ynuxpng4hstiospypw9str4gzu8.xyz2.hyperplane.dev/'
+        'https://icy-billowing-gadget.solana-mainnet.discover.quiknode.pro/b970ec100ab2d8c249bee494b7d682c8ef75ee6f/'
       )
       fileName = './data/mainnet.json'
       snaps = MAINNET_DATA
@@ -64,11 +64,28 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const poolsDict: Record<string, PoolStructure> = {}
 
-  const poolsData = await Promise.allSettled(
-    allPools.map(async (pool) => {
-      const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v })
-      const address = await pair.getAddress(market.program.programId)
+  let poolsData: any[] = []
 
+  for (let pool of allPools) {
+    await sleep(200)
+    const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v })
+    const address = await pair.getAddress(market.program.programId)
+
+    let lastSnapshot: PoolSnapshot | undefined
+    const tokenXData = tokensData?.[pool.tokenX.toString()] ?? {
+      decimals: 0,
+    }
+    const tokenYData = tokensData?.[pool.tokenY.toString()] ?? {
+      decimals: 0,
+    }
+    const tokenXPrice = tokenXData.coingeckoId ? coingeckoPrices[tokenXData.coingeckoId] ?? 0 : 0
+    const tokenYPrice = tokenYData.coingeckoId ? coingeckoPrices[tokenYData.coingeckoId] ?? 0 : 0
+
+    if (snaps?.[address.toString()]) {
+      lastSnapshot =
+        snaps[address.toString()].snapshots[snaps[address.toString()].snapshots.length - 1]
+    }
+    try {
       poolsDict[address.toString()] = pool
 
       const { volumeX, volumeY } = await market.getVolume(pair)
@@ -77,22 +94,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const { feeX, feeY } = await market.getGlobalFee(pair)
 
-      let lastSnapshot: PoolSnapshot | undefined
-      const tokenXData = tokensData?.[pool.tokenX.toString()] ?? {
-        decimals: 0,
-      }
-      const tokenYData = tokensData?.[pool.tokenY.toString()] ?? {
-        decimals: 0,
-      }
-      const tokenXPrice = tokenXData.coingeckoId ? coingeckoPrices[tokenXData.coingeckoId] ?? 0 : 0
-      const tokenYPrice = tokenYData.coingeckoId ? coingeckoPrices[tokenYData.coingeckoId] ?? 0 : 0
-
-      if (snaps?.[address.toString()]) {
-        lastSnapshot =
-          snaps[address.toString()].snapshots[snaps[address.toString()].snapshots.length - 1]
-      }
-
-      return {
+      poolsData.push({
         address: address.toString(),
         stats: {
           volumeX: {
@@ -148,40 +150,89 @@ export const createSnapshotForNetwork = async (network: Network) => {
             ),
           },
         },
-      }
-    })
-  )
+      })
+    } catch (e) {
+      console.log(e)
+      poolsData.push({
+        address: address.toString(),
+        stats: {
+          volumeX: {
+            tokenBNFromBeginning:
+              typeof lastSnapshot !== 'undefined'
+                ? new BN(lastSnapshot.volumeX.tokenBNFromBeginning)
+                : new BN(0),
+            usdValue24: 0,
+          },
+          volumeY: {
+            tokenBNFromBeginning:
+              typeof lastSnapshot !== 'undefined'
+                ? new BN(lastSnapshot.volumeY.tokenBNFromBeginning)
+                : new BN(0),
+            usdValue24: 0,
+          },
+          liquidityX: {
+            tokenBNFromBeginning:
+              typeof lastSnapshot !== 'undefined'
+                ? new BN(lastSnapshot.liquidityX.tokenBNFromBeginning)
+                : new BN(0),
+            usdValue24:
+              typeof lastSnapshot !== 'undefined' ? lastSnapshot.liquidityX.usdValue24 : 0,
+          },
+          liquidityY: {
+            tokenBNFromBeginning:
+              typeof lastSnapshot !== 'undefined'
+                ? new BN(lastSnapshot.liquidityY.tokenBNFromBeginning)
+                : new BN(0),
+            usdValue24:
+              typeof lastSnapshot !== 'undefined' ? lastSnapshot.liquidityY.usdValue24 : 0,
+          },
+          feeX: {
+            tokenBNFromBeginning:
+              typeof lastSnapshot !== 'undefined'
+                ? new BN(lastSnapshot.feeX.tokenBNFromBeginning)
+                : new BN(0),
+            usdValue24: 0,
+          },
+          feeY: {
+            tokenBNFromBeginning:
+              typeof lastSnapshot !== 'undefined'
+                ? new BN(lastSnapshot.feeY.tokenBNFromBeginning)
+                : new BN(0),
+            usdValue24: 0,
+          },
+        },
+      })
+    }
+  }
 
   const now = Date.now()
   const timestamp =
     Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) + 1000 * 60 * 60 * 12
 
-  poolsData
-    .filter((data) => data.status !== 'rejected')
-    .forEach((data) => {
-      const { address, stats } = (data as PromiseFulfilledResult<any>).value
-      const xAddress = poolsDict[address].tokenX.toString()
-      const yAddress = poolsDict[address].tokenY.toString()
+  poolsData.forEach((data) => {
+    const { address, stats } = data
+    const xAddress = poolsDict[address].tokenX.toString()
+    const yAddress = poolsDict[address].tokenY.toString()
 
-      if (!snaps[address]) {
-        snaps[address] = {
-          snapshots: [],
-          tokenX: {
-            address: xAddress,
-            decimals: tokensData?.[xAddress]?.decimals ?? 0,
-          },
-          tokenY: {
-            address: yAddress,
-            decimals: tokensData?.[yAddress]?.decimals ?? 0,
-          },
-        }
+    if (!snaps[address]) {
+      snaps[address] = {
+        snapshots: [],
+        tokenX: {
+          address: xAddress,
+          decimals: tokensData?.[xAddress]?.decimals ?? 0,
+        },
+        tokenY: {
+          address: yAddress,
+          decimals: tokensData?.[yAddress]?.decimals ?? 0,
+        },
       }
+    }
 
-      snaps[address].snapshots.push({
-        timestamp,
-        ...stats,
-      })
+    snaps[address].snapshots.push({
+      timestamp,
+      ...stats,
     })
+  })
 
   fs.writeFile(fileName, JSON.stringify(snaps), (err) => {
     if (err) {

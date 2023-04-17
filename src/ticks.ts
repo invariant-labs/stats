@@ -1,4 +1,4 @@
-import { Network, Market, Pair, getMarketAddress } from '@invariant-labs/sdk'
+import { Network, Market, Pair, getMarketAddress, sleep } from '@invariant-labs/sdk'
 import { Provider } from '@project-serum/anchor'
 import { PublicKey } from '@solana/web3.js'
 import fs from 'fs'
@@ -38,8 +38,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const allPools = await market.getAllPools()
 
-  await Promise.allSettled(
-    allPools.map(async (pool) => {
+  for (let pool of allPools) {
+    try {
+      await sleep(200)
       const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v })
       const address = await pair.getAddress(market.program.programId)
       const ticks = await market.getAllTicks(pair)
@@ -66,8 +67,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
           }
         })
       })
-    })
-  )
+    } catch {}
+  }
 }
 
 createSnapshotForNetwork(Network.DEV).then(
