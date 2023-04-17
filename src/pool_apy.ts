@@ -1,4 +1,4 @@
-import { Network, Market, getMarketAddress, Pair, sleep } from '@invariant-labs/sdk'
+import { Network, Market, getMarketAddress, Pair } from '@invariant-labs/sdk'
 import { poolAPY, WeeklyData } from '@invariant-labs/sdk/lib/utils'
 import { BN, Provider } from '@project-serum/anchor'
 import { PublicKey } from '@solana/web3.js'
@@ -68,9 +68,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const poolsData: Record<string, PoolStructure> = {}
   const input: Record<string, any> = {}
 
-  for (let pool of allPools) {
-    try {
-      await sleep(200)
+  await Promise.allSettled(
+    allPools.map(async (pool) => {
       const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v })
       const address = await pair.getAddress(market.program.programId)
       const activeTokens = await market.getActiveLiquidityInTokens(address, pool.currentTickIndex)
@@ -261,8 +260,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
             volumeX: 0,
           }
         })
-    } catch {}
-  }
+    })
+  )
 
   const now = Date.now()
   const timestamp =
