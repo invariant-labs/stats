@@ -32,11 +32,13 @@ export default function (req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  const lastTimestamp = Math.max(...Object.values(snaps).filter(items => items.snapshots.length > 0).map(items => +items.snapshots[items.snapshots.length - 1].timestamp))
+
   Object.values(snaps).forEach(({ snapshots }) => {
     const snap = snapshots[snapshots.length - 1];
-    volume24 += snap.volumeX.usdValue24 + snap.volumeY.usdValue24;
+    volume24 += snap.timestamp === lastTimestamp ? snap.volumeX.usdValue24 + snap.volumeY.usdValue24 : 0;
     tvl += snap.liquidityX.usdValue24 + snap.liquidityY.usdValue24;
-    fees24 += snap.feeX.usdValue24 + snap.feeY.usdValue24;
+    fees24 += snap.timestamp === lastTimestamp ? snap.feeX.usdValue24 + snap.feeY.usdValue24 : 0;
   });
   res.json({
     volume24,
