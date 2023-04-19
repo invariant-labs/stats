@@ -30,7 +30,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.MAIN:
       provider = Provider.local(
-        "https://rpc.ankr.com/solana"
+        "https://icy-billowing-gadget.solana-mainnet.discover.quiknode.pro/b970ec100ab2d8c249bee494b7d682c8ef75ee6f/"
       );
       fileName = "./data/incentive_apy_mainnet.json";
       ticksFolder = "./data/ticks/mainnet/";

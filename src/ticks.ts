@@ -1,5 +1,5 @@
-import { Network, Market, Pair, getMarketAddress } from "@invariant-labs/sdk";
-import { Provider } from "@project-serum/anchor";
+import { Network, Market, Pair, getMarketAddress, sleep } from "@invariant-labs/sdk";
+import { BN, Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 
@@ -13,7 +13,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.MAIN:
       provider = Provider.local(
-        "https://rpc.ankr.com/solana"
+        "https://icy-billowing-gadget.solana-mainnet.discover.quiknode.pro/b970ec100ab2d8c249bee494b7d682c8ef75ee6f/"
       );
       folderName = "./data/ticks/mainnet/";
       break;
@@ -39,44 +39,54 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const allPools = await market.getAllPools();
 
-  await Promise.all(
-    allPools.map(async (pool) => {
-      const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
-      const address = await pair.getAddress(market.program.programId);
-      const ticks = await market.getAllTicks(pair);
-      const { volumeX, volumeY } = await market.getVolume(pair);
+  for (let pool of allPools) {
+    const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
+    const address = await pair.getAddress(market.program.programId);
+    const ticks = await market.getAllTicks(pair);
 
-      fs.readFile(
-        folderName + address.toString() + ".json",
-        "utf-8",
-        (err, data) => {
-          let snaps: any[] = [];
-          if (!err) {
-            snaps = JSON.parse(data);
-          }
+    let volumeX, volumeY
 
-          snaps.push({
-            timestamp,
-            ticks,
-            volumeX: volumeX.toString(),
-            volumeY: volumeY.toString(),
-          });
+      try {
+        const volumes = await market.getVolume(pair)
+        volumeX = volumes.volumeX
+        volumeY = volumes.volumeY
+      } catch {
+        volumeX = new BN('0')
+        volumeY = new BN('0')
+      }
 
-          snaps = snaps.slice(Math.max(snaps.length - 25, 0), snaps.length);
-
-          fs.writeFile(
-            folderName + address + ".json",
-            JSON.stringify(snaps),
-            (err) => {
-              if (err) {
-                console.log(err);
-              }
-            }
-          );
+    fs.readFile(
+      folderName + address.toString() + ".json",
+      "utf-8",
+      (err, data) => {
+        let snaps: any[] = [];
+        if (!err) {
+          snaps = JSON.parse(data);
         }
-      );
-    })
-  );
+
+        snaps.push({
+          timestamp,
+          ticks,
+          volumeX: volumeX.toString(),
+          volumeY: volumeY.toString(),
+        });
+
+        snaps = snaps.slice(Math.max(snaps.length - 8, 0), snaps.length);
+
+        fs.writeFile(
+          folderName + address + ".json",
+          JSON.stringify(snaps),
+          (err) => {
+            if (err) {
+              console.log(err);
+            }
+          }
+        );
+      }
+    );
+
+    await sleep(100)
+  }
 };
 
 createSnapshotForNetwork(Network.DEV).then(

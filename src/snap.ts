@@ -1,4 +1,4 @@
-import { Network, Market, Pair, getMarketAddress } from "@invariant-labs/sdk";
+import { Network, Market, Pair, getMarketAddress, sleep } from "@invariant-labs/sdk";
 import { PoolStructure } from "@invariant-labs/sdk/lib/market";
 import { BN, Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
@@ -27,7 +27,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.MAIN:
       provider = Provider.local(
-        "https://rpc.ankr.com/solana"
+        "https://icy-billowing-gadget.solana-mainnet.discover.quiknode.pro/b970ec100ab2d8c249bee494b7d682c8ef75ee6f/"
       );
       fileName = "./data/mainnet.json";
       snaps = MAINNET_DATA;
@@ -64,20 +64,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const poolsDict: Record<string, PoolStructure> = {};
 
-  const poolsData = await Promise.all(
-    allPools.map(async (pool) => {
-      const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
+  let poolsData: any[] = []
+
+  for (let pool of allPools) {
+    const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
       const address = await pair.getAddress(market.program.programId);
 
       poolsDict[address.toString()] = pool;
-
-      const { volumeX, volumeY } = await market.getVolume(pair);
-
-      const { liquidityX, liquidityY } = await market.getPairLiquidityValues(
-        pair
-      );
-
-      const { feeX, feeY } = await market.getGlobalFee(pair);
 
       let lastSnapshot: PoolSnapshot | undefined;
       const tokenXData = tokensData?.[pool.tokenX.toString()] ?? {
@@ -100,7 +93,36 @@ export const createSnapshotForNetwork = async (network: Network) => {
           ];
       }
 
-      return {
+      let volumeX, volumeY, liquidityX, liquidityY, feeX, feeY
+
+      try {
+        const volumes = await market.getVolume(pair)
+        volumeX = volumes.volumeX
+        volumeY = volumes.volumeY
+      } catch {
+        volumeX = new BN(lastSnapshot?.volumeX.tokenBNFromBeginning ?? '0')
+        volumeY = new BN(lastSnapshot?.volumeY.tokenBNFromBeginning ?? '0')
+      }
+
+      try {
+        const liq = await market.getPairLiquidityValues(pair)
+        liquidityX = liq.liquidityX
+        liquidityY = liq.liquidityY
+      } catch {
+        liquidityX = new BN('0')
+        liquidityY = new BN('0')
+      }
+
+      try {
+        const fees = await market.getGlobalFee(pair)
+        feeX = fees.feeX
+        feeY = fees.feeY
+      } catch {
+        feeX = new BN(lastSnapshot?.feeX.tokenBNFromBeginning ?? '0')
+        feeY = new BN(lastSnapshot?.feeY.tokenBNFromBeginning ?? '0')
+      }
+
+      poolsData.push({
         address: address.toString(),
         stats: {
           volumeX: {
@@ -166,10 +188,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
             ),
           },
         },
-      };
-    })
-  );
-
+      })
+    await sleep(100)
+  }
   const now = Date.now();
   const timestamp =
     Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +

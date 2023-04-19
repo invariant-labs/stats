@@ -1,4 +1,4 @@
-import { Network, Market, getMarketAddress, Pair } from "@invariant-labs/sdk";
+import { Network, Market, getMarketAddress, Pair, sleep } from "@invariant-labs/sdk";
 import { poolAPY, WeeklyData } from "@invariant-labs/sdk/lib/utils";
 import { BN, Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
@@ -32,7 +32,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.MAIN:
       provider = Provider.local(
-        "https://rpc.ankr.com/solana"
+        "https://icy-billowing-gadget.solana-mainnet.discover.quiknode.pro/b970ec100ab2d8c249bee494b7d682c8ef75ee6f/"
       );
       fileName = "./data/pool_apy_mainnet.json";
       archiveFileName = "./data/pool_apy_archive_mainnet.json";
@@ -68,196 +68,31 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const poolsData: Record<string, PoolStructure> = {};
   const input: Record<string, any> = {};
 
-  await Promise.all(
-    allPools.map(async (pool) => {
-      const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
-      const address = await pair.getAddress(market.program.programId);
-      const activeTokens = await market.getActiveLiquidityInTokens(
+  for (let pool of allPools) {
+    const pair = new Pair(pool.tokenX, pool.tokenY, { fee: pool.fee.v });
+    const address = await pair.getAddress(market.program.programId);
+    let activeTokens
+    try {
+      await market.getActiveLiquidityInTokens(
         address,
         pool.currentTickIndex
       );
-      poolsData[address.toString()] = pool;
+    } catch {
+      activeTokens = new BN('0')
+    }
+    poolsData[address.toString()] = pool;
 
-      return await fs.promises
-        .readFile(ticksFolder + address.toString() + ".json", "utf-8")
-        .then((data) => {
-          const snaps = jsonArrayToTicks(address.toString(), JSON.parse(data));
+    await fs.promises
+      .readFile(ticksFolder + address.toString() + ".json", "utf-8")
+      .then((data) => {
+        const snaps = jsonArrayToTicks(address.toString(), JSON.parse(data));
 
-          if (
-            snaps.length > 1 &&
-            (snaps[snaps.length - 1].timestamp - snaps[0].timestamp) /
-              (1000 * 60 * 60) <
-              24
-          ) {
-            weeklyData[address.toString()] = {
-              apy: 0,
-              weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
-              weeklyRange: [
-                { tickLower: null, tickUpper: null },
-                { tickLower: null, tickUpper: null },
-                { tickLower: null, tickUpper: null },
-                { tickLower: null, tickUpper: null },
-                { tickLower: null, tickUpper: null },
-                { tickLower: null, tickUpper: null },
-                { tickLower: null, tickUpper: null },
-              ],
-              tokenXamount: new BN(0),
-              volumeX: 0,
-            };
-          } else {
-            const len = snaps.length;
-            const currentSnap =
-              len > 0
-                ? snaps[len - 1]
-                : {
-                    volumeX: "0",
-                    volumeY: "0",
-                    ticks: [],
-                  };
-
-            let prevSnap;
-
-            if (len > 0) {
-              let index = 0;
-              for (let i = 0; i < len; i++) {
-                if (
-                  (snaps[snaps.length - 1].timestamp - snaps[i].timestamp) /
-                    (1000 * 60 * 60) >=
-                  24
-                ) {
-                  index = i;
-                } else {
-                  break;
-                }
-              }
-              prevSnap = snaps[index];
-            } else {
-              prevSnap = {
-                volumeX: "0",
-                volumeY: "0",
-                ticks: [],
-              };
-            }
-
-            try {
-              const lastWeeklyData =
-                typeof apySnaps?.[address.toString()] !== "undefined"
-                  ? {
-                      ...apySnaps?.[address.toString()],
-                      tokenXamount: new BN(0),
-                      volumeX: 0,
-                    }
-                  : undefined;
-
-              const poolApy = poolAPY({
-                feeTier: { fee: pool.fee.v },
-                volumeX: +new BN(currentSnap.volumeX)
-                  .sub(new BN(prevSnap.volumeX))
-                  .toString(),
-                volumeY: +new BN(currentSnap.volumeY)
-                  .sub(new BN(prevSnap.volumeY))
-                  .toString(),
-                ticksPreviousSnapshot: prevSnap.ticks,
-                ticksCurrentSnapshot: currentSnap.ticks,
-                weeklyData: lastWeeklyData ?? {
-                  apy: 0,
-                  weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
-                  weeklyRange: [
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                  ],
-                  tokenXamount: new BN(0),
-                  volumeX: 0,
-                },
-                currentTickIndex: pool.currentTickIndex,
-                activeTokens,
-              });
-
-              input[address.toString()] = {
-                feeTier: { fee: pool.fee.v.toString() },
-                volumeX: +new BN(currentSnap.volumeX)
-                  .sub(new BN(prevSnap.volumeX))
-                  .toString(),
-                volumeY: +new BN(currentSnap.volumeY)
-                  .sub(new BN(prevSnap.volumeY))
-                  .toString(),
-                ticksPreviousSnapshot: prevSnap.ticks.map((tick) => ({
-                  index: tick.index,
-                  sign: tick.sign,
-                  bump: tick.bump,
-                  liquidityChange: { v: tick.liquidityChange.v.toString() },
-                  liquidityGross: { v: tick.liquidityGross.v.toString() },
-                  sqrtPrice: { v: tick.sqrtPrice.v.toString() },
-                  feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.v.toString() },
-                  feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.v.toString() },
-                  secondsPerLiquidityOutside: {
-                    v: tick.secondsPerLiquidityOutside.v.toString(),
-                  },
-                  pool: tick.pool.toString(),
-                })),
-                ticksCurrentSnapshot: currentSnap.ticks.map((tick) => ({
-                  index: tick.index,
-                  sign: tick.sign,
-                  bump: tick.bump,
-                  liquidityChange: { v: tick.liquidityChange.v.toString() },
-                  liquidityGross: { v: tick.liquidityGross.v.toString() },
-                  sqrtPrice: { v: tick.sqrtPrice.v.toString() },
-                  feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.v.toString() },
-                  feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.v.toString() },
-                  secondsPerLiquidityOutside: {
-                    v: tick.secondsPerLiquidityOutside.v.toString(),
-                  },
-                  pool: tick.pool.toString(),
-                })),
-                weeklyData: apySnaps?.[address.toString()] ?? {
-                  apy: 0,
-                  weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
-                  weeklyRange: [
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                    { tickLower: null, tickUpper: null },
-                  ],
-                },
-                currentTickIndex: pool.currentTickIndex,
-                activeTokens,
-              };
-
-              weeklyData[address.toString()] = {
-                ...poolApy,
-                apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
-                weeklyFactor: poolApy.weeklyFactor.map((factor) =>
-                  isNaN(+JSON.stringify(factor)) ? 0 : factor
-                ),
-              };
-            } catch (_error) {
-              weeklyData[address.toString()] = {
-                apy: 0,
-                weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
-                weeklyRange: [
-                  { tickLower: null, tickUpper: null },
-                  { tickLower: null, tickUpper: null },
-                  { tickLower: null, tickUpper: null },
-                  { tickLower: null, tickUpper: null },
-                  { tickLower: null, tickUpper: null },
-                  { tickLower: null, tickUpper: null },
-                  { tickLower: null, tickUpper: null },
-                ],
-                tokenXamount: new BN(0),
-                volumeX: 0,
-              };
-            }
-          }
-        })
-        .catch(() => {
+        if (
+          snaps.length > 1 &&
+          (snaps[snaps.length - 1].timestamp - snaps[0].timestamp) /
+            (1000 * 60 * 60) <
+            24
+        ) {
           weeklyData[address.toString()] = {
             apy: 0,
             weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
@@ -273,9 +108,179 @@ export const createSnapshotForNetwork = async (network: Network) => {
             tokenXamount: new BN(0),
             volumeX: 0,
           };
-        });
-    })
-  );
+        } else {
+          const len = snaps.length;
+          const currentSnap =
+            len > 0
+              ? snaps[len - 1]
+              : {
+                  volumeX: "0",
+                  volumeY: "0",
+                  ticks: [],
+                };
+
+          let prevSnap;
+
+          if (len > 0) {
+            let index = 0;
+            for (let i = 0; i < len; i++) {
+              if (
+                (snaps[snaps.length - 1].timestamp - snaps[i].timestamp) /
+                  (1000 * 60 * 60) >=
+                24
+              ) {
+                index = i;
+              } else {
+                break;
+              }
+            }
+            prevSnap = snaps[index];
+          } else {
+            prevSnap = {
+              volumeX: "0",
+              volumeY: "0",
+              ticks: [],
+            };
+          }
+
+          try {
+            const lastWeeklyData =
+              typeof apySnaps?.[address.toString()] !== "undefined"
+                ? {
+                    ...apySnaps?.[address.toString()],
+                    tokenXamount: new BN(0),
+                    volumeX: 0,
+                  }
+                : undefined;
+
+            const poolApy = poolAPY({
+              feeTier: { fee: pool.fee.v },
+              volumeX: +new BN(currentSnap.volumeX)
+                .sub(new BN(prevSnap.volumeX))
+                .toString(),
+              volumeY: +new BN(currentSnap.volumeY)
+                .sub(new BN(prevSnap.volumeY))
+                .toString(),
+              ticksPreviousSnapshot: prevSnap.ticks,
+              ticksCurrentSnapshot: currentSnap.ticks,
+              weeklyData: lastWeeklyData ?? {
+                apy: 0,
+                weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+                weeklyRange: [
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                ],
+                tokenXamount: new BN(0),
+                volumeX: 0,
+              },
+              currentTickIndex: pool.currentTickIndex,
+              activeTokens,
+            });
+
+            input[address.toString()] = {
+              feeTier: { fee: pool.fee.v.toString() },
+              volumeX: +new BN(currentSnap.volumeX)
+                .sub(new BN(prevSnap.volumeX))
+                .toString(),
+              volumeY: +new BN(currentSnap.volumeY)
+                .sub(new BN(prevSnap.volumeY))
+                .toString(),
+              ticksPreviousSnapshot: prevSnap.ticks.map((tick) => ({
+                index: tick.index,
+                sign: tick.sign,
+                bump: tick.bump,
+                liquidityChange: { v: tick.liquidityChange.v.toString() },
+                liquidityGross: { v: tick.liquidityGross.v.toString() },
+                sqrtPrice: { v: tick.sqrtPrice.v.toString() },
+                feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.v.toString() },
+                feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.v.toString() },
+                secondsPerLiquidityOutside: {
+                  v: tick.secondsPerLiquidityOutside.v.toString(),
+                },
+                pool: tick.pool.toString(),
+              })),
+              ticksCurrentSnapshot: currentSnap.ticks.map((tick) => ({
+                index: tick.index,
+                sign: tick.sign,
+                bump: tick.bump,
+                liquidityChange: { v: tick.liquidityChange.v.toString() },
+                liquidityGross: { v: tick.liquidityGross.v.toString() },
+                sqrtPrice: { v: tick.sqrtPrice.v.toString() },
+                feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.v.toString() },
+                feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.v.toString() },
+                secondsPerLiquidityOutside: {
+                  v: tick.secondsPerLiquidityOutside.v.toString(),
+                },
+                pool: tick.pool.toString(),
+              })),
+              weeklyData: apySnaps?.[address.toString()] ?? {
+                apy: 0,
+                weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+                weeklyRange: [
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                  { tickLower: null, tickUpper: null },
+                ],
+              },
+              currentTickIndex: pool.currentTickIndex,
+              activeTokens,
+            };
+
+            weeklyData[address.toString()] = {
+              ...poolApy,
+              apy: isNaN(+JSON.stringify(poolApy.apy)) ? 0 : poolApy.apy,
+              weeklyFactor: poolApy.weeklyFactor.map((factor) =>
+                isNaN(+JSON.stringify(factor)) ? 0 : factor
+              ),
+            };
+          } catch (_error) {
+            weeklyData[address.toString()] = {
+              apy: 0,
+              weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+              weeklyRange: [
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+                { tickLower: null, tickUpper: null },
+              ],
+              tokenXamount: new BN(0),
+              volumeX: 0,
+            };
+          }
+        }
+      })
+      .catch(() => {
+        weeklyData[address.toString()] = {
+          apy: 0,
+          weeklyFactor: [0, 0, 0, 0, 0, 0, 0],
+          weeklyRange: [
+            { tickLower: null, tickUpper: null },
+            { tickLower: null, tickUpper: null },
+            { tickLower: null, tickUpper: null },
+            { tickLower: null, tickUpper: null },
+            { tickLower: null, tickUpper: null },
+            { tickLower: null, tickUpper: null },
+            { tickLower: null, tickUpper: null },
+          ],
+          tokenXamount: new BN(0),
+          volumeX: 0,
+        };
+      });
+    
+    await sleep(100)
+  }
 
   const now = Date.now();
   const timestamp =
