@@ -76,7 +76,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     const address = await pair.getAddress(market.program.programId)
     let activeTokens
     try {
-      await market.getActiveLiquidityInTokens(address, pool.currentTickIndex)
+      activeTokens = await market.getActiveLiquidityInTokens(address, pool.currentTickIndex)
     } catch {
       activeTokens = new BN('0')
     }
