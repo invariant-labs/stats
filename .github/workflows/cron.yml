@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  solana_version: 1.9.14
+  solana_version: 1.14.9
 
 jobs:
   install:
@@ -20,7 +20,7 @@ jobs:
         run: |
           sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_version }}/install)"
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          solana-keygen new
+            solana-keygen new
       - name: do a snapshot
         run: |
           git config --global user.email stats@invariant.app
