@@ -4,10 +4,12 @@ import { BN, Provider } from '@project-serum/anchor'
 import { PublicKey } from '@solana/web3.js'
 import fs from 'fs'
 import DEVNET_APY from '../../data/eclipse/pool_apy_devnet.json'
+import DEVNET_ARCHIVE from '../../data/eclipse/pool_apy_archive_devnet.json'
 import {
   ApySnapshot,
   eclipseDevnetTokensData,
   jsonArrayToTicks,
+  PoolApyArchiveSnapshot,
   TokenData,
 } from '../utils'
 import { PoolStructure } from '@invariant-labs/sdk-eclipse/lib/market'
@@ -18,8 +20,10 @@ require('dotenv').config()
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: Provider
   let fileName: string
+  let archiveFileName: string
   let ticksFolder: string
   let apySnaps: Record<string, ApySnapshot>
+  let apyArchive: Record<string, PoolApyArchiveSnapshot[]>
   let tokensData: Record<string, TokenData>
 
   switch (network) {
@@ -27,8 +31,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     default:
       provider = Provider.local('https://staging-rpc.dev.eclipsenetwork.xyz')
       fileName = './data/eclipse/pool_apy_devnet.json'
+      archiveFileName = './data/eclipse/pool_apy_archive_devnet.json'
       ticksFolder = './data/eclipse/ticks/devnet/'
       apySnaps = DEVNET_APY
+      apyArchive = DEVNET_ARCHIVE
       tokensData = eclipseDevnetTokensData
   }
 
@@ -251,7 +257,32 @@ export const createSnapshotForNetwork = async (network: Network) => {
     await sleep(100)
   }
 
+  const now = Date.now()
+  const timestamp =
+    Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) + 1000 * 60 * 60 * 12
+
   Object.entries(weeklyData).forEach(([address, data]) => {
+    if (!apyArchive[address]) {
+      apyArchive[address] = []
+    }
+    apyArchive[address].push({
+      timestamp,
+      apy: data.apy,
+      range: data.weeklyRange[data.weeklyRange.length - 1],
+      weeklyFactor: data.weeklyFactor,
+      tokenXAmount: data.tokenXamount.toString(),
+      volumeX: data.volumeX,
+      tokenX: {
+        address: poolsData[address].tokenX.toString(),
+        ticker: tokensData?.[poolsData[address].tokenX.toString()]?.ticker ?? '',
+        decimals: tokensData?.[poolsData[address].tokenX.toString()]?.decimals ?? 0,
+      },
+      tokenY: {
+        address: poolsData[address].tokenY.toString(),
+        ticker: tokensData?.[poolsData[address].tokenY.toString()]?.ticker ?? '',
+        decimals: tokensData?.[poolsData[address].tokenY.toString()]?.decimals ?? 0,
+      },
+    })
     apy[address] = {
       apy: data.apy,
       weeklyFactor: data.weeklyFactor,
@@ -260,6 +291,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
   })
 
   fs.writeFile(fileName, JSON.stringify(apy), (err) => {
+    if (err) {
+      throw err
+    }
+  })
+
+  fs.writeFile(archiveFileName, JSON.stringify(apyArchive), (err) => {
     if (err) {
       throw err
     }
