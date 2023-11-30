@@ -178,12 +178,12 @@ export const devnetTokensData = {
 };
 
 export const eclipseDevnetTokensData = {
-  G6p4KcFS3SNToF3iPNAtpuN3V1d4GYQWj4XUWhBMT4xh: {
+  '5W3bmyYDww6p5XRZnCR6m2c75st6XyCxW1TgGS3wTq7S': {
     decimals: 9,
     coingeckoId: "usd-coin",
     ticker: "USDC",
   },
-  "8yKX1JD2gXgu3SXvZ7RxeYwD32RGwUHcJKvVDskrHLoG": {
+  '3JXmQAzBPU66dkVQufSE1ChBMRAdCHp6T7ZMBKAwhmWw': {
     decimals: 9,
     coingeckoId: "bitcoin",
     ticker: "BTC",
