@@ -2,6 +2,7 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import BN from "bn.js";
 import DEVNET_DATA from "../../../../data/devnet.json";
 import MAINNET_DATA from "../../../../data/mainnet.json";
+import ECLIPSE_DEVNET_DATA from '../../../../data/eclipse/devnet.json'
 import { PoolStatsData, printBN } from "../../../../src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
@@ -26,6 +27,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
     data = DEVNET_DATA;
   } else if (net === "mainnet") {
     data = MAINNET_DATA;
+  } if (net === "eclipse-devnet") {
+    data = ECLIPSE_DEVNET_DATA;
   } else {
     res.status(400).send("INVALID NETWORK");
     return;

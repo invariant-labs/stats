@@ -177,6 +177,24 @@ export const devnetTokensData = {
   },
 };
 
+export const eclipseDevnetTokensData = {
+  G6p4KcFS3SNToF3iPNAtpuN3V1d4GYQWj4XUWhBMT4xh: {
+    decimals: 9,
+    coingeckoId: "usd-coin",
+    ticker: "USDC",
+  },
+  "8yKX1JD2gXgu3SXvZ7RxeYwD32RGwUHcJKvVDskrHLoG": {
+    decimals: 9,
+    coingeckoId: "bitcoin",
+    ticker: "BTC",
+  },
+  So11111111111111111111111111111111111111112: {
+    decimals: 9,
+    coingeckoId: "ethereum",
+    ticker: "WETH",
+  },
+};
+
 export interface QuotientSnapshot {
   timestamp: number;
   quotient: number;

@@ -1,6 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import DEVNET_APY from "../../data/pool_apy_archive_devnet.json";
 import MAINNET_APY from "../../data/pool_apy_archive_mainnet.json";
+import ECLIPSE_DEVNET_APY from "../../data/eclipse/pool_apy_archive_devnet.json";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -23,6 +24,10 @@ export default function (req: VercelRequest, res: VercelResponse) {
   }
   if (net === 'mainnet') {
     res.json(MAINNET_APY)
+    return
+  }
+  if (net === 'eclipse-devnet') {
+    res.json(ECLIPSE_DEVNET_APY)
     return
   }
   res.status(400).send('INVALID NETWORK')
