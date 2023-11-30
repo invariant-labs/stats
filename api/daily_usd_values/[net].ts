@@ -1,6 +1,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
 import DEVNET_DATA from '../../data/devnet.json'
 import MAINNET_DATA from '../../data/mainnet.json'
+import ECLIPSE_DEVNET_DATA from '../../data/eclipse/devnet.json'
 import { PoolStatsData } from '../../src/utils'
 
 export default function (req: VercelRequest, res: VercelResponse) {
@@ -21,6 +22,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
     snaps = DEVNET_DATA
   } else if (net === 'mainnet') {
     snaps = MAINNET_DATA
+  } else if (net === 'eclipse-devnet') {
+    snaps = ECLIPSE_DEVNET_DATA
   } else {
     res.status(400).send('INVALID NETWORK')
     return

@@ -1,6 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import DEVNET_DATA from "../../data/devnet.json";
 import MAINNET_DATA from "../../data/mainnet.json";
+import ECLIPSE_DEVNET_DATA from '../../data/eclipse/devnet.json'
 import { PoolSnapshot, PoolStatsData } from "../../src/utils";
 
 const onlySnaps = (
@@ -36,6 +37,10 @@ export default function (req: VercelRequest, res: VercelResponse) {
   }
   if (net === "mainnet") {
     res.json(onlySnaps(MAINNET_DATA));
+    return;
+  }
+  if (net === "eclipse-devnet") {
+    res.json(onlySnaps(ECLIPSE_DEVNET_DATA));
     return;
   }
   res.status(400).send("INVALID NETWORK");

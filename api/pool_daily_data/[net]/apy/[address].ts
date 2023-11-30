@@ -1,6 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import DEVNET_APY from "../../../../data/pool_apy_archive_devnet.json";
 import MAINNET_APY from "../../../../data/pool_apy_archive_mainnet.json";
+import ECLIPSE_DEVNET_APY from "../../../../data/eclipse/pool_apy_archive_devnet.json";
 import { PoolApyArchiveSnapshot } from "../../../../src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
@@ -25,7 +26,9 @@ export default function (req: VercelRequest, res: VercelResponse) {
     apyArchive = DEVNET_APY;
   } else if (net === "mainnet") {
     apyArchive = MAINNET_APY;
-  } else {
+  } else if (net === "eclipse-devnet") {
+    apyArchive = ECLIPSE_DEVNET_APY;
+  }else {
     res.status(400).send("INVALID NETWORK");
     return;
   }
