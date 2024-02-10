@@ -1,6 +1,47 @@
-# invariantStats
+# Historical data
 
-### Querying archive data
+The historical data is available inside the `/data` directory. The content of these files is described below:
+
+Pool data is stored in the files below, depending on the network's location:
+- Solana: `mainnet.json`
+- Solana devnet: `devnet.json`
+- Eclipse devnet: `eclipse/devnet.json`
+
+All of this data has the same JSON structure:
+
+```Typescript
+ {
+    [address: string]: {
+        snapshots: [
+            {
+               timestamp: number, // ASC
+               volumeX: TokenAmount,
+               volumeY: TokenAmount,
+               liquidityX: TokenAmount,
+               liquidityY: TokenAmount,
+               feeX: TokenAmount,
+               feeY: TokenAmount,
+            }
+        ]
+        tokenX: TokenInfo
+        tokenY: TokenInfo
+    } 
+}
+
+interface TokenInfo {
+    address: string,
+    decimals: number
+
+}
+
+interface TokenAmount {
+    tokenBNFromBeginning: string, // token amount (program format)
+    usdValue24: number
+}
+```
+
+
+# Querying archive data
 
 There is an API that allows querying historical data for specific pools
 ```bash
@@ -12,7 +53,7 @@ Below is an example of a query:
 https://stats.invariant.app/pool_daily_data/mainnet/aggregated/BRt1iVYDNoohkL1upEb8UfHE8yji6gEDAmuN9Y4yekyc?limit=10
 ```
 
-### Most popular pool addresses
+# Most popular pool addresses
 
 | Token X                                          | Token Y                                          | Fee      | Address                                                                                                     |
 |--------------------------------------------------|--------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------|
