@@ -29,7 +29,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.DEV:
     default:
-      provider = Provider.local('https://staging-rpc.dev.eclipsenetwork.xyz')
+      provider = Provider.local('https://staging-rpc-eu.dev2.eclipsenetwork.xyz')
       fileName = './data/eclipse/pool_apy_devnet.json'
       archiveFileName = './data/eclipse/pool_apy_archive_devnet.json'
       ticksFolder = './data/eclipse/ticks/devnet/'
