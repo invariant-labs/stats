@@ -25,7 +25,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.DEV:
     default:
-      provider = Provider.local('https://staging-rpc-eu.dev2.eclipsenetwork.xyz')
+      provider = Provider.local('https://staging-rpc.dev2.eclipsenetwork.xyz')
       fileName = './data/eclipse/devnet.json'
       snaps = DEVNET_DATA
       tokensData = eclipseDevnetTokensData
