@@ -40,6 +40,24 @@ interface TokenAmount {
 }
 ```
 
+# Generated data
+
+List of snapshot files:
+- data/devnet.json
+- data/input_mainnet_pool_apy.json
+- data/mainnet.json
+- data/pool_apy_archive_devnet.json
+- data/pool_apy_archive_mainnet.json
+- data/pool_apy_devnet.json
+- data/pool_apy_mainnet.json
+- data/ticks
+    - devnet
+        - [tick_address.json]
+        - ...
+    - mainnet
+        - [tick_address.json]
+        - ...
+
 
 # Querying archive data
 

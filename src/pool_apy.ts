@@ -31,7 +31,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = Provider.local('https://rpc.solana.nightly.app')
+      provider = Provider.local('https://solana-mainnet.g.alchemy.com/v2/YfX5E62sdlEoytQ9ZEOA_5KIE3QbwUUD')
       fileName = './data/pool_apy_mainnet.json'
       archiveFileName = './data/pool_apy_archive_mainnet.json'
       ticksFolder = './data/ticks/mainnet/'
