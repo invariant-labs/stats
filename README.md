@@ -50,7 +50,7 @@ List of snapshot files:
 - data/pool_apy_archive_mainnet.json
 - data/pool_apy_devnet.json
 - data/pool_apy_mainnet.json
-- ticks
+- data/ticks
     - devnet
         - [tick_address.json]
         - ...
