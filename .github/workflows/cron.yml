@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  solana_version: 1.14.11
+  solana_version: 1.16.16
 
 jobs:
   install:
