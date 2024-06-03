@@ -2,7 +2,7 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import BN from "bn.js";
 import DEVNET_DATA from "../../../../data/devnet.json";
 import MAINNET_DATA from "../../../../data/mainnet.json";
-import ECLIPSE_DEVNET_DATA from '../../../../data/eclipse/devnet.json'
+import ECLIPSE_DEVNET_DATA from "../../../../data/eclipse/devnet.json";
 import DEVNET_APY from "../../../../data/pool_apy_archive_devnet.json";
 import MAINNET_APY from "../../../../data/pool_apy_archive_mainnet.json";
 import ECLIPSE_DEVNET_APY from "../../../../data/eclipse/pool_apy_archive_devnet.json";
@@ -37,7 +37,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
   } else if (net === "mainnet") {
     data = MAINNET_DATA;
     apyArchive = MAINNET_APY;
-  } if (net === "eclipse-devnet") {
+  }
+  if (net === "eclipse-devnet") {
     data = ECLIPSE_DEVNET_DATA;
     apyArchive = ECLIPSE_DEVNET_APY;
   } else {

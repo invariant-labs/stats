@@ -1,7 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import DEVNET_DATA from "../../data/devnet.json";
 import MAINNET_DATA from "../../data/mainnet.json";
-import ECLIPSE_DEVNET_DATA from '../../data/eclipse/devnet.json'
+import ECLIPSE_DEVNET_DATA from "../../data/eclipse/devnet.json";
 import { PoolSnapshot, PoolStatsData } from "../../src/utils";
 
 const onlySnaps = (
@@ -11,6 +11,20 @@ const onlySnaps = (
 
   Object.entries(data).forEach(([address, pool]) => {
     newData[address] = pool.snapshots.slice(-31);
+  });
+
+  return newData;
+};
+
+const sliceSnaps = (
+  data: Record<string, PoolSnapshot[]>,
+  limit: number,
+  skip: number
+): Record<string, PoolSnapshot[]> => {
+  const newData: Record<string, PoolSnapshot[]> = {};
+
+  Object.entries(data).forEach(([address, pool]) => {
+    newData[address] = pool.slice(-limit + skip);
   });
 
   return newData;
@@ -30,18 +44,25 @@ export default function (req: VercelRequest, res: VercelResponse) {
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
 
-  const { net } = req.query;
+  const { net, limit = "750", skip = "0" } = req.query;
+
+  let data: Record<string, PoolStatsData>;
+
   if (net === "devnet") {
-    res.json(onlySnaps(DEVNET_DATA));
-    return;
+    data = DEVNET_DATA;
+  } else if (net === "mainnet") {
+    data = MAINNET_DATA;
+  } else if (net === "eclipse-devnet") {
+    data = ECLIPSE_DEVNET_DATA;
+  } else {
+    res.status(400).send("INVALID NETWORK");
   }
-  if (net === "mainnet") {
-    res.json(onlySnaps(MAINNET_DATA));
-    return;
-  }
-  if (net === "eclipse-devnet") {
-    res.json(onlySnaps(ECLIPSE_DEVNET_DATA));
-    return;
-  }
-  res.status(400).send("INVALID NETWORK");
+
+  const snaps: Record<string, PoolSnapshot[]> = sliceSnaps(
+    onlySnaps(data),
+    Number(limit),
+    Number(skip)
+  );
+
+  res.json(snaps);
 }
