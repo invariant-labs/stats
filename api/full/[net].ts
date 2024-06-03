@@ -46,7 +46,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
 
-  const { net, limit = "750", skip = "0" } = req.query;
+  const { net, limit = "28", skip = "0" } = req.query;
 
   let data: Record<string, PoolStatsData>;
 
