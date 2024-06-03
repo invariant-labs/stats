@@ -24,7 +24,9 @@ const sliceSnaps = (
   const newData: Record<string, PoolSnapshot[]> = {};
 
   Object.entries(data).forEach(([address, pool]) => {
-    newData[address] = pool.slice(-limit + skip);
+    const arr = pool.slice(-limit + skip);
+    arr.splice(arr.length - skip, skip);
+    newData[address] = arr;
   });
 
   return newData;
