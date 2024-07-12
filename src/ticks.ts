@@ -12,7 +12,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = Provider.local('https://rpc.solana.nightly.app')
+      provider = Provider.local('https://mainnet.helius-rpc.com/?api-key=ef843b40-9876-4a02-a181-a1e6d3e61b4c')
       folderName = './data/ticks/mainnet/'
       break
     case Network.DEV:
