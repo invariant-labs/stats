@@ -65,6 +65,44 @@ export const getCoingeckoPricesData = async (
   );
 };
 
+export interface JupApiPriceData {
+  data: Record<
+    string,
+    {
+      id: string;
+      price: number;
+    }
+  >;
+}
+
+export const getJupPricesData = async (
+  ids: string[]
+): Promise<Record<string, number>> => {
+  const maxTokensPerRequest = 100;
+
+  const chunkedIds: string[][] = [];
+  for (let i = 0; i < ids.length; i += maxTokensPerRequest) {
+    chunkedIds.push(ids.slice(i, i + maxTokensPerRequest));
+  }
+
+  const requests = chunkedIds.map(
+    async (idsChunk) =>
+      await axios.get<JupApiPriceData>(
+        `https://price.jup.ag/v4/price?ids=${idsChunk.join(",")}`
+      )
+  );
+
+  const responses = await Promise.all(requests);
+  const concatRes = responses.flatMap((response) =>
+    Object.values(response.data.data).map(({ id, price }) => ({ id, price }))
+  );
+
+  return concatRes.reduce<Record<string, number>>((acc, { id, price }) => {
+    acc[id] = price ?? 0;
+    return acc;
+  }, {});
+};
+
 export const printBN = (amount: BN, decimals: number): string => {
   const balanceString = amount.toString();
   if (balanceString.length <= decimals) {
@@ -178,12 +216,12 @@ export const devnetTokensData = {
 };
 
 export const eclipseDevnetTokensData = {
-  '5W3bmyYDww6p5XRZnCR6m2c75st6XyCxW1TgGS3wTq7S': {
+  "5W3bmyYDww6p5XRZnCR6m2c75st6XyCxW1TgGS3wTq7S": {
     decimals: 9,
     coingeckoId: "usd-coin",
     ticker: "USDC",
   },
-  '3JXmQAzBPU66dkVQufSE1ChBMRAdCHp6T7ZMBKAwhmWw': {
+  "3JXmQAzBPU66dkVQufSE1ChBMRAdCHp6T7ZMBKAwhmWw": {
     decimals: 9,
     coingeckoId: "bitcoin",
     ticker: "BTC",
