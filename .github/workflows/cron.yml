@@ -43,7 +43,8 @@ jobs:
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           solana --version
           solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
-      - name: do a snapshot
+      - name: svm snapshot
+        working-directory: ./svm
         run: |
           git config --global user.email stats@invariant.app
           git config --global user.name invariantStats
@@ -52,7 +53,18 @@ jobs:
           npm install
           npm run snap
           git add ./data
-          git commit -m "Snapshot of data done!"
+          git commit -m "Snapshot of svm data done!"
+      - name: a0 snapshot
+        working-directory: ./a0
+        run: |
+          git config --global user.email stats@invariant.app
+          git config --global user.name invariantStats
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
+          npm install
+          npm run snap
+          git add ./data
+          git commit -m "Snapshot of a0 data done!"
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.6.0
         with:

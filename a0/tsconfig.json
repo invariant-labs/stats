@@ -13,7 +13,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "isolatedModules": true,
-    "noFallthroughCasesInSwitch": true
-  },
-  "exclude": ["a0", "svm"]
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "./target"
+  }
 }
