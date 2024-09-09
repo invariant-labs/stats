@@ -12,21 +12,22 @@ import {
   calculateSqrtPrice,
   INVARIANT_ADDRESS,
   LiquidityTick,
+  PoolKey,
 } from "@invariant-labs/a0-sdk";
 
 import { PoolSnapshot, PoolStatsData } from "./utils";
 import TESTNET_DATA from "../../data/a0/testnet.json";
 import MAINNET_DATA from "../../data/a0/mainnet.json";
 import * as fs from "fs";
-import { assert, delay } from "@invariant-labs/a0-sdk/target/utils";
+import { assert } from "@invariant-labs/a0-sdk/target/utils";
 import { getCoingeckoPricesData, getTokensData, getUsdValue24 } from "./utils";
 
 const getPairLiquidityValues = async (
   pool: Pool,
   liquidityTicks: LiquidityTick[]
 ) => {
-  let liquidityX = BigInt(0);
-  let liquidityY = BigInt(0);
+  let liquidityX = 0n;
+  let liquidityY = 0n;
   const visitedTicks: LiquidityTick[] = [];
   for (let i = 0; i < liquidityTicks.length; i++) {
     let curr = liquidityTicks[i];
@@ -72,7 +73,7 @@ const getPairLiquidityValues = async (
           lowerSqrtPrice
         );
       } catch (error) {
-        xVal = BigInt(0);
+        xVal = 0n;
       }
 
       try {
@@ -83,7 +84,7 @@ const getPairLiquidityValues = async (
           lowerSqrtPrice
         );
       } catch (error) {
-        yVal = BigInt(0);
+        yVal = 0n;
       }
       liquidityX = liquidityX + xVal;
       liquidityY = liquidityY + yVal;
@@ -101,11 +102,7 @@ const getX = (
   currentSqrtPrice: bigint,
   lowerSqrtPrice: bigint
 ): bigint => {
-  if (
-    upperSqrtPrice <= BigInt(0) ||
-    currentSqrtPrice <= BigInt(0) ||
-    lowerSqrtPrice <= BigInt(0)
-  ) {
+  if (upperSqrtPrice <= 0n || currentSqrtPrice <= 0n || lowerSqrtPrice <= 0n) {
     throw new Error("Price cannot be lower or equal 0");
   }
 
@@ -113,7 +110,7 @@ const getX = (
   let nominator: bigint;
 
   if (currentSqrtPrice >= upperSqrtPrice) {
-    return BigInt(0);
+    return 0n;
   } else if (currentSqrtPrice < lowerSqrtPrice) {
     denominator = (lowerSqrtPrice * upperSqrtPrice) / PRICE_DENOMINATOR;
     nominator = upperSqrtPrice - lowerSqrtPrice;
@@ -131,17 +128,13 @@ export const getY = (
   currentSqrtPrice: bigint,
   lowerSqrtPrice: bigint
 ): bigint => {
-  if (
-    lowerSqrtPrice <= BigInt(0) ||
-    currentSqrtPrice <= BigInt(0) ||
-    upperSqrtPrice <= BigInt(0)
-  ) {
+  if (lowerSqrtPrice <= 0n || currentSqrtPrice <= 0n || upperSqrtPrice <= 0n) {
     throw new Error("Price cannot be 0");
   }
 
   let difference: bigint;
   if (currentSqrtPrice <= lowerSqrtPrice) {
-    return BigInt(0);
+    return 0n;
   } else if (currentSqrtPrice >= upperSqrtPrice) {
     difference = upperSqrtPrice - lowerSqrtPrice;
   } else {
@@ -149,6 +142,40 @@ export const getY = (
   }
 
   return (liquidity * difference) / PRICE_DENOMINATOR / LIQUIDITY_DENOMINATOR;
+};
+
+const stringifyPoolKey = (poolKey: any) => {
+  poolKey.feeTier.fee = String(poolKey.feeTier.fee);
+  poolKey.feeTier.tickSpacing = String(poolKey.feeTier.tickSpacing);
+  return JSON.stringify(poolKey);
+};
+
+const getGlobalFee = (
+  feeProtocolTokenX: bigint,
+  feeProtocolTokenY: bigint,
+  protocolFee: bigint
+) => {
+  const feeX = (feeProtocolTokenX * PERCENTAGE_DENOMINATOR) / protocolFee;
+  const feeY = (feeProtocolTokenY * PERCENTAGE_DENOMINATOR) / protocolFee;
+  return {
+    feeX,
+    feeY,
+  };
+};
+
+const getVolume = (
+  feeProtocolTokenX: bigint,
+  feeProtocolTokenY: bigint,
+  protocolFee: bigint,
+  poolKey: PoolKey
+) => {
+  const feeDenominator =
+    (protocolFee * BigInt(poolKey.feeTier.fee)) / PERCENTAGE_SCALE;
+
+  return {
+    volumeX: (feeProtocolTokenX * PERCENTAGE_SCALE) / feeDenominator,
+    volumeY: (feeProtocolTokenY * PERCENTAGE_SCALE) / feeDenominator,
+  };
 };
 
 export const createSnapshotForNetwork = async (network: Network) => {
@@ -188,8 +215,23 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const allPoolKeys = await invariant.getAllPoolKeys();
 
   let poolsData: any[] = [];
+  const poolPromises = allPoolKeys.map((poolKey) => {
+    return invariant.getPool(poolKey.tokenX, poolKey.tokenY, poolKey.feeTier);
+  });
+  const poolsBatchSize = 16;
+  let pools: Pool[] = []
+  while (poolPromises.length != 0) {
+    const poolsBatch = await Promise.all(poolPromises.splice(0, poolsBatchSize));
+    pools = pools.concat(poolsBatch)
+  }
+ 
+  const poolsWithKeys: [PoolKey, Pool][] = allPoolKeys.map((poolKey, i) => {
+    return [poolKey, pools[i]];
+  });
 
-  for (let poolKey of allPoolKeys) {
+  const protocolFee = await invariant.getProtocolFee();
+
+  for (let [poolKey, pool] of poolsWithKeys) {
     let lastSnapshot: PoolSnapshot | undefined;
 
     const tokenXData = tokensData?.[poolKey.tokenX] ?? {
@@ -205,43 +247,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokenYData.coingeckoId ? coingeckoPrices[tokenYData.coingeckoId] ?? 0 : 0
     );
 
-    const pool = await invariant.getPool(
-      poolKey.tokenX,
-      poolKey.tokenY,
-      poolKey.feeTier
-    );
     const { feeProtocolTokenX, feeProtocolTokenY } = pool;
-
-    const getVolume = () => {
-      const feeDenominator =
-        (protocolFee * BigInt(poolKey.feeTier.fee)) / PERCENTAGE_SCALE;
-
-      return {
-        volumeX: (feeProtocolTokenX * PERCENTAGE_SCALE) / feeDenominator,
-        volumeY: (feeProtocolTokenY * PERCENTAGE_SCALE) / feeDenominator,
-      };
-    };
-
-    const getGlobalFee = () => {
-      const feeX = (feeProtocolTokenX * PERCENTAGE_DENOMINATOR) / protocolFee;
-      const feeY = (feeProtocolTokenY * PERCENTAGE_DENOMINATOR) / protocolFee;
-      return {
-        feeX,
-        feeY,
-      };
-    };
 
     const tickmap = await invariant.getFullTickmap(poolKey);
     const liquidityTicks = await invariant.getAllLiquidityTicks(
       poolKey,
       tickmap
     );
-
-    const stringifyPoolKey = (poolKey) => {
-      poolKey.feeTier.fee = String(poolKey.feeTier.fee);
-      poolKey.feeTier.tickSpacing = String(poolKey.feeTier.tickSpacing);
-      return JSON.stringify(poolKey);
-    };
 
     const stringifiedPoolKey = stringifyPoolKey(poolKey);
 
@@ -253,32 +265,39 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
     let volumeX, volumeY, liquidityX, liquidityY, feeX, feeY;
 
-    const protocolFee = await invariant.getProtocolFee();
-
     try {
-      const volumes = getVolume();
+      const volumes = getVolume(
+        feeProtocolTokenX,
+        feeProtocolTokenY,
+        protocolFee,
+        poolKey
+      );
       volumeX = volumes.volumeX;
       volumeY = volumes.volumeY;
     } catch {
-      volumeX = BigInt(lastSnapshot?.volumeX.tokenBNFromBeginning ?? "0");
-      volumeY = BigInt(lastSnapshot?.volumeY.tokenBNFromBeginning ?? "0");
+      volumeX = BigInt(lastSnapshot?.volumeX.tokenBNFromBeginning ?? 0n);
+      volumeY = BigInt(lastSnapshot?.volumeY.tokenBNFromBeginning ?? 0n);
     }
     try {
       const liq: any = await getPairLiquidityValues(pool, liquidityTicks);
       liquidityX = liq.liquidityX;
       liquidityY = liq.liquidityY;
     } catch (e) {
-      liquidityY = BigInt(lastSnapshot?.liquidityX.tokenBNFromBeginning ?? "0");
-      liquidityX = BigInt(lastSnapshot?.liquidityY.tokenBNFromBeginning ?? "0");
+      liquidityY = BigInt(lastSnapshot?.liquidityX.tokenBNFromBeginning ?? 0n);
+      liquidityX = BigInt(lastSnapshot?.liquidityY.tokenBNFromBeginning ?? 0n);
     }
 
     try {
-      const fees = await getGlobalFee();
+      const fees = getGlobalFee(
+        feeProtocolTokenX,
+        feeProtocolTokenY,
+        protocolFee
+      );
       feeX = fees.feeX;
       feeY = fees.feeY;
     } catch {
-      feeX = BigInt(lastSnapshot?.feeX.tokenBNFromBeginning ?? "0");
-      feeY = BigInt(lastSnapshot?.feeY.tokenBNFromBeginning ?? "0");
+      feeX = BigInt(lastSnapshot?.feeX.tokenBNFromBeginning ?? 0n);
+      feeY = BigInt(lastSnapshot?.feeY.tokenBNFromBeginning ?? 0n);
     }
 
     poolsData.push({
@@ -292,7 +311,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             tokenXPrice,
             typeof lastSnapshot !== "undefined"
               ? BigInt(lastSnapshot.volumeX.tokenBNFromBeginning)
-              : BigInt(0)
+              : 0n
           ),
         },
         volumeY: {
@@ -303,7 +322,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             tokenYPrice,
             typeof lastSnapshot !== "undefined"
               ? BigInt(lastSnapshot.volumeY.tokenBNFromBeginning)
-              : BigInt(0)
+              : 0n
           ),
         },
         liquidityX: {
@@ -312,7 +331,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             liquidityX,
             tokenXData.decimals,
             tokenXPrice,
-            BigInt(0)
+            0n
           ),
         },
         liquidityY: {
@@ -321,7 +340,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             liquidityY,
             tokenYData.decimals,
             tokenYPrice,
-            BigInt(0)
+            0n
           ),
         },
         feeX: {
@@ -332,7 +351,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             tokenXPrice,
             typeof lastSnapshot !== "undefined"
               ? BigInt(lastSnapshot.feeX.tokenBNFromBeginning)
-              : BigInt(0)
+              : 0n
           ),
         },
         feeY: {
@@ -343,12 +362,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
             tokenYPrice,
             typeof lastSnapshot !== "undefined"
               ? BigInt(lastSnapshot.feeY.tokenBNFromBeginning)
-              : BigInt(0)
+              : 0n
           ),
         },
       },
     });
-    await delay(500);
   }
   const now = Date.now();
   const timestamp =
