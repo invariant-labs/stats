@@ -218,13 +218,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const poolPromises = allPoolKeys.map((poolKey) => {
     return invariant.getPool(poolKey.tokenX, poolKey.tokenY, poolKey.feeTier);
   });
-  const poolsBatchSize = 16;
-  let pools: Pool[] = []
+  const poolsBatchSize = 8;
+  let pools: Pool[] = [];
   while (poolPromises.length != 0) {
-    const poolsBatch = await Promise.all(poolPromises.splice(0, poolsBatchSize));
-    pools = pools.concat(poolsBatch)
+    const poolsBatch = await Promise.all(
+      poolPromises.splice(0, poolsBatchSize)
+    );
+    pools = pools.concat(poolsBatch);
   }
- 
+
   const poolsWithKeys: [PoolKey, Pool][] = allPoolKeys.map((poolKey, i) => {
     return [poolKey, pools[i]];
   });
@@ -397,21 +399,27 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   fs.writeFileSync(fileName, JSON.stringify(snaps));
 };
+const main = async () => {
+  const mainnet = createSnapshotForNetwork(Network.Mainnet).then(
+    () => {
+      console.log("Mainnet snapshot done!");
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+  
+  const testnet = createSnapshotForNetwork(Network.Testnet).then(
+    () => {
+      console.log("Testnet snapshot done!");
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+  await Promise.allSettled([testnet, mainnet])
+  process.exit(0)
+}
 
-createSnapshotForNetwork(Network.Mainnet).then(
-  () => {
-    console.log("Mainnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+main()
 
-createSnapshotForNetwork(Network.Testnet).then(
-  () => {
-    console.log("Testnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
