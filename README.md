@@ -6,6 +6,8 @@ Pool data is stored in the files below, depending on the network's location:
 - Solana: `mainnet.json`
 - Solana devnet: `devnet.json`
 - Eclipse devnet: `eclipse/devnet.json`
+- Aleph Zero testnet: `a0/testnet.json`
+- Aleph Zero mainnet: `a0/mainnet.json`
 
 All of this data has the same JSON structure:
 
@@ -43,6 +45,8 @@ interface TokenAmount {
 # Generated data
 
 List of snapshot files:
+- data/a0/testnet.json
+- data/a0/mainnet.json
 - data/devnet.json
 - data/input_mainnet_pool_apy.json
 - data/mainnet.json
@@ -63,12 +67,14 @@ List of snapshot files:
 
 There is an API that allows querying historical data for specific pools
 ```bash
-https://stats.invariant.app/pool_daily_data/[NETWORK]/aggregated/[POOL_ADDRESS]?{limit=N}
+https://stats.invariant.app/[*UNDERLYING_VM]/pool_daily_data/[NETWORK]/aggregated/[**POOL_ADDRESS]?{limit=N}
 ```
+*svm or a0 
+**for Aleph Zero POOL_ADDRESS is stringified PoolKey
 
 Below is an example of a query:
 ```bash
-https://stats.invariant.app/pool_daily_data/mainnet/aggregated/BRt1iVYDNoohkL1upEb8UfHE8yji6gEDAmuN9Y4yekyc?limit=10
+https://stats.invariant.app/svm/pool_daily_data/mainnet/aggregated/BRt1iVYDNoohkL1upEb8UfHE8yji6gEDAmuN9Y4yekyc?limit=10
 ```
 
 # Most popular pool addresses
