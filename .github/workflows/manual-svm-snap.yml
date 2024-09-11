@@ -1,9 +1,6 @@
-name: "Create snapshot of stats"
+name: "Manual svm snap"
 
-on:
-  schedule:
-    - cron: "30 11 * * *"
-  workflow_dispatch:
+on: workflow_dispatch
 
 env:
   solana_version: 1.14.13
@@ -57,53 +54,6 @@ jobs:
             ./data/*.json
             ./data/eclipse/
             ./data/ticks/
-  a0-snap:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "20"
-      - name: install global mocha
-        run: |
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          npm install -g mocha
-          npm install -g ts-mocha
-          npm install -g typescript
-          ts-mocha -h
-      - name: install essential
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config build-essential libudev-dev
-      - name: a0 snapshot
-        working-directory: ./a0
-        run: |
-          npm install
-          npm run snap
-      - uses: actions/upload-artifact@v4
-        with:
-          name: a0-snapshot-${{ github.run_id }}
-          path: |
-            ./data/a0/
-
-  deploy:
-    needs: [a0-snap, svm-snap]
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download a0 snapshot
-        uses: actions/download-artifact@v4
-        with:
-          name: a0-snapshot-${{ github.run_id }}
-          path: ./data/a0/
-        continue-on-error: true
-      - name: Download svm snapshot
-        uses: actions/download-artifact@v4
-        with:
-          name: svm-snapshot-${{ github.run_id }}
-          path: ./data/
-        continue-on-error: true
       - name: Commit changes
         run: |
           git config --global user.email stats@invariant.app
@@ -115,16 +65,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: main
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - name: Deploy to Production
-        uses: amondnet/vercel-action@v20
-        id: deploy-vercel-production
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod"
-          scope: ${{ secrets.VERCEL_ORG_ID }}
