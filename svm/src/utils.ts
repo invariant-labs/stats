@@ -36,6 +36,12 @@ export interface PoolStatsData {
   };
 }
 
+export interface PoolsApyStatsData {
+  apy: number;
+  weeklyFacetor: number[];
+  weeklyRange: Range[];
+}
+
 export interface CoingeckoApiPriceData {
   id: string;
   current_price: number;
@@ -367,7 +373,7 @@ export interface PoolWithAddress extends PoolStructure {
   address: PublicKey;
 }
 
-export interface TokenStatsData {
+export interface TokenStatsDataWithString {
   address: string;
   price: number;
   volume24: number;
@@ -379,7 +385,7 @@ export interface TimeData {
   value: number;
 }
 
-export interface PoolStatsData2 {
+export interface PoolStatsDataWithString {
   poolAddress: string;
   tokenX: string;
   tokenY: string;

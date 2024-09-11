@@ -2,12 +2,12 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import DEVNET_DATA from "../../../data/full_devnet.json";
 import MAINNET_DATA from "../../../data/full_mainnet.json";
 import {
-  PoolStatsData2,
+  PoolStatsDataWithString,
   TimeData,
-  TokenStatsData,
+  TokenStatsDataWithString,
 } from "../../../svm/src/utils";
 
-interface Data {
+interface FullSnap {
   volume24: {
     value: number;
     change: number;
@@ -20,8 +20,8 @@ interface Data {
     value: number;
     change: number;
   };
-  tokensData: TokenStatsData[];
-  poolsData: PoolStatsData2[];
+  tokensData: TokenStatsDataWithString[];
+  poolsData: PoolStatsDataWithString[];
   volumePlot: TimeData[];
   liquidityPlot: TimeData[];
 }
@@ -42,12 +42,12 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const { net } = req.query;
 
-  let data: Data;
+  let data: FullSnap;
 
   if (net === "devnet") {
-    data = DEVNET_DATA as unknown as Data;
+    data = DEVNET_DATA as unknown as FullSnap;
   } else if (net === "mainnet") {
-    data = MAINNET_DATA as unknown as Data;
+    data = MAINNET_DATA as unknown as FullSnap;
   } else {
     return res.status(400).send("INVALID NETWORK");
   }

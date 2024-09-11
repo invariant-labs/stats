@@ -4,12 +4,13 @@ import { PublicKey } from "@solana/web3.js";
 import {
   getJupPricesData2,
   getPoolsFromAdresses,
-  PoolSnapshot,
-  PoolStatsData2,
+  PoolsApyStatsData,
+  PoolStatsData,
+  PoolStatsDataWithString,
   PoolWithAddress,
   printBN,
   TimeData,
-  TokenStatsData,
+  TokenStatsDataWithString,
 } from "./utils";
 import fs from "fs";
 import { DECIMAL } from "@invariant-labs/sdk/lib/utils";
@@ -37,10 +38,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
       break;
   }
 
-  const data: Record<string, PoolSnapshot[]> = JSON.parse(
+  const data: Record<string, PoolStatsData> = JSON.parse(
     fs.readFileSync(dataFileName, "utf-8")
   );
-  const poolsApy: Record<string, number> = JSON.parse(
+  const poolsApy: Record<string, PoolsApyStatsData> = JSON.parse(
     fs.readFileSync(poolsApyFileName, "utf-8")
   );
 
@@ -75,8 +76,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
     change: 0,
   };
 
-  const tokensDataObject: Record<string, TokenStatsData> = {};
-  let poolsData: PoolStatsData2[] = [];
+  const tokensDataObject: Record<string, TokenStatsDataWithString> = {};
+  let poolsData: PoolStatsDataWithString[] = [];
 
   const volumeForTimestamps: Record<string, number> = {};
   const liquidityForTimestamps: Record<string, number> = {};
@@ -84,11 +85,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const lastTimestamp = Math.max(
     ...Object.values(data)
-      .filter((snaps) => snaps.length > 0)
-      .map((snaps) => +snaps[snaps.length - 1].timestamp)
+      .filter(({ snapshots }) => snapshots.length > 0)
+      .map(({ snapshots }) => +snapshots[snapshots.length - 1].timestamp)
   );
 
-  Object.entries(data).forEach(([address, snapshots]) => {
+  Object.entries(data).forEach(([address, poolStatsData]) => {
+    const snapshots = poolStatsData.snapshots;
+
     if (!poolsDataObject[address]) {
       return;
     }
@@ -118,7 +121,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         tokenX: poolsDataObject[address].tokenX.toString(),
         tokenY: poolsDataObject[address].tokenY.toString(),
         fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
-        apy: poolsApy[address] ?? 0,
+        apy: poolsApy[address].apy ?? 0,
         poolAddress: new PublicKey(address).toString(),
       });
       return;
@@ -153,7 +156,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokenX: poolsDataObject[address].tokenX.toString(),
       tokenY: poolsDataObject[address].tokenY.toString(),
       fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
-      apy: poolsApy[address] ?? 0,
+      apy: poolsApy[address]?.apy ?? 0,
       poolAddress: new PublicKey(address).toString(),
     });
 
