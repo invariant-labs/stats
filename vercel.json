@@ -5,8 +5,12 @@
   },
   "rewrites": [
     {
+      "source": "/a0/(.*)",
+      "destination": "/api/a0/$1"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/api/$1"
+      "destination": "/api/svm/$1"
     }
   ]
 }
