@@ -22,10 +22,10 @@ jobs:
             ./data/alph/
       - name: Commit changes
         run: |
-          git config --global user.email WRONGstats@invariant.app
+          git config --global user.email stats@invariant.app
           git config --global user.name invariantStats
           git add ./data/
-          git commit -m "Snapshots of data done!"
+          git commit -m "ALPH manual snapshot of data"
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.6.0
         with:
