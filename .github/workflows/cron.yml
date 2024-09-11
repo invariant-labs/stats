@@ -85,9 +85,26 @@ jobs:
           name: a0-snapshot-${{ github.run_id }}
           path: |
             ./data/a0/
+  alph-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+      - name: alph snapshot
+        working-directory: ./alph
+        run: |
+          npm install
+          npm run snap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alph-snapshot-${{ github.run_id }}
+          path: |
+            ./data/alph/
 
   deploy:
-    needs: [a0-snap, svm-snap]
+    needs: [a0-snap, alph-snap, svm-snap]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
@@ -97,6 +114,12 @@ jobs:
         with:
           name: a0-snapshot-${{ github.run_id }}
           path: ./data/a0/
+        continue-on-error: true
+      - name: Download alph snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: alph-snapshot-${{ github.run_id }}
+          path: ./data/alph/
         continue-on-error: true
       - name: Download svm snapshot
         uses: actions/download-artifact@v4

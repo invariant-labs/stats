@@ -30,6 +30,11 @@ export const enum A0Network {
   Mainnet = "mainnet",
 }
 
+export const enum ALPHNetwork {
+  Testnet = "testnet",
+  Mainnet = "mainnet",
+}
+
 export const toStringWithDecimals = (num: bigint, decimals: number) => {
   const upper = num / BigInt(10 ** decimals);
   const lower = num - upper;
