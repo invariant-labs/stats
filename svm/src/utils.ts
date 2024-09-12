@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { MOCK_TOKENS, Network } from "@invariant-labs/sdk";
 import { Network as StakerNetwork } from "@invariant-labs/staker-sdk";
-import { Tick } from "@invariant-labs/sdk/lib/market";
+import { Market, PoolStructure, Tick } from "@invariant-labs/sdk/lib/market";
 import { DECIMAL, Range } from "@invariant-labs/sdk/lib/utils";
 import { BN } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
@@ -34,6 +34,12 @@ export interface PoolStatsData {
     address: string;
     decimals: number;
   };
+}
+
+export interface PoolsApyStatsData {
+  apy: number;
+  weeklyFacetor: number[];
+  weeklyRange: Range[];
 }
 
 export interface CoingeckoApiPriceData {
@@ -362,3 +368,98 @@ export interface PoolApyArchiveSnapshot {
     decimals: number;
   };
 }
+
+export interface PoolWithAddress extends PoolStructure {
+  address: PublicKey;
+}
+
+export interface TokenStatsDataWithString {
+  address: string;
+  price: number;
+  volume24: number;
+  tvl: number;
+}
+
+export interface TimeData {
+  timestamp: number;
+  value: number;
+}
+
+export interface PoolStatsDataWithString {
+  poolAddress: string;
+  tokenX: string;
+  tokenY: string;
+  fee: number;
+  volume24: number;
+  tvl: number;
+  apy: number;
+}
+
+export const getPoolsFromAdresses = async (
+  addresses: PublicKey[],
+  marketProgram: Market
+): Promise<PoolWithAddress[]> => {
+  const pools = (await marketProgram.program.account.pool.fetchMultiple(
+    addresses
+  )) as Array<PoolStructure | null>;
+
+  return pools
+    .map((pool, index) =>
+      pool !== null
+        ? {
+            ...pool,
+            address: addresses[index],
+          }
+        : null
+    )
+    .filter((pool) => pool !== null) as PoolWithAddress[];
+};
+
+export interface TokenPriceData {
+  price: number;
+}
+
+interface RawJupApiResponse {
+  data: Record<
+    string,
+    {
+      id: string;
+      mintSymbol: string;
+      vsToken: string;
+      vsTokenSymbol: string;
+      price: number;
+    }
+  >;
+  timeTaken: number;
+}
+
+export const getJupPricesData2 = async (
+  ids: string[]
+): Promise<Record<string, TokenPriceData>> => {
+  const maxTokensPerRequest = 100;
+
+  const chunkedIds: string[][] = [];
+  for (let i = 0; i < ids.length; i += maxTokensPerRequest) {
+    chunkedIds.push(ids.slice(i, i + maxTokensPerRequest));
+  }
+
+  const requests = chunkedIds.map(
+    async (idsChunk) =>
+      await axios.get<RawJupApiResponse>(
+        `https://price.jup.ag/v4/price?ids=${idsChunk.join(",")}`
+      )
+  );
+
+  const responses = await Promise.all(requests);
+  const concatRes = responses.flatMap((response) =>
+    Object.values(response.data.data).map(({ id, price }) => ({ id, price }))
+  );
+
+  return concatRes.reduce<Record<string, TokenPriceData>>(
+    (acc, { id, price }) => {
+      acc[id] = { price: price ?? 0 };
+      return acc;
+    },
+    {}
+  );
+};
