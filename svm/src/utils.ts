@@ -216,12 +216,30 @@ export const devnetTokensData = {
 };
 
 export const eclipseDevnetTokensData = {
-  "5W3bmyYDww6p5XRZnCR6m2c75st6XyCxW1TgGS3wTq7S": {
+  GEds1ARB3oywy2sSdiNGDyxz9MhpfqPkFYYStdZmHaiN: {
     decimals: 9,
     coingeckoId: "usd-coin",
     ticker: "USDC",
   },
-  "3JXmQAzBPU66dkVQufSE1ChBMRAdCHp6T7ZMBKAwhmWw": {
+  CfwLhXJ2r2NmUE1f7oAeySY6eEZ7f5tC8v95nopUs5ez: {
+    decimals: 9,
+    coingeckoId: "bitcoin",
+    ticker: "BTC",
+  },
+  So11111111111111111111111111111111111111112: {
+    decimals: 9,
+    coingeckoId: "ethereum",
+    ticker: "WETH",
+  },
+};
+
+export const eclipseTestnetTokensData = {
+  "5gFSyxjNsuQsZKn9g5L9Ky3cSUvJ6YXqWVuPzmSi8Trx": {
+    decimals: 9,
+    coingeckoId: "usd-coin",
+    ticker: "USDC",
+  },
+  "2F5TprcNBqj2hXVr9oTssabKdf8Zbsf9xStqWjPm8yLo": {
     decimals: 9,
     coingeckoId: "bitcoin",
     ticker: "BTC",
