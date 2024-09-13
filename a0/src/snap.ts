@@ -170,11 +170,11 @@ const getVolume = (
   poolKey: PoolKey
 ) => {
   const feeDenominator =
-    (protocolFee * BigInt(poolKey.feeTier.fee)) / PERCENTAGE_SCALE;
+    (protocolFee * BigInt(poolKey.feeTier.fee)) / PERCENTAGE_DENOMINATOR;
 
   return {
-    volumeX: (feeProtocolTokenX * PERCENTAGE_SCALE) / feeDenominator,
-    volumeY: (feeProtocolTokenY * PERCENTAGE_SCALE) / feeDenominator,
+    volumeX: (feeProtocolTokenX * PERCENTAGE_DENOMINATOR) / feeDenominator,
+    volumeY: (feeProtocolTokenY * PERCENTAGE_DENOMINATOR) / feeDenominator,
   };
 };
 
@@ -391,10 +391,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
       };
     }
 
-    snaps[poolKey].snapshots.push({
-      timestamp,
-      ...stats,
-    });
+    const snapIndex = snaps[poolKey].snapshots.findIndex(
+      (snap) => snap.timestamp
+    );
+    if (snapIndex === -1) {
+      snaps[poolKey].snapshots.push({
+        timestamp,
+        ...stats,
+      });
+    } else {
+      snaps[poolKey].snapshots[snapIndex] = {
+        timestamp,
+        ...stats,
+      };
+    }
   });
 
   fs.writeFileSync(fileName, JSON.stringify(snaps));
@@ -408,7 +418,7 @@ const main = async () => {
       console.log(err);
     }
   );
-  
+
   const testnet = createSnapshotForNetwork(Network.Testnet).then(
     () => {
       console.log("Testnet snapshot done!");
@@ -417,9 +427,8 @@ const main = async () => {
       console.log(err);
     }
   );
-  await Promise.allSettled([testnet, mainnet])
-  process.exit(0)
-}
+  await Promise.allSettled([testnet, mainnet]);
+  process.exit(0);
+};
 
-main()
-
+main();
