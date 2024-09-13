@@ -391,10 +391,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
       };
     }
 
-    snaps[poolKey].snapshots.push({
-      timestamp,
-      ...stats,
-    });
+    const snapIndex = snaps[poolKey].snapshots.findIndex(
+      (snap) => snap.timestamp
+    );
+    if (snapIndex === -1) {
+      snaps[poolKey].snapshots.push({
+        timestamp,
+        ...stats,
+      });
+    } else {
+      snaps[poolKey].snapshots[snapIndex] = {
+        timestamp,
+        ...stats,
+      };
+    }
   });
 
   fs.writeFileSync(fileName, JSON.stringify(snaps));
