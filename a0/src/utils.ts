@@ -57,11 +57,11 @@ export const getTokensData = (network: Network) => {
           coingeckoId: "bitcoin",
         },
         [ETH_ADDRESS.Mainnet]: {
-          decimals: 18,
+          decimals: 12,
           coingeckoId: "ethereum",
         },
         [WAZERO_ADDRESS.Mainnet]: {
-          decimals: 8,
+          decimals: 12,
           coingeckoId: "aleph-zero",
         },
       };
@@ -76,11 +76,11 @@ export const getTokensData = (network: Network) => {
           coingeckoId: "bitcoin",
         },
         [ETH_ADDRESS.Testnet]: {
-          decimals: 18,
+          decimals: 12,
           coingeckoId: "ethereum",
         },
         [WAZERO_ADDRESS.Testnet]: {
-          decimals: 8,
+          decimals: 12,
           coingeckoId: "aleph-zero",
         },
       };
@@ -199,4 +199,12 @@ export const getCoingeckoPricesData2 = async (): Promise<CoinGeckoAPIData> => {
   );
 
   return data;
+};
+
+export const sleep = async (milliseconds: number): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, milliseconds);
+  });
 };

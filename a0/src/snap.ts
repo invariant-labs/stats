@@ -15,7 +15,7 @@ import {
   PoolKey,
 } from "@invariant-labs/a0-sdk";
 
-import { PoolSnapshot, PoolStatsData } from "./utils";
+import { PoolSnapshot, PoolStatsData, sleep } from "./utils";
 import TESTNET_DATA from "../../data/a0/testnet.json";
 import MAINNET_DATA from "../../data/a0/mainnet.json";
 import * as fs from "fs";
@@ -369,6 +369,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         },
       },
     });
+    await sleep(500);
   }
   const now = Date.now();
   const timestamp =
@@ -392,7 +393,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
 
     const snapIndex = snaps[poolKey].snapshots.findIndex(
-      (snap) => snap.timestamp
+      (snap) => snap.timestamp === timestamp
     );
     if (snapIndex === -1) {
       snaps[poolKey].snapshots.push({
