@@ -200,3 +200,11 @@ export const getCoingeckoPricesData2 = async (): Promise<CoinGeckoAPIData> => {
 
   return data;
 };
+
+export const sleep = async (milliseconds: number): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, milliseconds);
+  });
+};
