@@ -392,7 +392,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
 
     const snapIndex = snaps[poolKey].snapshots.findIndex(
-      (snap) => snap.timestamp
+      (snap) => snap.timestamp === timestamp
     );
     if (snapIndex === -1) {
       snaps[poolKey].snapshots.push({
