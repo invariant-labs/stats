@@ -174,7 +174,12 @@ export type CoinGeckoAPIPriceData = {
   price_change_percentage_24h: number;
 };
 
-export const DEFAULT_TOKENS = ["bitcoin", "ethereum", "usd-coin", "aleph-zero"];
+export const DEFAULT_TOKENS = [
+  "bitcoin",
+  "ethereum",
+  "usd-coin",
+  "vara-network",
+];
 
 export const getCoingeckoPricesData2 = async (): Promise<CoinGeckoAPIData> => {
   const { data } = await axios.get<CoinGeckoAPIData>(
