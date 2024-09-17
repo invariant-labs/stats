@@ -5,7 +5,7 @@
   },
   "rewrites": [
     {
-      "source": "/((?!alph)(?!a0)(?!svm).*)",
+      "source": "/((?!vara)(?!alph)(?!a0)(?!svm).*)",
       "destination": "/api/svm/$1"
     },
     {
@@ -15,6 +15,10 @@
     {
       "source": "/alph/(.*)",
       "destination": "/api/alph/$1"
+    },
+    {
+      "source": "/vara/(.*)",
+      "destination": "/api/vara/$1"
     },
     {
       "source": "/svm/(.*)",
