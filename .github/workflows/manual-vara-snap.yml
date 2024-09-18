@@ -1,42 +1,31 @@
-name: "Manual a0 snap"
+name: "Manual vara snap"
 
 on: workflow_dispatch
 
 jobs:
-  a0-snap:
+  vara-snap:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: "20"
-      - name: install global mocha
-        run: |
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          npm install -g mocha
-          npm install -g ts-mocha
-          npm install -g typescript
-          ts-mocha -h
-      - name: install essential
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config build-essential libudev-dev
-      - name: a0 snapshot
-        working-directory: ./a0
+      - name: vara snapshot
+        working-directory: ./vara
         run: |
           npm install
           npm run snap
       - uses: actions/upload-artifact@v4
         with:
-          name: a0-snapshot-${{ github.run_id }}
+          name: vara-snapshot-${{ github.run_id }}
           path: |
-            ./data/a0/
+            ./data/vara/
       - name: Commit changes
         run: |
           git config --global user.email stats@invariant.app
           git config --global user.name invariantStats
           git add ./data/
-          git commit -m "Aleph Zero snapshot of data done!"
+          git commit -m "Vara Network snapshot of data done!"
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.6.0
         with:
