@@ -2,6 +2,7 @@
 import { MOCK_TOKENS, Network } from "@invariant-labs/sdk";
 import { Network as StakerNetwork } from "@invariant-labs/staker-sdk";
 import { Market, PoolStructure, Tick } from "@invariant-labs/sdk/lib/market";
+import { Market as EclipseMarket } from "@invariant-labs/sdk-eclipse/lib/market";
 import { DECIMAL, Range } from "@invariant-labs/sdk/lib/utils";
 import { BN } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
@@ -222,12 +223,30 @@ export const devnetTokensData = {
 };
 
 export const eclipseDevnetTokensData = {
-  "5W3bmyYDww6p5XRZnCR6m2c75st6XyCxW1TgGS3wTq7S": {
+  GEds1ARB3oywy2sSdiNGDyxz9MhpfqPkFYYStdZmHaiN: {
     decimals: 9,
     coingeckoId: "usd-coin",
     ticker: "USDC",
   },
-  "3JXmQAzBPU66dkVQufSE1ChBMRAdCHp6T7ZMBKAwhmWw": {
+  CfwLhXJ2r2NmUE1f7oAeySY6eEZ7f5tC8v95nopUs5ez: {
+    decimals: 9,
+    coingeckoId: "bitcoin",
+    ticker: "BTC",
+  },
+  So11111111111111111111111111111111111111112: {
+    decimals: 9,
+    coingeckoId: "ethereum",
+    ticker: "WETH",
+  },
+};
+
+export const eclipseTestnetTokensData = {
+  "5gFSyxjNsuQsZKn9g5L9Ky3cSUvJ6YXqWVuPzmSi8Trx": {
+    decimals: 9,
+    coingeckoId: "usd-coin",
+    ticker: "USDC",
+  },
+  "2F5TprcNBqj2hXVr9oTssabKdf8Zbsf9xStqWjPm8yLo": {
     decimals: 9,
     coingeckoId: "bitcoin",
     ticker: "BTC",
@@ -397,7 +416,7 @@ export interface PoolStatsDataWithString {
 
 export const getPoolsFromAdresses = async (
   addresses: PublicKey[],
-  marketProgram: Market
+  marketProgram: Market | EclipseMarket
 ): Promise<PoolWithAddress[]> => {
   const pools = (await marketProgram.program.account.pool.fetchMultiple(
     addresses
