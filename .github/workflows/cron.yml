@@ -119,17 +119,6 @@ jobs:
           name: vara-snapshot-${{ github.run_id }}
           path: |
             ./data/vara/
-      - name: Commit changes
-        run: |
-          git config --global user.email stats@invariant.app
-          git config --global user.name invariantStats
-          git add ./data/
-          git commit -m "Snapshots of data done!"
-      - name: GitHub Push
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
 
   deploy:
     needs: [a0-snap, alph-snap, svm-snap, vara-snap]
