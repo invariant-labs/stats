@@ -132,7 +132,7 @@ jobs:
           branch: main
 
   deploy:
-    needs: [a0-snap, alph-snap, svm-snap]
+    needs: [a0-snap, alph-snap, svm-snap, vara-snap]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
@@ -154,6 +154,11 @@ jobs:
         with:
           name: svm-snapshot-${{ github.run_id }}
           path: ./data/
+      - name: Download vara snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: vara-snapshot-${{ github.run_id }}
+          path: ./data/vara/
         continue-on-error: true
       - name: Commit changes
         run: |
