@@ -11,7 +11,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@invariant-labs/vara-sdk": "^0.1.17"
+    "@invariant-labs/vara-sdk": "^0.1.17",
+    "axios": "^1.7.7"
   },
   "type": "module"
 }
