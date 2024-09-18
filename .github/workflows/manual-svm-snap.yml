@@ -59,7 +59,7 @@ jobs:
           git config --global user.email stats@invariant.app
           git config --global user.name invariantStats
           git add ./data/
-          git commit -m "Snapshot of data done!"
+          git commit -m "SVM snapshot of data done!!"
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.6.0
         with:
