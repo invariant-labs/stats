@@ -98,12 +98,37 @@ export const getTokensData = (network: Network) => {
       return {};
   }
 };
+export const printBigint = (amount: bigint, decimals: bigint): string => {
+  const parsedDecimals = Number(decimals);
+  const amountString = amount.toString();
+  const isNegative = amountString.length > 0 && amountString[0] === "-";
 
-export const toStringWithDecimals = (num: bigint, decimals: number) => {
-  const upper = num / BigInt(10 ** decimals);
-  const lower = num - upper;
+  const balanceString = isNegative ? amountString.slice(1) : amountString;
 
-  return upper + "." + lower;
+  if (balanceString.length <= parsedDecimals) {
+    return (
+      (isNegative ? "-" : "") +
+      "0." +
+      "0".repeat(parsedDecimals - balanceString.length) +
+      balanceString
+    );
+  } else {
+    return (
+      (isNegative ? "-" : "") +
+      trimZeros(
+        balanceString.substring(0, balanceString.length - parsedDecimals) +
+          "." +
+          balanceString.substring(balanceString.length - parsedDecimals)
+      )
+    );
+  }
+};
+
+export const trimZeros = (numStr: string): string => {
+  return numStr
+    .replace(/(\.\d*?)0+$/, "$1")
+    .replace(/^0+(\d)|(\d)0+$/gm, "$1$2")
+    .replace(/\.$/, "");
 };
 
 export const getUsdValue24 = (
@@ -112,9 +137,9 @@ export const getUsdValue24 = (
   price: bigint,
   lastTotal: bigint
 ) => {
-  return +toStringWithDecimals(
+  return +printBigint(
     ((total - lastTotal) * price) / PRICE_DENOMINATOR,
-    decimals
+    BigInt(decimals)
   );
 };
 

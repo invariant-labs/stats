@@ -72,22 +72,15 @@ export const getTokensData = (network: Network) => {
   }
 };
 
-export const toStringWithDecimals = (num: bigint, decimals: number) => {
-  const upper = num / BigInt(10 ** decimals);
-  const lower = num - upper;
-
-  return upper + "." + lower;
-};
-
 export const getUsdValue24 = (
   total: bigint,
   decimals: number,
   price: bigint,
   lastTotal: bigint
 ) => {
-  return +toStringWithDecimals(
+  return +printBigint(
     ((total - lastTotal) * price) / PRICE_DENOMINATOR,
-    decimals
+    BigInt(decimals)
   );
 };
 
