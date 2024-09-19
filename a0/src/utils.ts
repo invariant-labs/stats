@@ -57,7 +57,7 @@ export const getTokensData = (network: Network) => {
           coingeckoId: "bitcoin",
         },
         [ETH_ADDRESS.Mainnet]: {
-          decimals: 12,
+          decimals: 18,
           coingeckoId: "ethereum",
         },
         [WAZERO_ADDRESS.Mainnet]: {
@@ -76,7 +76,7 @@ export const getTokensData = (network: Network) => {
           coingeckoId: "bitcoin",
         },
         [ETH_ADDRESS.Testnet]: {
-          decimals: 12,
+          decimals: 18,
           coingeckoId: "ethereum",
         },
         [WAZERO_ADDRESS.Testnet]: {
