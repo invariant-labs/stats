@@ -284,8 +284,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       liquidityX = liq.liquidityX;
       liquidityY = liq.liquidityY;
     } catch (e) {
-      liquidityY = BigInt(lastSnapshot?.liquidityX.tokenBNFromBeginning ?? 0n);
-      liquidityX = BigInt(lastSnapshot?.liquidityY.tokenBNFromBeginning ?? 0n);
+      liquidityX = BigInt(lastSnapshot?.liquidityX.tokenBNFromBeginning ?? 0n);
+      liquidityY = BigInt(lastSnapshot?.liquidityY.tokenBNFromBeginning ?? 0n);
     }
 
     try {
