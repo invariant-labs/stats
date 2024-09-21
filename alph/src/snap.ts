@@ -232,6 +232,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const protocolFee = await invariant.getProtocolFee();
 
+  const now = Date.now();
+  const timestamp =
+    Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
+    1000 * 60 * 60 * 12;
+
   for (let [poolKey, pool] of poolsWithKeys) {
     let lastSnapshot: PoolSnapshot | undefined;
 
@@ -259,10 +264,23 @@ export const createSnapshotForNetwork = async (network: Network) => {
     const stringifiedPoolKey = stringifyPoolKey(poolKey);
 
     if (snaps?.[stringifiedPoolKey]) {
-      lastSnapshot =
+      if (
         snaps[stringifiedPoolKey].snapshots[
           snaps[stringifiedPoolKey].snapshots.length - 1
-        ];
+        ].timestamp === timestamp
+      ) {
+        if (snaps?.[stringifiedPoolKey].snapshots.length >= 2) {
+          lastSnapshot =
+            snaps[stringifiedPoolKey].snapshots[
+              snaps[stringifiedPoolKey].snapshots.length - 2
+            ];
+        }
+      } else {
+        lastSnapshot =
+          snaps[stringifiedPoolKey].snapshots[
+            snaps[stringifiedPoolKey].snapshots.length - 1
+          ];
+      }
     }
     let volumeX, volumeY, liquidityX, liquidityY, feeX, feeY;
 
@@ -369,10 +387,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       },
     });
   }
-  const now = Date.now();
-  const timestamp =
-    Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
-    1000 * 60 * 60 * 12;
 
   poolsData.forEach(({ poolKey, stats }) => {
     const parsedPoolKey = JSON.parse(poolKey);
