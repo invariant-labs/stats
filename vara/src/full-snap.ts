@@ -153,7 +153,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   tokensPricesData.forEach((token) => {
     Object.entries(allTokens).forEach(([address, tokenData]) => {
-      if (tokenData.coingeckoId === token.id) {
+      if (tokenData.coingeckoId === token.id && tokensDataObject[address]) {
         tokensDataObject[address].price = token.current_price;
       }
     });
