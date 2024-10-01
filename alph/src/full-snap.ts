@@ -84,7 +84,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
         tokenX: parsedPoolKey.tokenX,
         tokenY: parsedPoolKey.tokenY,
         fee: +printBigint(parsedPoolKey.feeTier.fee, 10n),
-        // apy: poolsApy[address] ?? 0,
       });
       return;
     }
@@ -118,7 +117,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokenX: parsedPoolKey.tokenX,
       tokenY: parsedPoolKey.tokenY,
       fee: +printBigint(parsedPoolKey.feeTier.fee, 10n),
-      // apy: poolsApy[address] ?? 0,
     });
 
     snapshots.slice(-30).forEach((snapshot) => {
