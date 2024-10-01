@@ -37,6 +37,15 @@ export interface PoolStatsData {
   };
 }
 
+export interface PoolData {
+  tokenX: string;
+  tokenY: string;
+  fee: number;
+  volume24: number;
+  tvl: number;
+  // apy: number
+}
+
 export const getTokensData = (network: Network) => {
   switch (network) {
     // TODO: These values are not verified, they are just placeholders
@@ -53,14 +62,6 @@ export const getTokensData = (network: Network) => {
         [ETH_ID.Mainnet]: {
           decimals: 12,
           coingeckoId: "ethereum",
-        },
-        [USDT_ID.Mainnet]: {
-          decimals: 6,
-          coingeckoId: "tether",
-        },
-        [SOL_ID.Mainnet]: {
-          decimals: 9,
-          coingeckoId: "solana",
         },
         [ALPH_TOKEN_ID]: {
           decimals: 18,
@@ -81,14 +82,6 @@ export const getTokensData = (network: Network) => {
           decimals: 18,
           coingeckoId: "ethereum",
         },
-        [USDT_ID.Testnet]: {
-          decimals: 6,
-          coingeckoId: "tether",
-        },
-        [SOL_ID.Testnet]: {
-          decimals: 9,
-          coingeckoId: "solana",
-        },
         [ALPH_TOKEN_ID]: {
           decimals: 18,
           coingeckoId: "alephium",
@@ -97,38 +90,6 @@ export const getTokensData = (network: Network) => {
     default:
       return {};
   }
-};
-export const printBigint = (amount: bigint, decimals: bigint): string => {
-  const parsedDecimals = Number(decimals);
-  const amountString = amount.toString();
-  const isNegative = amountString.length > 0 && amountString[0] === "-";
-
-  const balanceString = isNegative ? amountString.slice(1) : amountString;
-
-  if (balanceString.length <= parsedDecimals) {
-    return (
-      (isNegative ? "-" : "") +
-      "0." +
-      "0".repeat(parsedDecimals - balanceString.length) +
-      balanceString
-    );
-  } else {
-    return (
-      (isNegative ? "-" : "") +
-      trimZeros(
-        balanceString.substring(0, balanceString.length - parsedDecimals) +
-          "." +
-          balanceString.substring(balanceString.length - parsedDecimals)
-      )
-    );
-  }
-};
-
-export const trimZeros = (numStr: string): string => {
-  return numStr
-    .replace(/(\.\d*?)0+$/, "$1")
-    .replace(/^0+(\d)|(\d)0+$/gm, "$1$2")
-    .replace(/\.$/, "");
 };
 
 export const getUsdValue24 = (
@@ -171,4 +132,75 @@ export const getCoingeckoPricesData = async (
       .map((res) => res.data)
       .reduce((acc, data) => [...acc, ...data], [])
   );
+};
+
+export interface TokenStatsData {
+  address: string;
+  price: number;
+  volume24: number;
+  tvl: number;
+}
+
+export interface TimeData {
+  timestamp: number;
+  value: number;
+}
+
+export const printBigint = (amount: bigint, decimals: bigint): string => {
+  const parsedDecimals = Number(decimals);
+  const amountString = amount.toString();
+  const isNegative = amountString.length > 0 && amountString[0] === "-";
+
+  const balanceString = isNegative ? amountString.slice(1) : amountString;
+
+  if (balanceString.length <= parsedDecimals) {
+    return (
+      (isNegative ? "-" : "") +
+      "0." +
+      "0".repeat(parsedDecimals - balanceString.length) +
+      balanceString
+    );
+  } else {
+    return (
+      (isNegative ? "-" : "") +
+      trimZeros(
+        balanceString.substring(0, balanceString.length - parsedDecimals) +
+          "." +
+          balanceString.substring(balanceString.length - parsedDecimals)
+      )
+    );
+  }
+};
+
+export const trimZeros = (numStr: string): string => {
+  return numStr
+    .replace(/(\.\d*?)0+$/, "$1")
+    .replace(/^0+(\d)|(\d)0+$/gm, "$1$2")
+    .replace(/\.$/, "");
+};
+
+export type CoinGeckoAPIData = CoinGeckoAPIPriceData[];
+
+export type CoinGeckoAPIPriceData = {
+  id: string;
+  current_price: number;
+  price_change_percentage_24h: number;
+};
+
+export const DEFAULT_TOKENS = ["bitcoin", "ethereum", "usd-coin", "aleph-zero"];
+
+export const getCoingeckoPricesData2 = async (): Promise<CoinGeckoAPIData> => {
+  const { data } = await axios.get<CoinGeckoAPIData>(
+    `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${DEFAULT_TOKENS}`
+  );
+
+  return data;
+};
+
+export const sleep = async (milliseconds: number): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, milliseconds);
+  });
 };
