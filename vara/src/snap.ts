@@ -56,6 +56,7 @@ const getPairLiquidityValues = async (
       } else {
         liquidityDelta = liquidityUpper;
         prev.liquidityChange = liquidityLower - liquidityUpper;
+        break;
       }
 
       const lowerSqrtPrice = calculateSqrtPrice(lowerTickIndex);
