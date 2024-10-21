@@ -10,8 +10,10 @@ import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import DEVNET_DATA from "../../../data/eclipse/devnet.json";
 import TESTNET_DATA from "../../../data/eclipse/testnet.json";
+import MAINNET_DATA from "../../../data/eclipse/mainnet.json";
 import {
   eclipseDevnetTokensData,
+  eclipseMainnetTokensData,
   eclipseTestnetTokensData,
   getTokensPrices,
   getUsdValue24,
@@ -36,12 +38,21 @@ export const createSnapshotForNetwork = async (network: Network) => {
       snaps = DEVNET_DATA;
       tokensData = eclipseDevnetTokensData;
       break;
-    default:
+    case Network.TEST:
       provider = Provider.local("https://testnet.dev2.eclipsenetwork.xyz");
       fileName = "../data/eclipse/testnet.json";
       snaps = TESTNET_DATA;
       tokensData = eclipseTestnetTokensData;
-  }
+      break;
+    case Network.MAIN:
+      provider = Provider.local("https://mainnetbeta-rpc.eclipse.xyz");
+      fileName = "../data/eclipse/mainnet.json";
+      snaps = MAINNET_DATA;
+      tokensData = eclipseMainnetTokensData;
+      break;
+    default:
+      throw new Error('Unknown network')
+    }
 
   const idsList: string[] = [];
 
@@ -245,6 +256,15 @@ createSnapshotForNetwork(Network.DEV).then(
 createSnapshotForNetwork(Network.TEST).then(
   () => {
     console.log("Eclipse: Testnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
+
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("Eclipse: Mainnet snapshot done!");
   },
   (err) => {
     console.log(err);

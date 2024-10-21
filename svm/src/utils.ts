@@ -258,6 +258,25 @@ export const eclipseTestnetTokensData = {
   },
 };
 
+export const eclipseMainnetTokensData = {
+  So11111111111111111111111111111111111111112: {
+    decimals: 9,
+    coingeckoId: "ethereum",
+    ticker: "WETH",
+  },
+  // 2022 tokens
+  "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE": {
+    decimals: 6,
+    coingeckoId: "usd-coin",
+    ticker: "USDC",
+  },
+  "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL": {
+    decimals: 9,
+    coingeckoId: "solana",
+    ticker: "SOL",
+  },
+};
+
 export interface QuotientSnapshot {
   timestamp: number;
   quotient: number;
