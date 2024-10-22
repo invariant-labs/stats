@@ -28,12 +28,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
       dataFileName = "../data/eclipse/devnet.json";
       poolsApyFileName = "../data/eclipse/pool_apy_devnet.json";
       break;
-    default:
+    case Network.TEST:
       provider = Provider.local("https://testnet.dev2.eclipsenetwork.xyz");
       fileName = "../data/eclipse/full_testnet.json";
       dataFileName = "../data/eclipse/testnet.json";
       poolsApyFileName = "../data/eclipse/pool_apy_testnet.json";
       break;
+    case Network.MAIN:
+      provider = Provider.local("https://mainnetbeta-rpc.eclipse.xyz");
+      fileName = "../data/eclipse/full_mainnet.json";
+      dataFileName = "../data/eclipse/mainnet.json";
+      poolsApyFileName = "../data/eclipse/pool_apy_mainnet.json";
+      break;
+    default:
+      throw new Error('Unknown network')
   }
 
   const data: Record<string, PoolStatsData> = JSON.parse(
@@ -259,6 +267,15 @@ createSnapshotForNetwork(Network.DEV).then(
 createSnapshotForNetwork(Network.TEST).then(
   () => {
     console.log("Eclipse: Full testnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
+
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("Eclipse: Full mainnet snapshot done!");
   },
   (err) => {
     console.log(err);
