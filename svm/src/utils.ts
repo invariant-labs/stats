@@ -275,6 +275,11 @@ export const eclipseMainnetTokensData = {
     coingeckoId: "solana",
     ticker: "SOL",
   },
+  "841P4tebEgNux2jaWSjCoi9LhrVr9eHGjLc758Va3RPH": {
+    decimals: 6,
+    coingeckoId: "dogwifhat",
+    ticker: "WIF",
+  },
 };
 
 export interface QuotientSnapshot {
