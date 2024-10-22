@@ -3,6 +3,7 @@ import DEVNET_DATA from "../../../data/full_devnet.json";
 import MAINNET_DATA from "../../../data/full_mainnet.json";
 import ECLIPSE_DEVNET_DATA from "../../../data/eclipse/full_devnet.json";
 import ECLIPSE_TESTNET_DATA from "../../../data/eclipse/full_testnet.json";
+import ECLIPSE_MAINNET_DATA from "../../../data/eclipse/full_mainnet.json";
 import {
   PoolStatsDataWithString,
   TimeData,
@@ -54,6 +55,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
     data = ECLIPSE_DEVNET_DATA as unknown as FullSnap;
   } else if (net === "eclipse-testnet") {
     data = ECLIPSE_TESTNET_DATA as unknown as FullSnap;
+  } else if (net === "eclipse-mainnet") {
+    data = ECLIPSE_MAINNET_DATA as unknown as FullSnap;
   } else {
     return res.status(400).send("INVALID NETWORK");
   }

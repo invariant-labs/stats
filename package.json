@@ -10,6 +10,7 @@
   "dependencies": {
     "@vercel/node": "^3.2.11",
     "axios": "^0.26.1",
+    "bn.js": "^5.2.1",
     "ts-node": "^10.5.0",
     "tsx": "^4.19.0"
   },
