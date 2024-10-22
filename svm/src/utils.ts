@@ -264,6 +264,16 @@ export const eclipseMainnetTokensData = {
     coingeckoId: "ethereum",
     ticker: "WETH",
   },
+  "HgD4Dc6qYCj3UanMDiuC4qANheeTsAvk6DY91B3F8gnL": {
+    decimals: 5,
+    coingeckoId: "moon",
+    ticker: "MOON"
+  },
+  "LaihKXA47apnS599tyEyasY2REfEzBNe4heunANhsMx": {
+    decimals: 5,
+    coingeckoId: "laika",
+    ticker: "LAIKA"
+  },
   // 2022 tokens
   "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE": {
     decimals: 6,
