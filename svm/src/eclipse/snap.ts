@@ -51,8 +51,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokensData = eclipseMainnetTokensData;
       break;
     default:
-      throw new Error('Unknown network')
-    }
+      throw new Error("Unknown network");
+  }
 
   const idsList: string[] = [];
 

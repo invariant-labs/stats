@@ -9,6 +9,7 @@ import { PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
 import MAINNET_TOKENS from "../../data/mainnet_tokens.json";
 import { TokenInfo } from "@solana/spl-token-registry";
+import { Network as EclipseNetwork } from "@invariant-labs/sdk-eclipse";
 
 export interface SnapshotValueData {
   tokenBNFromBeginning: string;
@@ -142,6 +143,7 @@ export interface TokenData {
   ticker?: string;
   coingeckoId?: string;
   decimals: number;
+  solAddress?: string;
 }
 
 export const getTokensData = async (): Promise<Record<string, TokenData>> => {
@@ -245,16 +247,19 @@ export const eclipseTestnetTokensData = {
     decimals: 9,
     coingeckoId: "usd-coin",
     ticker: "USDC",
+    solAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
   },
   "2F5TprcNBqj2hXVr9oTssabKdf8Zbsf9xStqWjPm8yLo": {
     decimals: 9,
     coingeckoId: "bitcoin",
     ticker: "BTC",
+    solAddress: "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh",
   },
   So11111111111111111111111111111111111111112: {
     decimals: 9,
     coingeckoId: "ethereum",
     ticker: "WETH",
+    solAddress: "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
   },
 };
 
@@ -263,32 +268,36 @@ export const eclipseMainnetTokensData = {
     decimals: 9,
     coingeckoId: "ethereum",
     ticker: "WETH",
+    solAddress: "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
   },
-  "HgD4Dc6qYCj3UanMDiuC4qANheeTsAvk6DY91B3F8gnL": {
+  HgD4Dc6qYCj3UanMDiuC4qANheeTsAvk6DY91B3F8gnL: {
     decimals: 5,
     coingeckoId: "moon",
-    ticker: "MOON"
+    ticker: "MOON",
   },
-  "LaihKXA47apnS599tyEyasY2REfEzBNe4heunANhsMx": {
+  LaihKXA47apnS599tyEyasY2REfEzBNe4heunANhsMx: {
     decimals: 5,
     coingeckoId: "laika",
-    ticker: "LAIKA"
+    ticker: "LAIKA",
   },
   // 2022 tokens
-  "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE": {
+  AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE: {
     decimals: 6,
     coingeckoId: "usd-coin",
     ticker: "USDC",
+    solAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
   },
-  "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL": {
+  BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL: {
     decimals: 9,
     coingeckoId: "solana",
     ticker: "SOL",
+    solAddress: "So11111111111111111111111111111111111111112",
   },
   "841P4tebEgNux2jaWSjCoi9LhrVr9eHGjLc758Va3RPH": {
     decimals: 6,
     coingeckoId: "dogwifhat",
     ticker: "WIF",
+    solAddress: "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
   },
 };
 
@@ -515,4 +524,35 @@ export const getJupPricesData2 = async (
     },
     {}
   );
+};
+
+export type CoinGeckoAPIData = CoinGeckoAPIPriceData[];
+
+export type CoinGeckoAPIPriceData = {
+  id: string;
+  current_price: number;
+  price_change_percentage_24h: number;
+};
+
+export const DEFAULT_TOKENS = ["bitcoin", "ethereum", "usd-coin", "aleph-zero"];
+
+export const getCoingeckoPricesData2 = async (): Promise<CoinGeckoAPIData> => {
+  const { data } = await axios.get<CoinGeckoAPIData>(
+    `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${DEFAULT_TOKENS}`
+  );
+
+  return data;
+};
+
+export const getEclipseTokensData = (
+  network: EclipseNetwork
+): Record<string, TokenData> => {
+  switch (network) {
+    case EclipseNetwork.MAIN:
+      return eclipseMainnetTokensData;
+    case EclipseNetwork.TEST:
+      return eclipseTestnetTokensData;
+    default:
+      return {};
+  }
 };
