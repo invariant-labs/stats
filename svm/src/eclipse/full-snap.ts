@@ -2,6 +2,8 @@ import { getMarketAddress, Market, Network } from "@invariant-labs/sdk-eclipse";
 import { Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
+  getCoingeckoPricesData2,
+  getEclipseTokensData,
   getJupPricesData2,
   getPoolsFromAdresses,
   PoolsApyStatsData,
@@ -41,7 +43,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       poolsApyFileName = "../data/eclipse/pool_apy_mainnet.json";
       break;
     default:
-      throw new Error('Unknown network')
+      throw new Error("Unknown network");
   }
 
   const data: Record<string, PoolStatsData> = JSON.parse(
@@ -190,12 +192,17 @@ export const createSnapshotForNetwork = async (network: Network) => {
     });
   });
 
+  const allTokens = getEclipseTokensData(network);
   const tokensPricesData = await getJupPricesData2(
-    Object.keys(tokensDataObject)
+    Object.values(allTokens).map((tokenData) => tokenData.solAddress ?? "")
   );
 
-  Object.entries(tokensPricesData).forEach(([address, token]) => {
-    tokensDataObject[address].price = token.price;
+  Object.entries(tokensPricesData).forEach(([solAddress, priceData]) => {
+    Object.entries(allTokens).forEach(([address, tokenData]) => {
+      if (solAddress === tokenData.solAddress && tokensDataObject[address]) {
+        tokensDataObject[address].price = priceData.price;
+      }
+    });
   });
 
   const volumePlot: TimeData[] = Object.entries(volumeForTimestamps)
