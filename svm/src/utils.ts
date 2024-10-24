@@ -280,6 +280,16 @@ export const eclipseMainnetTokensData = {
     coingeckoId: "laika",
     ticker: "LAIKA",
   },
+  "9iswScagJJkKAAsRtp7pJB62f3idZRxHr1Sr9hACThFh": {
+    decimals: 9,
+    coingeckoId: "elon-cat-finance",
+    ticker: "ECAT"
+  },
+  "trbts2EsWyMdnCjsHUFBKLtgudmBD7Rfbz8zCg1s4EK": {
+    decimals: 9,
+    coingeckoId: "turbo",
+    ticker: "Turbo"
+  },
   // 2022 tokens
   AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE: {
     decimals: 6,
