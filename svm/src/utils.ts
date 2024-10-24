@@ -270,26 +270,6 @@ export const eclipseMainnetTokensData = {
     ticker: "WETH",
     solAddress: "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
   },
-  HgD4Dc6qYCj3UanMDiuC4qANheeTsAvk6DY91B3F8gnL: {
-    decimals: 5,
-    coingeckoId: "moon",
-    ticker: "MOON",
-  },
-  LaihKXA47apnS599tyEyasY2REfEzBNe4heunANhsMx: {
-    decimals: 5,
-    coingeckoId: "laika",
-    ticker: "LAIKA",
-  },
-  "9iswScagJJkKAAsRtp7pJB62f3idZRxHr1Sr9hACThFh": {
-    decimals: 9,
-    coingeckoId: "elon-cat-finance",
-    ticker: "ECAT"
-  },
-  "trbts2EsWyMdnCjsHUFBKLtgudmBD7Rfbz8zCg1s4EK": {
-    decimals: 9,
-    coingeckoId: "turbo",
-    ticker: "Turbo"
-  },
   // 2022 tokens
   AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE: {
     decimals: 6,
