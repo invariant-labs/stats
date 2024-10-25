@@ -45,7 +45,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokensData = eclipseTestnetTokensData;
       break;
     case Network.MAIN:
-      provider = Provider.local("https://mainnetbeta-rpc.eclipse.xyz");
+      provider = Provider.local("https://eclipse.helius-rpc.com");
       fileName = "../data/eclipse/mainnet.json";
       snaps = MAINNET_DATA;
       tokensData = eclipseMainnetTokensData;

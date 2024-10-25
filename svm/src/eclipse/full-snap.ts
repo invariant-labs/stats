@@ -37,7 +37,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       poolsApyFileName = "../data/eclipse/pool_apy_testnet.json";
       break;
     case Network.MAIN:
-      provider = Provider.local("https://mainnetbeta-rpc.eclipse.xyz");
+      provider = Provider.local("https://eclipse.helius-rpc.com");
       fileName = "../data/eclipse/full_mainnet.json";
       dataFileName = "../data/eclipse/mainnet.json";
       poolsApyFileName = "../data/eclipse/pool_apy_mainnet.json";
