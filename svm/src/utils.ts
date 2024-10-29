@@ -546,3 +546,30 @@ export const getEclipseTokensData = (
       return {};
   }
 };
+
+export const getLastSnapshot = (
+  snapshots: Record<string, PoolStatsData>,
+  address: string,
+  currentTimestamp: number
+): PoolSnapshot | null => {
+  const snapshotsLength = snapshots[address].snapshots.length;
+
+  const lastSnapshot = snapshots[address].snapshots[snapshotsLength - 1];
+
+  if (!lastSnapshot) {
+    return null;
+  }
+
+  if (lastSnapshot.timestamp === currentTimestamp) {
+    const secondLastTimestamp =
+      snapshots[address].snapshots[snapshotsLength - 2];
+
+    if (!secondLastTimestamp) {
+      return null;
+    } else {
+      return secondLastTimestamp;
+    }
+  } else {
+    return lastSnapshot;
+  }
+};
