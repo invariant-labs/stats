@@ -92,7 +92,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tickSpacing: pool.tickSpacing,
     });
 
-    const [address, /*volumes,*/ liq /*, fees*/] = await Promise.all([
+    const [address, liq] = await Promise.all([
       pair.getAddress(market.program.programId),
       market.getPairLiquidityValues(pair),
     ]);
