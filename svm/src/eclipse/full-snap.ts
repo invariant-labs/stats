@@ -251,7 +251,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   if (network === Network.MAIN) {
     for (const supportedToken of Object.keys(supportedTokens)) {
-      const result = await market.getCurrentTokenStats(supportedToken);
+      const result = await market.getCurrentTokenStats(
+        supportedToken,
+        "So11111111111111111111111111111111111111112",
+        tokensPricesData["7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"].price
+      );
 
       if (!("error" in result) && tokensDataObject[supportedToken]) {
         tokensDataObject[supportedToken].price = +result.priceUsd;

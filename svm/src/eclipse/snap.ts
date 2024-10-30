@@ -84,7 +84,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   if (network === Network.MAIN) {
     for (const supportedToken of Object.keys(supportedTokens)) {
-      const result = await market.getCurrentTokenStats(supportedToken);
+      const result = await market.getCurrentTokenStats(
+        supportedToken,
+        "So11111111111111111111111111111111111111112",
+        coingeckoPrices["ethereum"]
+      );
 
       if (!("error" in result)) {
         supportedTokensWithPrices[supportedToken] = +result.priceUsd;
