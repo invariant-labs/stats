@@ -11,6 +11,7 @@ import {
   PoolStatsDataWithString,
   PoolWithAddress,
   printBN,
+  supportedTokens,
   TimeData,
   TokenStatsDataWithString,
 } from "../utils";
@@ -247,6 +248,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
   volume24.change = ((volume24.value - prevVolume24) / prevVolume24) * 100;
   tvl24.change = ((tvl24.value - prevTvl24) / prevTvl24) * 100;
   fees24.change = ((fees24.value - prevFees24) / prevFees24) * 100;
+
+  if (network === Network.MAIN) {
+    for (const supportedToken of Object.keys(supportedTokens)) {
+      const result = await market.getCurrentTokenStats(supportedToken);
+
+      if (!("error" in result) && tokensDataObject[supportedToken]) {
+        tokensDataObject[supportedToken].price = +result.priceUsd;
+      }
+    }
+  }
 
   fs.writeFileSync(
     fileName,

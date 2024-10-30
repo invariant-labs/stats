@@ -546,3 +546,12 @@ export const getEclipseTokensData = (
       return {};
   }
 };
+
+export const supportedTokens = {
+  LaihKXA47apnS599tyEyasY2REfEzBNe4heunANhsMx: {
+    decimals: 5,
+  },
+  trbts2EsWyMdnCjsHUFBKLtgudmBD7Rfbz8zCg1s4EK: {
+    decimals: 9,
+  },
+};
