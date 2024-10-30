@@ -3,7 +3,6 @@ import {
   Market,
   Pair,
   getMarketAddress,
-  DENOMINATOR,
 } from "@invariant-labs/sdk-eclipse";
 import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
 import { BN, Provider } from "@project-serum/anchor";
@@ -16,7 +15,6 @@ import {
   eclipseDevnetTokensData,
   eclipseMainnetTokensData,
   eclipseTestnetTokensData,
-  getLastSnapshot,
   getTokensPrices,
   getUsdValue24,
   PoolSnapshot,
@@ -81,24 +79,21 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   let poolsData: any[] = [];
 
-  const now = Date.now();
-  const timestamp =
-    Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
-    1000 * 60 * 60 * 12;
-
   for (let pool of allPools) {
     const pair = new Pair(pool.tokenX, pool.tokenY, {
       fee: pool.fee.v,
       tickSpacing: pool.tickSpacing,
     });
-
-    const [address, liq] = await Promise.all([
+    const [address, volumes, liq, fees] = await Promise.all([
       pair.getAddress(market.program.programId),
+      market.getVolume(pair),
       market.getPairLiquidityValues(pair),
+      market.getGlobalFee(pair),
     ]);
 
     poolsDict[address.toString()] = pool;
 
+    let lastSnapshot: PoolSnapshot | undefined;
     const tokenXData = tokensData?.[pool.tokenX.toString()] ?? {
       decimals: 0,
     };
@@ -112,56 +107,18 @@ export const createSnapshotForNetwork = async (network: Network) => {
       ? coingeckoPrices[tokenYData.coingeckoId] ?? 0
       : 0;
 
-    const lastSnapshot = getLastSnapshot(snaps, address.toString(), timestamp);
+    if (snaps?.[address.toString()]) {
+      lastSnapshot =
+        snaps[address.toString()].snapshots[
+          snaps[address.toString()].snapshots.length - 1
+        ];
+    }
 
     let volumeX, volumeY, liquidityX, liquidityY, feeX, feeY;
 
-    const lastFeeX =
-      lastSnapshot !== null
-        ? new BN(lastSnapshot.feeX.tokenBNFromBeginning)
-        : new BN(0);
-    const lastFeeY =
-      lastSnapshot !== null
-        ? new BN(lastSnapshot.feeY.tokenBNFromBeginning)
-        : new BN(0);
-
-    const lastVolumeX =
-      lastSnapshot !== null
-        ? new BN(lastSnapshot.volumeX.tokenBNFromBeginning)
-        : new BN(0);
-    const lastVolumeY =
-      lastSnapshot !== null
-        ? new BN(lastSnapshot.volumeY.tokenBNFromBeginning)
-        : new BN(0);
-
-    const { feeProtocolTokenX, feeProtocolTokenY, protocolFee } = pool;
-    let feeProtocolTokenXDiff = feeProtocolTokenX.lt(lastFeeX)
-      ? new BN(0)
-      : feeProtocolTokenX.sub(lastFeeX);
-    const feeXDiff = feeProtocolTokenXDiff.mul(DENOMINATOR).div(protocolFee.v);
-    const volumeXDiff = feeProtocolTokenXDiff
-      .mul(DENOMINATOR)
-      .div(protocolFee.v.mul(pool.fee.v).div(DENOMINATOR));
-
-    let feeProtocolTokenYDiff = feeProtocolTokenY.lt(lastFeeY)
-      ? new BN(0)
-      : feeProtocolTokenY.sub(lastFeeY);
-    const feeYDiff = feeProtocolTokenYDiff.mul(DENOMINATOR).div(protocolFee.v);
-    const volumeYDiff = feeProtocolTokenYDiff
-      .mul(DENOMINATOR)
-      .div(protocolFee.v.mul(pool.fee.v).div(DENOMINATOR));
-
     try {
-      feeX = lastFeeX.add(feeXDiff);
-      feeY = lastFeeY.add(feeYDiff);
-    } catch {
-      feeX = new BN(lastSnapshot?.feeX.tokenBNFromBeginning ?? "0");
-      feeY = new BN(lastSnapshot?.feeY.tokenBNFromBeginning ?? "0");
-    }
-
-    try {
-      volumeX = lastVolumeX.add(volumeXDiff);
-      volumeY = lastVolumeY.add(volumeYDiff);
+      volumeX = volumes.volumeX;
+      volumeY = volumes.volumeY;
     } catch {
       volumeX = new BN(lastSnapshot?.volumeX.tokenBNFromBeginning ?? "0");
       volumeY = new BN(lastSnapshot?.volumeY.tokenBNFromBeginning ?? "0");
@@ -175,6 +132,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
       liquidityY = new BN("0");
     }
 
+    try {
+      feeX = fees.feeX;
+      feeY = fees.feeY;
+    } catch {
+      feeX = new BN(lastSnapshot?.feeX.tokenBNFromBeginning ?? "0");
+      feeY = new BN(lastSnapshot?.feeY.tokenBNFromBeginning ?? "0");
+    }
+
+    const { feeProtocolTokenX, feeProtocolTokenY } = pool;
+
     poolsData.push({
       address: address.toString(),
       stats: {
@@ -184,7 +151,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
             volumeX,
             tokenXData.decimals,
             tokenXPrice,
-            lastVolumeX
+            typeof lastSnapshot !== "undefined"
+              ? new BN(lastSnapshot.volumeX.tokenBNFromBeginning)
+              : new BN(0)
           ),
         },
         volumeY: {
@@ -193,7 +162,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
             volumeY,
             tokenYData.decimals,
             tokenYPrice,
-            lastVolumeY
+            typeof lastSnapshot !== "undefined"
+              ? new BN(lastSnapshot.volumeY.tokenBNFromBeginning)
+              : new BN(0)
           ),
         },
         liquidityX: {
@@ -220,7 +191,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
             feeX,
             tokenXData.decimals,
             tokenXPrice,
-            lastFeeX
+            typeof lastSnapshot !== "undefined"
+              ? new BN(lastSnapshot.feeX.tokenBNFromBeginning)
+              : new BN(0)
           ),
         },
         feeY: {
@@ -229,7 +202,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
             feeY,
             tokenYData.decimals,
             tokenYPrice,
-            lastFeeY
+            typeof lastSnapshot !== "undefined"
+              ? new BN(lastSnapshot.feeY.tokenBNFromBeginning)
+              : new BN(0)
           ),
         },
         protocolFeeX: {
@@ -253,6 +228,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
       },
     });
   }
+  const now = Date.now();
+  const timestamp =
+    Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
+    1000 * 60 * 60 * 12;
 
   poolsData.forEach(({ address, stats }) => {
     const xAddress = poolsDict[address].tokenX.toString();
