@@ -96,7 +96,7 @@ export const getJupPricesData = async (
   const requests = chunkedIds.map(
     async (idsChunk) =>
       await axios.get<JupApiPriceData>(
-        `https://price.jup.ag/v4/price?ids=${idsChunk.join(",")}`
+        `https://api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
       )
   );
 
@@ -476,10 +476,7 @@ interface RawJupApiResponse {
     string,
     {
       id: string;
-      mintSymbol: string;
-      vsToken: string;
-      vsTokenSymbol: string;
-      price: number;
+      price: string;
     }
   >;
   timeTaken: number;
@@ -498,22 +495,24 @@ export const getJupPricesData2 = async (
   const requests = chunkedIds.map(
     async (idsChunk) =>
       await axios.get<RawJupApiResponse>(
-        `https://price.jup.ag/v4/price?ids=${idsChunk.join(",")}`
+        `https://api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
       )
   );
 
   const responses = await Promise.all(requests);
   const concatRes = responses.flatMap((response) =>
-    Object.values(response.data.data).map(({ id, price }) => ({ id, price }))
+    Object.values(response.data.data).map((tokenData) => ({
+      id: tokenData?.id ? tokenData.id : "",
+      price: tokenData?.price ? tokenData.price : "0",
+    }))
   );
 
-  return concatRes.reduce<Record<string, TokenPriceData>>(
-    (acc, { id, price }) => {
-      acc[id] = { price: price ?? 0 };
-      return acc;
-    },
-    {}
-  );
+  return concatRes.reduce<Record<string, TokenPriceData>>((acc, tokenData) => {
+    if (tokenData?.id) {
+      acc[tokenData.id] = { price: Number(tokenData.price ?? 0) };
+    }
+    return acc;
+  }, {});
 };
 
 export type CoinGeckoAPIData = CoinGeckoAPIPriceData[];
