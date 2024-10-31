@@ -19,6 +19,7 @@ import {
   getUsdValue24,
   PoolSnapshot,
   PoolStatsData,
+  supportedTokens,
   TokenData,
 } from "../utils";
 
@@ -79,6 +80,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   let poolsData: any[] = [];
 
+  const supportedTokensWithPrices = {};
+
+  if (network === Network.MAIN) {
+    for (const supportedToken of Object.keys(supportedTokens)) {
+      const result = await market.getCurrentTokenStats(
+        supportedToken,
+        "So11111111111111111111111111111111111111112",
+        coingeckoPrices["ethereum"]
+      );
+
+      if (!("error" in result)) {
+        supportedTokensWithPrices[supportedToken] = +result.priceUsd;
+      }
+
+      tokensData[supportedToken] = supportedTokens[supportedToken];
+    }
+  }
+
   for (let pool of allPools) {
     const pair = new Pair(pool.tokenX, pool.tokenY, {
       fee: pool.fee.v,
@@ -94,18 +113,26 @@ export const createSnapshotForNetwork = async (network: Network) => {
     poolsDict[address.toString()] = pool;
 
     let lastSnapshot: PoolSnapshot | undefined;
-    const tokenXData = tokensData?.[pool.tokenX.toString()] ?? {
+    let tokenXData = tokensData?.[pool.tokenX.toString()] ?? {
       decimals: 0,
     };
-    const tokenYData = tokensData?.[pool.tokenY.toString()] ?? {
+    let tokenYData = tokensData?.[pool.tokenY.toString()] ?? {
       decimals: 0,
     };
-    const tokenXPrice = tokenXData.coingeckoId
+    let tokenXPrice = tokenXData.coingeckoId
       ? coingeckoPrices[tokenXData.coingeckoId] ?? 0
       : 0;
-    const tokenYPrice = tokenYData.coingeckoId
+    let tokenYPrice = tokenYData.coingeckoId
       ? coingeckoPrices[tokenYData.coingeckoId] ?? 0
       : 0;
+
+    if (Object.keys(supportedTokens).includes(pool.tokenX.toString())) {
+      tokenXPrice = supportedTokensWithPrices[pool.tokenX.toString()];
+    }
+
+    if (Object.keys(supportedTokens).includes(pool.tokenY.toString())) {
+      tokenYPrice = supportedTokensWithPrices[pool.tokenY.toString()];
+    }
 
     if (snaps?.[address.toString()]) {
       lastSnapshot =
@@ -230,6 +257,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
         },
       };
     }
+
+    snaps[address].tokenX = {
+      address: xAddress,
+      decimals: tokensData?.[xAddress]?.decimals ?? 0,
+    };
+    snaps[address].tokenY = {
+      address: yAddress,
+      decimals: tokensData?.[yAddress]?.decimals ?? 0,
+    };
 
     snaps[address].snapshots.push({
       timestamp,
