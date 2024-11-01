@@ -5,6 +5,7 @@ on: workflow_dispatch
 jobs:
   install:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: actions/checkout@v1
       - name: Deploy to Production
