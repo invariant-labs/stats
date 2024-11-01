@@ -80,7 +80,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     const tokenYData = tokensData?.[pool.tokenY.toString()] ?? {
       decimals: 0,
     };
-    const tokenXPrice: string = jupPrices[pool.tokenX.toString()] || '0';
+    const tokenXPrice = jupPrices[pool.tokenX.toString()] || '0';
     const tokenYPrice = jupPrices[pool.tokenY.toString()] || '0';
 
     if (snaps?.[address.toString()]) {
