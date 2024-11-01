@@ -182,11 +182,12 @@ export const getTokensPrices = async (
 export const getUsdValue24 = (
   total: BN,
   decimals: number,
-  price: string,
+  price: number | string,
   lastTotal: BN
 ) => {
-  const bnPrice = printBNtoBN(price, DECIMAL);
-
+  const priceString = typeof price === 'string' ? price : price.toFixed(DECIMAL)
+  const bnPrice = printBNtoBN(priceString, DECIMAL)
+  
   return +printBN(
     total
       .sub(lastTotal)
