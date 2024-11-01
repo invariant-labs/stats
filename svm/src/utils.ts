@@ -78,14 +78,14 @@ export interface JupApiPriceData {
     string,
     {
       id: string;
-      price: number;
+      price: string;
     }
   >;
 }
 
 export const getJupPricesData = async (
   ids: string[]
-): Promise<Record<string, number>> => {
+): Promise<Record<string, string>> => {
   const maxTokensPerRequest = 100;
 
   const chunkedIds: string[][] = [];
@@ -102,11 +102,16 @@ export const getJupPricesData = async (
 
   const responses = await Promise.all(requests);
   const concatRes = responses.flatMap((response) =>
-    Object.values(response.data.data).map(({ id, price }) => ({ id, price }))
+    {
+      const filteredData = Object.fromEntries(
+        Object.entries(response.data.data).filter(([_, value]) => value !== null)
+    );
+      return Object.values(filteredData).map(({ id, price }) => ({ id, price }))
+    }
   );
 
-  return concatRes.reduce<Record<string, number>>((acc, { id, price }) => {
-    acc[id] = price ?? 0;
+  return concatRes.reduce<Record<string, string>>((acc, { id, price }) => {
+    acc[id] = price ?? "0";
     return acc;
   }, {});
 };
@@ -177,10 +182,10 @@ export const getTokensPrices = async (
 export const getUsdValue24 = (
   total: BN,
   decimals: number,
-  price: number,
+  price: string,
   lastTotal: BN
 ) => {
-  const bnPrice = printBNtoBN(price.toFixed(DECIMAL), DECIMAL);
+  const bnPrice = printBNtoBN(price, DECIMAL);
 
   return +printBN(
     total
