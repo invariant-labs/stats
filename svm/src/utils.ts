@@ -78,14 +78,14 @@ export interface JupApiPriceData {
     string,
     {
       id: string;
-      price: number;
+      price: string;
     }
   >;
 }
 
 export const getJupPricesData = async (
   ids: string[]
-): Promise<Record<string, number>> => {
+): Promise<Record<string, string>> => {
   const maxTokensPerRequest = 100;
 
   const chunkedIds: string[][] = [];
@@ -96,17 +96,20 @@ export const getJupPricesData = async (
   const requests = chunkedIds.map(
     async (idsChunk) =>
       await axios.get<JupApiPriceData>(
-        `https://price.jup.ag/v4/price?ids=${idsChunk.join(",")}`
+        `https://api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
       )
   );
 
   const responses = await Promise.all(requests);
-  const concatRes = responses.flatMap((response) =>
-    Object.values(response.data.data).map(({ id, price }) => ({ id, price }))
-  );
+  const concatRes = responses.flatMap((response) => {
+    const filteredData = Object.fromEntries(
+      Object.entries(response.data.data).filter(([_, value]) => value !== null)
+    );
+    return Object.values(filteredData).map(({ id, price }) => ({ id, price }));
+  });
 
-  return concatRes.reduce<Record<string, number>>((acc, { id, price }) => {
-    acc[id] = price ?? 0;
+  return concatRes.reduce<Record<string, string>>((acc, { id, price }) => {
+    acc[id] = price ?? "0";
     return acc;
   }, {});
 };
@@ -177,10 +180,12 @@ export const getTokensPrices = async (
 export const getUsdValue24 = (
   total: BN,
   decimals: number,
-  price: number,
+  price: number | string,
   lastTotal: BN
 ) => {
-  const bnPrice = printBNtoBN(price.toFixed(DECIMAL), DECIMAL);
+  const priceString =
+    typeof price === "string" ? price : price.toFixed(DECIMAL);
+  const bnPrice = printBNtoBN(priceString, DECIMAL);
 
   return +printBN(
     total
@@ -476,10 +481,7 @@ interface RawJupApiResponse {
     string,
     {
       id: string;
-      mintSymbol: string;
-      vsToken: string;
-      vsTokenSymbol: string;
-      price: number;
+      price: string;
     }
   >;
   timeTaken: number;
@@ -498,22 +500,24 @@ export const getJupPricesData2 = async (
   const requests = chunkedIds.map(
     async (idsChunk) =>
       await axios.get<RawJupApiResponse>(
-        `https://price.jup.ag/v4/price?ids=${idsChunk.join(",")}`
+        `https://api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
       )
   );
 
   const responses = await Promise.all(requests);
   const concatRes = responses.flatMap((response) =>
-    Object.values(response.data.data).map(({ id, price }) => ({ id, price }))
+    Object.values(response.data.data).map((tokenData) => ({
+      id: tokenData?.id ? tokenData.id : "",
+      price: tokenData?.price ? tokenData.price : "0",
+    }))
   );
 
-  return concatRes.reduce<Record<string, TokenPriceData>>(
-    (acc, { id, price }) => {
-      acc[id] = { price: price ?? 0 };
-      return acc;
-    },
-    {}
-  );
+  return concatRes.reduce<Record<string, TokenPriceData>>((acc, tokenData) => {
+    if (tokenData?.id) {
+      acc[tokenData.id] = { price: Number(tokenData.price ?? 0) };
+    }
+    return acc;
+  }, {});
 };
 
 export type CoinGeckoAPIData = CoinGeckoAPIPriceData[];
@@ -572,4 +576,13 @@ export const getLastSnapshot = (
   } else {
     return lastSnapshot;
   }
+};
+
+export const supportedTokens = {
+  LaihKXA47apnS599tyEyasY2REfEzBNe4heunANhsMx: {
+    decimals: 5,
+  },
+  trbts2EsWyMdnCjsHUFBKLtgudmBD7Rfbz8zCg1s4EK: {
+    decimals: 9,
+  },
 };
