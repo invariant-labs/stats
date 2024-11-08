@@ -101,14 +101,12 @@ export const getJupPricesData = async (
   );
 
   const responses = await Promise.all(requests);
-  const concatRes = responses.flatMap((response) =>
-    {
-      const filteredData = Object.fromEntries(
-        Object.entries(response.data.data).filter(([_, value]) => value !== null)
+  const concatRes = responses.flatMap((response) => {
+    const filteredData = Object.fromEntries(
+      Object.entries(response.data.data).filter(([_, value]) => value !== null)
     );
-      return Object.values(filteredData).map(({ id, price }) => ({ id, price }))
-    }
-  );
+    return Object.values(filteredData).map(({ id, price }) => ({ id, price }));
+  });
 
   return concatRes.reduce<Record<string, string>>((acc, { id, price }) => {
     acc[id] = price ?? "0";
@@ -185,9 +183,10 @@ export const getUsdValue24 = (
   price: number | string,
   lastTotal: BN
 ) => {
-  const priceString = typeof price === 'string' ? price : price.toFixed(DECIMAL)
-  const bnPrice = printBNtoBN(priceString, DECIMAL)
-  
+  const priceString =
+    typeof price === "string" ? price : price.toFixed(DECIMAL);
+  const bnPrice = printBNtoBN(priceString, DECIMAL);
+
   return +printBN(
     total
       .sub(lastTotal)
