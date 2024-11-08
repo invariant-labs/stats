@@ -8560,7 +8560,9 @@
     "symbol": "SBONK",
     "logoURI": "https://raw.githubusercontent.com/Sperlo64/SHIBONK/main/bonklogo2.png",
     "tags": ["community", "solana-fm"],
-    "extensions": { "coingeckoId": "shibonk-311f81df-a4ea-4f31-9e61-df0af8211bd7" }
+    "extensions": {
+      "coingeckoId": "shibonk-311f81df-a4ea-4f31-9e61-df0af8211bd7"
+    }
   },
   {
     "address": "EeXQwXffMVCsrDX9TZaFAmEnEV428y5XjyVH7qAbQFFR",
@@ -11597,5 +11599,15 @@
     "logoURI": "https://raw.githubusercontent.com/LP-Finance-Inc/token-image/main/zSOL.png",
     "tags": ["community", "solana-fm"],
     "extensions": { "coingeckoId": "zsol" }
+  },
+  {
+    "address": "DoGinuF39MGaxJDeJ3QDk4qd2vXwkYf5TDYpkdpYjip",
+    "chainId": 101,
+    "decimals": 5,
+    "name": "DoginHood",
+    "symbol": "DOGIN",
+    "logoURI": "https://ipfs.io/ipfs/QmPfaJVTTSLSzoVaauMKAn6Xa2bs76YeVMDERiay4UmX5b",
+    "tags": [],
+    "extensions": { "coingeckoId": "doginhood" }
   }
 ]
