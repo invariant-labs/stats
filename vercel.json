@@ -5,7 +5,7 @@
   },
   "rewrites": [
     {
-      "source": "/((?!vara)(?!alph)(?!a0)(?!svm).*)",
+      "source": "/((?!vara)(?!alph)(?!a0)(?!svm)(?!solana).*)",
       "destination": "/api/svm/$1"
     },
     {
@@ -23,6 +23,10 @@
     {
       "source": "/svm/(.*)",
       "destination": "/api/svm/$1"
+    },
+    {
+      "source": "/solana/(.*)",
+      "destination": "/api/solana/$1"
     }
   ]
 }
