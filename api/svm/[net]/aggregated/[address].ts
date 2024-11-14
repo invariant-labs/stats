@@ -11,8 +11,8 @@ import ECLIPSE_MAINNET_APY from "../../../../data/eclipse/pool_apy_archive_mainn
 import {
   PoolApyArchiveSnapshot,
   PoolStatsData,
-  printBN,
 } from "../../../../svm/src/utils";
+import { printBN } from "../../../utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -40,7 +40,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     data = MAINNET_DATA;
     apyArchive = MAINNET_APY;
   }
-  if (net === "eclipse-devnet") {
+  else if (net === "eclipse-devnet") {
     data = ECLIPSE_DEVNET_DATA;
     apyArchive = ECLIPSE_DEVNET_APY;
   } else if (net === "eclipse-mainnet") {
