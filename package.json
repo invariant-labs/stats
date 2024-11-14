@@ -12,7 +12,12 @@
     "axios": "^0.26.1",
     "bn.js": "^5.2.1",
     "ts-node": "^10.5.0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "@invariant-labs/sdk": "0.9.67",
+    "@project-serum/anchor": "0.21.0",
+    "@solana/spl-token": "0.1.6",
+    "@solana/spl-token-registry": "^0.2.2821",
+    "@solana/web3.js": "1.31.0"
   },
   "devDependencies": {
     "typescript": "^4.5.5"
