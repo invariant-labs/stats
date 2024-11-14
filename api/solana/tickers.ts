@@ -42,8 +42,20 @@ export default async function (req: VercelRequest, res: VercelResponse) {
   );
 
   const poolsList = [
-    "2SgUGxYDczrB6wUzXHPJH65pNhWkEzNMEx3km4xTYUTC", // SOL/ETH 0.01
-    "Aoa3FhXZ6jgFzMHBtG2Z7ekdsCt9XCcn7hk95HA5FoB",  // SOL/ETH 0.02
+    "5dX3tkVDmbHBWMCQMerAHTmd9wsRvmtKLoQt6qv9fHy7", // USDT/USDC 0.01%
+    "8v7UUgCxfheNJrwoDfFyZynE9CDTgwpTBEPCRMXadPHj", // DOGIN/SOL 0.2%
+    "8KuayFj5yvJz8kybcEvQn5tuJ6egywDohSPteGpu6tST", // HADES/USDC 1%
+    "GMj5Pga1nQpow3f5qHL2KNfRFihx31VF8ecP2qhpgPzq", // jupSOL/SOL 0.01%
+    "FPbp7mWLzqsjUDRY1ujfh5dNaSR7nzym7rV8P8GhbjcZ", // JLP/USDT 0.01%
+    "7drJL7kEdJfgNzeaEYKDqTkfmiG2ain3nEPtGHDZc6i2", // INV/USDC 0.3%
+    "92iP1tzdCjTMoLy6rZgEZcZTpvhcvWWa5yASC9wMSnv3", // TULIP/USDC 0.3%
+    "2SgUGxYDczrB6wUzXHPJH65pNhWkEzNMEx3km4xTYUTC", // SOL/USDC 0.01%
+    "Aoa3FhXZ6jgFzMHBtG2Z7ekdsCt9XCcn7hk95HA5FoB",  // SOL/USDC 0.02%
+    "6rvpVhL9fxm2WLMefNRaLwv6aNdivZadMi56teWfSkuU", // SOL/USDC 0.05%
+    "FwiuNR91xfiUvWiBu4gieK4SFmh9qjMhYS9ebyYJ8PGj", // USDH/USDC 0.01%
+    "BYTvYRsTtduFNMoPRiq7he2jEqh9BGvW8UZVjUrb8Z7R", // JitoSOL/mSOL 0.01%
+    "67thJrJa8QB2ZHV3TJVpHWK5uR9oQDDfrBou7jKR81cV", // DOGIN/USDC 0.01%
+    "9uzQcsaW74EQqSx9z15xBghF7B1a4xE8tMVifeZL71pH", // MUMU/USDC 1%
   ];
 
   const provider = Provider.local("https://mainnet.helius-rpc.com/?api-key=6f17ef70-139f-463a-bfaa-85a120eee8d3");
