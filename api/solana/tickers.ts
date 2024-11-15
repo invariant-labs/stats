@@ -1,14 +1,13 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   PoolStatsData,
-  printBN,
-} from "../../svm/src/utils";
-import fs from "fs";
-import { BN, Provider } from "@project-serum/anchor";
+} from "../utils"
+import { BN, Provider, Wallet } from "@project-serum/anchor";
 import { getMarketAddress, Market, Network } from "@invariant-labs/sdk";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { PoolStructure } from "@invariant-labs/sdk/lib/market";
-import { PoolSnapshot } from "../utils";
+import { PoolSnapshot, printBN } from "../utils";
+import data from "../../data/mainnet.json"
 
 interface Ticker {
   ticker_id: string;
@@ -34,12 +33,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
 
-  let tickers: Ticker[] = [];
-
-  let dataFileName = "./data/mainnet.json";
-  const data: Record<string, PoolStatsData> = JSON.parse(
-    fs.readFileSync(dataFileName, "utf-8")
-  );
+  const tickers: Ticker[] = [];
 
   const poolsList = [
     "5dX3tkVDmbHBWMCQMerAHTmd9wsRvmtKLoQt6qv9fHy7", // USDT/USDC 0.01%
@@ -58,7 +52,10 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "9uzQcsaW74EQqSx9z15xBghF7B1a4xE8tMVifeZL71pH", // MUMU/USDC 1%
   ];
 
-  const provider = Provider.local("https://mainnet.helius-rpc.com/?api-key=6f17ef70-139f-463a-bfaa-85a120eee8d3");
+  const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=6f17ef70-139f-463a-bfaa-85a120eee8d3")
+  const keypair = new Keypair;
+  const wallet = new Wallet(keypair);
+  const provider = new Provider(connection,wallet, {})
 
   const network = Network.MAIN;
   const market = await Market.build(
@@ -77,8 +74,8 @@ export default async function (req: VercelRequest, res: VercelResponse) {
       priceMap.set(poolsList[i], price);
     }
   });
-
-  for (const [pool_id, pool] of Object.entries(data)) {
+  const typedData = data as Record<string, PoolStatsData> 
+  for (const [pool_id, pool] of Object.entries(typedData)) {
     let lastSnap: PoolSnapshot | undefined;
     let prevSnap: PoolSnapshot | undefined;
     let lastTimestamp = 0;
