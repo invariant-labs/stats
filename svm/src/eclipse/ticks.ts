@@ -77,11 +77,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
   }
 }
 
-createSnapshotForNetwork(Network.DEV).then(
-  () => {
-    console.log('Eclipse: Devnet ticks snapshot done!')
-  },
-  (err) => {
-    console.log(err)
-  }
-)
+// createSnapshotForNetwork(Network.DEV).then(
+//   () => {
+//     console.log('Eclipse: Devnet ticks snapshot done!')
+//   },
+//   (err) => {
+//     console.log(err)
+//   }
+// )
