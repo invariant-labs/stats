@@ -277,23 +277,23 @@ export const createSnapshotForNetwork = async (network: Network) => {
   );
 };
 
-createSnapshotForNetwork(Network.DEV).then(
-  () => {
-    console.log("Eclipse: Full devnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+// createSnapshotForNetwork(Network.DEV).then(
+//   () => {
+//     console.log("Eclipse: Full devnet snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
 
-createSnapshotForNetwork(Network.TEST).then(
-  () => {
-    console.log("Eclipse: Full testnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+// createSnapshotForNetwork(Network.TEST).then(
+//   () => {
+//     console.log("Eclipse: Full testnet snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {
