@@ -323,14 +323,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
   })
 }
 
-createSnapshotForNetwork(Network.DEV).then(
-  () => {
-    console.log('Devnet pool apy snapshot done!')
-  },
-  (err) => {
-    console.log(err)
-  }
-)
+// createSnapshotForNetwork(Network.DEV).then(
+//   () => {
+//     console.log('Devnet pool apy snapshot done!')
+//   },
+//   (err) => {
+//     console.log(err)
+//   }
+// )
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {
