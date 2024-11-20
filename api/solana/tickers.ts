@@ -1,13 +1,38 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import {
-  PoolStatsData,
-} from "../utils"
+import { PoolStatsData } from "../utils";
 import { BN, Provider, Wallet } from "@project-serum/anchor";
 import { getMarketAddress, Market, Network } from "@invariant-labs/sdk";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { PoolStructure } from "@invariant-labs/sdk/lib/market";
 import { PoolSnapshot, printBN } from "../utils";
-import data from "../../data/mainnet.json"
+import data from "../../data/mainnet.json";
+import fullData from "../../data/full_mainnet.json";
+import {
+  PoolStatsDataWithString,
+  TimeData,
+  TokenStatsDataWithString,
+} from "../../svm/src/utils";
+
+type NewType = TimeData;
+
+interface FullSnap {
+  volume24: {
+    value: number;
+    change: number;
+  };
+  tvl24: {
+    value: number;
+    change: number;
+  };
+  fees24: {
+    value: number;
+    change: number;
+  };
+  tokensData: TokenStatsDataWithString[];
+  poolsData: PoolStatsDataWithString[];
+  volumePlot: TimeData[];
+  liquidityPlot: NewType[];
+}
 
 interface Ticker {
   ticker_id: string;
@@ -19,6 +44,27 @@ interface Ticker {
   target_volume: string;
   liquidity_in_usd: string;
 }
+function toFixed(x) {
+  if (Math.abs(x) < 1.0) {
+    var e = parseInt(x.toString().split("e-")[1]);
+    if (e) {
+      x *= Math.pow(10, e - 1);
+      x = "0." + new Array(e).join("0") + x.toString().substring(2);
+    }
+  } else {
+    var e = parseInt(x.toString().split("+")[1]);
+    if (e > 20) {
+      e -= 20;
+      x /= Math.pow(10, e);
+      x += new Array(e + 1).join("0");
+    }
+  }
+  return x;
+}
+
+const formatNumber = (num: number): string => {
+  return toFixed(num).toString();
+};
 export default async function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
   res.setHeader("Access-Control-Allow-Credentials", true);
@@ -44,7 +90,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "7drJL7kEdJfgNzeaEYKDqTkfmiG2ain3nEPtGHDZc6i2", // INV/USDC 0.3%
     "92iP1tzdCjTMoLy6rZgEZcZTpvhcvWWa5yASC9wMSnv3", // TULIP/USDC 0.3%
     "2SgUGxYDczrB6wUzXHPJH65pNhWkEzNMEx3km4xTYUTC", // SOL/USDC 0.01%
-    "Aoa3FhXZ6jgFzMHBtG2Z7ekdsCt9XCcn7hk95HA5FoB",  // SOL/USDC 0.02%
+    "Aoa3FhXZ6jgFzMHBtG2Z7ekdsCt9XCcn7hk95HA5FoB", // SOL/USDC 0.02%
     "6rvpVhL9fxm2WLMefNRaLwv6aNdivZadMi56teWfSkuU", // SOL/USDC 0.05%
     "FwiuNR91xfiUvWiBu4gieK4SFmh9qjMhYS9ebyYJ8PGj", // USDH/USDC 0.01%
     "BYTvYRsTtduFNMoPRiq7he2jEqh9BGvW8UZVjUrb8Z7R", // JitoSOL/mSOL 0.01%
@@ -52,10 +98,12 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "9uzQcsaW74EQqSx9z15xBghF7B1a4xE8tMVifeZL71pH", // MUMU/USDC 1%
   ];
 
-  const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=6f17ef70-139f-463a-bfaa-85a120eee8d3")
-  const keypair = new Keypair;
+  const connection = new Connection(
+    "https://mainnet.helius-rpc.com/?api-key=6f17ef70-139f-463a-bfaa-85a120eee8d3"
+  );
+  const keypair = new Keypair();
   const wallet = new Wallet(keypair);
-  const provider = new Provider(connection,wallet, {})
+  const provider = new Provider(connection, wallet, {});
 
   const network = Network.MAIN;
   const market = await Market.build(
@@ -74,58 +122,180 @@ export default async function (req: VercelRequest, res: VercelResponse) {
       priceMap.set(poolsList[i], price);
     }
   });
-  const typedData = data as Record<string, PoolStatsData> 
-  for (const [pool_id, pool] of Object.entries(typedData)) {
-    let lastSnap: PoolSnapshot | undefined;
-    let prevSnap: PoolSnapshot | undefined;
-    let lastTimestamp = 0;
+  const typedData = data as Record<string, PoolStatsData>;
 
-    for (const snap of pool.snapshots) {
-      if (snap.timestamp > lastTimestamp) {
-        prevSnap = lastSnap;
-        lastSnap = snap;
+  const decimals = new Map<string, number>();
+
+  poolsList.forEach((p) => {
+    const poolRecord = typedData[p];
+    if (poolRecord) {
+      if (poolRecord.tokenX.decimals != 0) {
+        decimals.set(poolRecord.tokenX.address, poolRecord.tokenX.decimals);
+      }
+      if (poolRecord.tokenY.decimals != 0) {
+        decimals.set(poolRecord.tokenY.address, poolRecord.tokenY.decimals);
       }
     }
+  });
+  // for some reason they're set to 0 in the last snap
+  decimals.set("jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v", 9);
+  decimals.set("5LafQUrVco6o7KMz42eqVEJ9LW31StPyGjeeu5sKoMtA", 6);
+  
+  const typedFullData = fullData as FullSnap;
 
-    if (!lastSnap) {
-      continue;
+  const usdPrices = new Map<string, number>();
+
+  typedFullData.tokensData.forEach((tokenRecord) => {
+    if (decimals.get(tokenRecord.address) !== undefined) {
+      if (tokenRecord.price) {
+          usdPrices.set(tokenRecord.address, tokenRecord.price);
+      } else {
+        console.error(tokenRecord);
+      }
     }
+  });
 
+  for (const {
+    poolAddress: pool_id,
+    tvl,
+    volume24,
+    tokenX,
+    tokenY,
+  } of typedFullData.poolsData) {
     if (poolsList.includes(pool_id)) {
-      const liquidity_in_usd = (
-        lastSnap.liquidityX.usdValue24 + lastSnap.liquidityY.usdValue24
-      ).toString();
+      try {
+        typedFullData.tokensData.find((t) => t.price);
+        const liquidity_in_usd = tvl;
 
-      const price = priceMap.get(pool_id);
+        const price = priceMap.get(pool_id);
 
-      if (!price) {
-        console.error("Failed to fetch pool", pool_id);
-        continue;
+        if (!price) {
+          console.error("Failed to fetch pool", pool_id);
+          continue;
+        }
+
+        const tokenXDecimals = decimals.get(tokenX);
+        const tokenYDecimals = decimals.get(tokenY);
+        if (!tokenXDecimals) {
+          console.error("Failed to read tokenX decimals", tokenX);
+          continue;
+        }
+        if (!tokenYDecimals) {
+          console.error("Failed to read tokenY decimals", tokenY);
+          continue;
+        }
+        let xVolume = 0;
+        let yVolume = 0;
+
+        const PRICE_PRECISION = 24;
+        const priceWithDecimals = price
+          .mul(new BN(10).pow(new BN(tokenXDecimals)))
+          .div(new BN(10).pow(new BN(tokenYDecimals)))
+          .div(new BN(10).pow(new BN(48 - PRICE_PRECISION))); // limit
+
+        let tokenXUsdPrice = usdPrices.get(tokenX);
+        let tokenYUsdPrice = usdPrices.get(tokenY);
+
+        if (!tokenXUsdPrice && !tokenYUsdPrice) {
+          console.error(
+            "Failed to read tokenX && tokenY usdPrice",
+            tokenX,
+            tokenY
+          );
+          continue;
+        }
+
+        if (!volume24) {
+          xVolume = 0;
+          yVolume = 0;
+        } else if (!tokenXUsdPrice || !tokenYUsdPrice) {
+          let last: undefined | PoolSnapshot;
+          let prev: undefined | PoolSnapshot;
+
+          for (const snap of typedData[pool_id].snapshots) {
+            if (!last || last.timestamp < snap.timestamp) {
+              last = snap;
+              prev = last;
+            }
+          }
+
+          if (!last || !prev) {
+            continue;
+          }
+          let adjustedVolumeUsd = volume24;
+          const volumeAdjustment = Math.floor(
+            Math.log10(10 ** 12 / adjustedVolumeUsd)
+          );
+
+          adjustedVolumeUsd = Math.ceil(
+            adjustedVolumeUsd * 10 ** volumeAdjustment
+          );
+
+          if (tokenYUsdPrice) {
+            let adjustedPrice = tokenYUsdPrice;
+            const priceAdjustment = Math.floor(
+              Math.log10(10 ** 12 / adjustedPrice)
+            );
+            adjustedPrice = Math.ceil(adjustedPrice * 10 ** priceAdjustment);
+
+            if (adjustedPrice === 0) {
+              continue;
+            }
+
+            xVolume = Number(
+              printBN(
+                new BN(adjustedVolumeUsd)
+                  .mul(new BN(10).pow(new BN(priceAdjustment)))
+                  .mul(new BN(10).pow(new BN(PRICE_PRECISION)))
+                  .div(new BN(adjustedPrice))
+                  .div(priceWithDecimals),
+                volumeAdjustment
+              )
+            );
+
+            yVolume = volume24 / tokenYUsdPrice;
+          } else if (tokenXUsdPrice) {
+            let adjustedPrice = tokenXUsdPrice;
+            const priceAdjustment = Math.floor(
+              Math.log10(10 ** 12 / adjustedPrice)
+            );
+            adjustedPrice = Math.ceil(adjustedPrice * 10 ** priceAdjustment);
+
+            if (adjustedPrice === 0) {
+              continue;
+            }
+
+            yVolume = Number(
+              printBN(
+                new BN(adjustedVolumeUsd)
+                  .mul(new BN(10).pow(new BN(priceAdjustment)))
+                  .mul(priceWithDecimals)
+                  .div(new BN(adjustedPrice)),
+                volumeAdjustment + PRICE_PRECISION
+              )
+            );
+
+            xVolume = volume24 / tokenXUsdPrice;
+          }
+        } else {
+          xVolume = volume24 / (tokenXUsdPrice ?? 1);
+          yVolume = volume24 / tokenYUsdPrice;
+        }
+        const ticker: Ticker = {
+          base_volume: formatNumber(xVolume),
+          target_volume: formatNumber(yVolume),
+          liquidity_in_usd: formatNumber(liquidity_in_usd),
+          ticker_id: [tokenX, tokenY].join("_"),
+          last_price: printBN(priceWithDecimals, PRICE_PRECISION),
+          pool_id,
+          base_currency: tokenX,
+          target_currency: tokenY,
+        };
+
+        tickers.push(ticker);
+      } catch (e) {
+        console.error(e);
       }
-      const PRICE_PRECISION = 24 
-      const priceWithDecimals = price
-        .mul(new BN(10).pow(new BN(pool.tokenX.decimals)))
-        .div(new BN(10).pow(new BN(pool.tokenY.decimals)))
-        .div(new BN(10).pow(new BN(48 - PRICE_PRECISION))); // limit
-      const xVolume = new BN(lastSnap.volumeX.tokenBNFromBeginning).sub(
-        new BN(prevSnap?.volumeX.tokenBNFromBeginning ?? "0")
-      );
-      const yVolume = new BN(lastSnap.volumeY.tokenBNFromBeginning).sub(
-        new BN(prevSnap?.volumeY.tokenBNFromBeginning ?? "0")
-      );
-
-      const ticker: Ticker = {
-        base_volume: printBN(xVolume, pool.tokenX.decimals),
-        target_volume: printBN(yVolume, pool.tokenY.decimals),
-        liquidity_in_usd,
-        ticker_id: [pool.tokenX.address, pool.tokenY.address].join("_"),
-        last_price: printBN(priceWithDecimals, PRICE_PRECISION),
-        pool_id,
-        base_currency: pool.tokenX.address,
-        target_currency: pool.tokenY.address,
-      };
-
-      tickers.push(ticker);
     }
   }
 
