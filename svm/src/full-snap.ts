@@ -4,12 +4,14 @@ import { PublicKey } from "@solana/web3.js";
 import {
   getJupPricesData2,
   getPoolsFromAdresses,
+  getTokensPrices,
   PoolsApyStatsData,
   PoolStatsData,
   PoolStatsDataWithString,
   PoolWithAddress,
   printBN,
   TimeData,
+  tokensPriceViaCoingecko,
   TokenStatsDataWithString,
 } from "./utils";
 import fs from "fs";
@@ -188,8 +190,17 @@ export const createSnapshotForNetwork = async (network: Network) => {
     Object.keys(tokensDataObject)
   );
 
+  const coingeckoIds =  tokensPriceViaCoingecko.map(token => token.coingeckoId)
+  const coingeckoAddresses = tokensPriceViaCoingecko.map(token => token.address)
+  const coingeckoPrices = await getTokensPrices(coingeckoIds, coingeckoAddresses)
+
+
   Object.entries(tokensPricesData).forEach(([address, token]) => {
     tokensDataObject[address].price = token.price;
+  });
+
+  Object.entries(coingeckoPrices).forEach(([address, price]) => {
+    tokensDataObject[address].price = price
   });
 
   const volumePlot: TimeData[] = Object.entries(volumeForTimestamps)
