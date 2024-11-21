@@ -17,11 +17,13 @@ import {
   eclipseTestnetTokensData,
   getTokensPrices,
   getUsdValue24,
+  PoolLock,
   PoolSnapshot,
   PoolStatsData,
   supportedTokens,
   TokenData,
 } from "../utils";
+import { IWallet, LiquidityLocker } from "@invariant-labs/locker-eclipse-sdk";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -67,16 +69,42 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const connection = provider.connection;
 
-  const market = await Market.build(
+  const market = Market.build(
     network,
-    provider.wallet,
+    provider.wallet as IWallet,
     connection,
     new PublicKey(getMarketAddress(network))
   );
 
+  const locker = LiquidityLocker.build(
+    network,
+    provider.wallet as IWallet,
+    connection
+  );
+
   const allPools = await market.getAllPools();
+  const allLocks = await locker.getAllLocks(market);
 
   const poolsDict: Record<string, PoolStructure> = {};
+  const poolLocks: Record<string, PoolLock> = {};
+
+  allLocks.forEach((lock) => {
+    const pool = lock.pool.toString();
+    if (!poolLocks[pool]) {
+      poolLocks[pool] = {
+        lockedX: lock.amountTokenX,
+        lockedY: lock.amountTokenY,
+      };
+    }
+
+    const newX = poolLocks[pool].lockedX.add(lock.amountTokenX);
+    const newY = poolLocks[pool].lockedY.add(lock.amountTokenY);
+
+    poolLocks[pool] = {
+      lockedX: newX,
+      lockedY: newY,
+    };
+  });
 
   let poolsData: any[] = [];
 
@@ -167,6 +195,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
       feeY = new BN(lastSnapshot?.feeY.tokenBNFromBeginning ?? "0");
     }
 
+    const lockedX = poolLocks[address.toString()]
+      ? poolLocks[address.toString()].lockedX
+      : new BN(0);
+
+    const lockedY = poolLocks[address.toString()]
+      ? poolLocks[address.toString()].lockedY
+      : new BN(0);
+
     poolsData.push({
       address: address.toString(),
       stats: {
@@ -232,6 +268,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
               : new BN(0)
           ),
         },
+        lockedX: {
+          tokenBNFromBeginning: lockedX.toString(),
+          usdValue24: getUsdValue24(
+            lockedX,
+            tokenXData.decimals,
+            tokenXPrice,
+            new BN(0)
+          ),
+        },
+        lockedY: {
+          tokenBNFromBeginning: lockedY.toString(),
+          usdValue24: getUsdValue24(
+            lockedY,
+            tokenYData.decimals,
+            tokenYPrice,
+            new BN(0)
+          ),
+        },
       },
     });
   }
@@ -289,20 +343,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
 //   }
 // );
 
-// createSnapshotForNetwork(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Testnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
-createSnapshotForNetwork(Network.MAIN).then(
+createSnapshotForNetwork(Network.TEST).then(
   () => {
-    console.log("Eclipse: Mainnet snapshot done!");
+    console.log("Eclipse: Testnet snapshot done!");
   },
   (err) => {
     console.log(err);
   }
 );
+
+// createSnapshotForNetwork(Network.MAIN).then(
+//   () => {
+//     console.log("Eclipse: Mainnet snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );

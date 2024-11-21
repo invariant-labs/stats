@@ -24,6 +24,8 @@ export interface PoolSnapshot {
   liquidityY: SnapshotValueData;
   feeX: SnapshotValueData;
   feeY: SnapshotValueData;
+  lockedX?: SnapshotValueData;
+  lockedY?: SnapshotValueData;
 }
 
 export interface PoolStatsData {
@@ -450,6 +452,11 @@ export interface PoolStatsDataWithString {
   volume24: number;
   tvl: number;
   apy: number;
+}
+
+export interface PoolLock {
+  lockedX: BN;
+  lockedY: BN;
 }
 
 export const getPoolsFromAdresses = async (
