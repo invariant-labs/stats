@@ -1,81 +1,97 @@
-import { Network, Market, Pair, getMarketAddress, sleep } from '@invariant-labs/sdk-eclipse'
-import { BN, Provider } from '@project-serum/anchor'
-import { PublicKey } from '@solana/web3.js'
-import fs from 'fs'
+import {
+  Network,
+  Market,
+  Pair,
+  getMarketAddress,
+  sleep,
+  IWallet,
+} from "@invariant-labs/sdk-eclipse";
+import { BN, Provider } from "@project-serum/anchor";
+import { PublicKey } from "@solana/web3.js";
+import fs from "fs";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config()
+require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
-  let provider: Provider
-  let folderName: string
+  let provider: Provider;
+  let folderName: string;
 
   switch (network) {
     case Network.DEV:
     default:
-      provider = Provider.local('https://staging-rpc.dev2.eclipsenetwork.xyz')
-      folderName = '../data/eclipse/ticks/devnet/'
+      provider = Provider.local("https://staging-rpc.dev2.eclipsenetwork.xyz");
+      folderName = "../data/eclipse/ticks/devnet/";
   }
 
-  const connection = provider.connection
+  const connection = provider.connection;
 
-  const market = await Market.build(
+  const market = Market.build(
     network,
-    provider.wallet,
+    provider.wallet as IWallet,
     connection,
     new PublicKey(getMarketAddress(network))
-  )
+  );
 
-  const now = Date.now()
+  const now = Date.now();
   const timestamp =
-    Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) + 1000 * 60 * 60 * 12
+    Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
+    1000 * 60 * 60 * 12;
 
-  const allPools = await market.getAllPools()
+  const allPools = await market.getAllPools();
 
   for (let pool of allPools) {
     const pair = new Pair(pool.tokenX, pool.tokenY, {
       fee: pool.fee.v,
       tickSpacing: pool.tickSpacing,
-    })
-    const address = await pair.getAddress(market.program.programId)
-    const ticks = await market.getAllTicks(pair)
+    });
+    const address = await pair.getAddress(market.program.programId);
+    const ticks = await market.getAllTicks(pair);
 
-    let volumeX, volumeY
+    let volumeX, volumeY;
 
     try {
-      const volumes = await market.getVolume(pair)
-      volumeX = volumes.volumeX
-      volumeY = volumes.volumeY
+      const volumes = await market.getVolume(pair);
+      volumeX = volumes.volumeX;
+      volumeY = volumes.volumeY;
     } catch {
-      volumeX = new BN('0')
-      volumeY = new BN('0')
+      volumeX = new BN("0");
+      volumeY = new BN("0");
     }
 
-    fs.readFile(folderName + address.toString() + '.json', 'utf-8', (err, data) => {
-      let snaps: any[] = []
-      if (!err) {
-        snaps = JSON.parse(data)
-      }
-
-      snaps.push({
-        timestamp,
-        ticks,
-        volumeX: volumeX.toString(),
-        volumeY: volumeY.toString(),
-      })
-
-      snaps = snaps.slice(Math.max(snaps.length - 8, 0), snaps.length)
-
-      fs.writeFile(folderName + address + '.json', JSON.stringify(snaps), (err) => {
-        if (err) {
-          console.log(err)
+    fs.readFile(
+      folderName + address.toString() + ".json",
+      "utf-8",
+      (err, data) => {
+        let snaps: any[] = [];
+        if (!err) {
+          snaps = JSON.parse(data);
         }
-      })
-    })
 
-    await sleep(100)
+        snaps.push({
+          timestamp,
+          ticks,
+          volumeX: volumeX.toString(),
+          volumeY: volumeY.toString(),
+        });
+
+        snaps = snaps.slice(Math.max(snaps.length - 8, 0), snaps.length);
+
+        fs.writeFile(
+          folderName + address + ".json",
+          JSON.stringify(snaps),
+          (err) => {
+            if (err) {
+              console.log(err);
+            }
+          }
+        );
+      }
+    );
+
+    await sleep(100);
   }
-}
+};
 
 // createSnapshotForNetwork(Network.DEV).then(
 //   () => {

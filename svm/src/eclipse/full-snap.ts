@@ -17,6 +17,7 @@ import {
 } from "../utils";
 import fs from "fs";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
+import { IWallet } from "@invariant-labs/sdk-eclipse";
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: Provider;
@@ -56,9 +57,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const connection = provider.connection;
 
-  const market = await Market.build(
+  const market = Market.build(
     network,
-    provider.wallet,
+    provider.wallet as IWallet,
     connection,
     new PublicKey(getMarketAddress(network))
   );
