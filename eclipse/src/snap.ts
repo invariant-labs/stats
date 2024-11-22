@@ -19,6 +19,7 @@ import {
   eclipseTestnetTokensData,
   getTokensPrices,
   getUsdValue24,
+  PoolLock,
   PoolSnapshot,
   PoolStatsData,
   supportedTokens,
@@ -90,9 +91,28 @@ export const createSnapshotForNetwork = async (network: Network) => {
   console.log("Locker program id:", locker.program.programId.toString());
 
   const allPools = await market.getAllPools();
-  console.log("Total pools:", allPools.length);
+  const allLocks = await locker.getAllLocks(market);
 
   const poolsDict: Record<string, PoolStructure> = {};
+  const poolLocks: Record<string, PoolLock> = {};
+
+  allLocks.forEach((lock) => {
+    const pool = lock.pool.toString();
+    if (!poolLocks[pool]) {
+      poolLocks[pool] = {
+        lockedX: lock.amountTokenX,
+        lockedY: lock.amountTokenY,
+      };
+    }
+
+    const newX = poolLocks[pool].lockedX.add(lock.amountTokenX);
+    const newY = poolLocks[pool].lockedY.add(lock.amountTokenY);
+
+    poolLocks[pool] = {
+      lockedX: newX,
+      lockedY: newY,
+    };
+  });
 
   let poolsData: any[] = [];
 
@@ -183,6 +203,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
       feeY = new BN(lastSnapshot?.feeY.tokenBNFromBeginning ?? "0");
     }
 
+    const lockedX = poolLocks[address.toString()]
+      ? poolLocks[address.toString()].lockedX
+      : new BN(0);
+
+    const lockedY = poolLocks[address.toString()]
+      ? poolLocks[address.toString()].lockedY
+      : new BN(0);
+
     poolsData.push({
       address: address.toString(),
       stats: {
@@ -246,6 +274,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
             typeof lastSnapshot !== "undefined"
               ? new BN(lastSnapshot.feeY.tokenBNFromBeginning)
               : new BN(0)
+          ),
+        },
+        lockedX: {
+          tokenBNFromBeginning: lockedX.toString(),
+          usdValue24: getUsdValue24(
+            lockedX,
+            tokenXData.decimals,
+            tokenXPrice,
+            new BN(0)
+          ),
+        },
+        lockedY: {
+          tokenBNFromBeginning: lockedY.toString(),
+          usdValue24: getUsdValue24(
+            lockedY,
+            tokenYData.decimals,
+            tokenYPrice,
+            new BN(0)
           ),
         },
       },

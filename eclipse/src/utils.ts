@@ -24,6 +24,8 @@ export interface PoolSnapshot {
   liquidityY: SnapshotValueData;
   feeX: SnapshotValueData;
   feeY: SnapshotValueData;
+  lockedX?: SnapshotValueData;
+  lockedY?: SnapshotValueData;
 }
 
 export interface PoolStatsData {
@@ -47,6 +49,11 @@ export interface PoolsApyStatsData {
 export interface CoingeckoApiPriceData {
   id: string;
   current_price: number;
+}
+
+export interface PoolLock {
+  lockedX: BN;
+  lockedY: BN;
 }
 
 export const getCoingeckoPricesData = async (
