@@ -1,4 +1,9 @@
-import { getMarketAddress, Market, Network } from "@invariant-labs/sdk-eclipse";
+import {
+  getMarketAddress,
+  IWallet,
+  Market,
+  Network,
+} from "@invariant-labs/sdk-eclipse";
 import { Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
@@ -14,7 +19,7 @@ import {
   supportedTokens,
   TimeData,
   TokenStatsDataWithString,
-} from "../utils";
+} from "./utils";
 import fs from "fs";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
 
@@ -58,7 +63,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const market = await Market.build(
     network,
-    provider.wallet,
+    provider.wallet as IWallet,
     connection,
     new PublicKey(getMarketAddress(network))
   );

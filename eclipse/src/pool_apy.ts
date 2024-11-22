@@ -4,6 +4,7 @@ import {
   getMarketAddress,
   Pair,
   sleep,
+  IWallet,
 } from "@invariant-labs/sdk-eclipse";
 import { poolAPY, WeeklyData } from "@invariant-labs/sdk-eclipse/lib/utils";
 import { BN, Provider } from "@project-serum/anchor";
@@ -48,7 +49,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const market = await Market.build(
     network,
-    provider.wallet,
+    provider.wallet as IWallet,
     connection,
     new PublicKey(getMarketAddress(network))
   );
@@ -149,7 +150,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 : undefined;
 
             const poolApy = poolAPY({
-              feeTier: { fee: pool.fee.v },
+              feeTier: { fee: pool.fee.v, tickSpacing: pool.tickSpacing },
               volumeX: +new BN(currentSnap.volumeX)
                 .sub(new BN(prevSnap.volumeX))
                 .toString(),

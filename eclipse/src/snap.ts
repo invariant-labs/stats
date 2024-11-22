@@ -75,20 +75,18 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const connection = provider.connection;
 
-  const market = await Market.build(
+  const market = Market.build(
     network,
     provider.wallet as IWallet,
     connection,
     new PublicKey(getMarketAddress(network))
   );
 
-  const locker = await LiquidityLocker.build(
+  const locker = LiquidityLocker.build(
     network,
     provider.wallet as IWallet,
     connection
   );
-
-  console.log("Locker program id:", locker.program.programId.toString());
 
   const allPools = await market.getAllPools();
   const allLocks = await locker.getAllLocks(market);
@@ -103,15 +101,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
         lockedX: lock.amountTokenX,
         lockedY: lock.amountTokenY,
       };
+    } else {
+      const newX = poolLocks[pool].lockedX.add(lock.amountTokenX);
+      const newY = poolLocks[pool].lockedY.add(lock.amountTokenY);
+
+      poolLocks[pool] = {
+        lockedX: newX,
+        lockedY: newY,
+      };
     }
-
-    const newX = poolLocks[pool].lockedX.add(lock.amountTokenX);
-    const newY = poolLocks[pool].lockedY.add(lock.amountTokenY);
-
-    poolLocks[pool] = {
-      lockedX: newX,
-      lockedY: newY,
-    };
   });
 
   let poolsData: any[] = [];
@@ -335,11 +333,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
     });
   });
 
-  fs.writeFile(fileName, JSON.stringify(snaps), (err) => {
-    if (err) {
-      throw err;
-    }
-  });
+  // fs.writeFile(fileName, JSON.stringify(snaps), (err) => {
+  //   if (err) {
+  //     throw err;
+  //   }
+  // });
 };
 
 // createSnapshotForNetwork(Network.DEV).then(
