@@ -9,7 +9,7 @@ env:
   solana_version: 1.18.18
 
 jobs:
-  svm-snap:
+  sol-snap:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -43,7 +43,7 @@ jobs:
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           solana --version
           solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
-      - name: svm snapshot
+      - name: sol snapshot
         working-directory: ./svm
         run: |
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
@@ -52,7 +52,54 @@ jobs:
           npm run snap
       - uses: actions/upload-artifact@v4
         with:
-          name: svm-snapshot-${{ github.run_id }}
+          name: sol-snapshot-${{ github.run_id }}
+          path: |
+            ./data/*.json
+            ./data/ticks/
+  eclipse-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+      - name: install global mocha
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          npm install -g mocha
+          npm install -g ts-mocha
+          npm install -g typescript
+          npm install -g @project-serum/anchor
+          ts-mocha -h
+      - name: install essential
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config build-essential libudev-dev
+      - name: install solana
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.solana_version }}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          solana --version
+      - name: setup solana
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          solana --version
+          solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
+      - name: eclipse snapshot
+        working-directory: ./eclipse
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
+          npm install
+          npm run snap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eclipse-snapshot-${{ github.run_id }}
           path: |
             ./data/*.json
             ./data/eclipse/
@@ -121,7 +168,7 @@ jobs:
             ./data/vara/
 
   deploy:
-    needs: [a0-snap, alph-snap, svm-snap, vara-snap]
+    needs: [a0-snap, alph-snap, sol-snap, eclipse-snap, vara-snap]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     permissions: write-all

@@ -333,11 +333,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
     });
   });
 
-  // fs.writeFile(fileName, JSON.stringify(snaps), (err) => {
-  //   if (err) {
-  //     throw err;
-  //   }
-  // });
+  fs.writeFile(fileName, JSON.stringify(snaps), (err) => {
+    if (err) {
+      throw err;
+    }
+  });
 };
 
 // createSnapshotForNetwork(Network.DEV).then(
