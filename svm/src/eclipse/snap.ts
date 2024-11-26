@@ -167,6 +167,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       feeY = new BN(lastSnapshot?.feeY.tokenBNFromBeginning ?? "0");
     }
 
+    const { feeProtocolTokenX, feeProtocolTokenY } = pool;
+
     poolsData.push({
       address: address.toString(),
       stats: {
@@ -230,6 +232,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
             typeof lastSnapshot !== "undefined"
               ? new BN(lastSnapshot.feeY.tokenBNFromBeginning)
               : new BN(0)
+          ),
+        },
+        protocolFeeX: {
+          tokenBNFromBeginning: feeProtocolTokenX.toString(),
+          usdValue24: getUsdValue24(
+            feeProtocolTokenX,
+            tokenXData.decimals,
+            tokenXPrice,
+            new BN(0)
+          ),
+        },
+        protocolFeeY: {
+          tokenBNFromBeginning: feeProtocolTokenY.toString(),
+          usdValue24: getUsdValue24(
+            feeProtocolTokenY,
+            tokenYData.decimals,
+            tokenYPrice,
+            new BN(0)
           ),
         },
       },
