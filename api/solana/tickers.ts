@@ -109,11 +109,6 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     ["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", 50], // mSol
     ["27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4", 60], // JLP
     ["jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v", 70], // jupSOL
-    ["5LafQUrVco6o7KMz42eqVEJ9LW31StPyGjeeu5sKoMtA", 80], // MUMU
-    ["BWXrrYFhT7bMHmNBFoQFWdsSgA3yXoAnMhDK6Fn1eSEn", 90], // HADES
-    ["TuLipcqtGVXP9XR62wM8WWCm6a9vhLs7T1uoWBk6FDs", 100], // TULIP
-    ["iVNcrNE9BRZBC9Aqf753iZiZfbszeAVUoikgT9yvr2a", 110], // INV
-    ["DoGinuF39MGaxJDeJ3QDk4qd2vXwkYf5TDYpkdpYjip", 120], // DOGIN
   ]);
   const connection = new Connection(
     "https://mainnet.helius-rpc.com/?api-key=6f17ef70-139f-463a-bfaa-85a120eee8d3"
