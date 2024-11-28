@@ -25,7 +25,7 @@ import {
   supportedTokens,
   TokenData,
 } from "./utils";
-import { LiquidityLocker } from "@invariant-labs/locker-eclipse-sdk";
+import { Locker } from "@invariant-labs/locker-eclipse-sdk";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -82,14 +82,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     new PublicKey(getMarketAddress(network))
   );
 
-  const locker = LiquidityLocker.build(
-    network,
-    provider.wallet as IWallet,
-    connection
-  );
+  const locker = Locker.build(network, provider.wallet as IWallet, connection);
 
   const allPools = await market.getAllPools();
-  const allLocks = await locker.getAllLocks(market);
+  const allLocks = await locker.getAllLockedPositions(market);
 
   const poolsDict: Record<string, PoolStructure> = {};
   const poolLocks: Record<string, PoolLock> = {};
@@ -134,7 +130,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   for (let pool of allPools) {
     const pair = new Pair(pool.tokenX, pool.tokenY, {
-      fee: pool.fee.v,
+      fee: pool.fee,
       tickSpacing: pool.tickSpacing,
     });
     const [address, volumes, liq, fees] = await Promise.all([

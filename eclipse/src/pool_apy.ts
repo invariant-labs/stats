@@ -63,7 +63,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   for (let pool of allPools) {
     const pair = new Pair(pool.tokenX, pool.tokenY, {
-      fee: pool.fee.v,
+      fee: pool.fee,
       tickSpacing: pool.tickSpacing,
     });
     const address = await pair.getAddress(market.program.programId);
@@ -150,7 +150,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 : undefined;
 
             const poolApy = poolAPY({
-              feeTier: { fee: pool.fee.v, tickSpacing: pool.tickSpacing },
+              feeTier: { fee: pool.fee, tickSpacing: pool.tickSpacing },
               volumeX: +new BN(currentSnap.volumeX)
                 .sub(new BN(prevSnap.volumeX))
                 .toString(),
