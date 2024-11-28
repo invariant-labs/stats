@@ -96,8 +96,20 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "BYTvYRsTtduFNMoPRiq7he2jEqh9BGvW8UZVjUrb8Z7R", // JitoSOL/mSOL 0.01%
     "67thJrJa8QB2ZHV3TJVpHWK5uR9oQDDfrBou7jKR81cV", // DOGIN/USDC 0.01%
     "9uzQcsaW74EQqSx9z15xBghF7B1a4xE8tMVifeZL71pH", // MUMU/USDC 1%
+    "Hupfi1jGC8BDgiojUJS1wauVnUXCtd84ATnrvVnfa28p", // JLP/SOL 0.01%
   ];
 
+  // Tokens which price should be evaluated last, the lower the value the less likely the token is to be the base_currency
+  const targetTokenOrder = new Map([
+    ["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", 0], // USDC
+    ["Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", 10], // USDT
+    ["USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX", 20], // USDH
+    ["So11111111111111111111111111111111111111112", 30], // SOL
+    ["J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn", 40], // JitoSOL
+    ["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", 50], // mSol
+    ["27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4", 60], // JLP
+    ["jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v", 70], // jupSOL
+  ]);
   const connection = new Connection(
     "https://mainnet.helius-rpc.com/?api-key=6f17ef70-139f-463a-bfaa-85a120eee8d3"
   );
@@ -140,7 +152,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
   // for some reason they're set to 0 in the last snap
   decimals.set("jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v", 9);
   decimals.set("5LafQUrVco6o7KMz42eqVEJ9LW31StPyGjeeu5sKoMtA", 6);
-  
+
   const typedFullData = fullData as FullSnap;
 
   const usdPrices = new Map<string, number>();
@@ -148,7 +160,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
   typedFullData.tokensData.forEach((tokenRecord) => {
     if (decimals.get(tokenRecord.address) !== undefined) {
       if (tokenRecord.price) {
-          usdPrices.set(tokenRecord.address, tokenRecord.price);
+        usdPrices.set(tokenRecord.address, tokenRecord.price);
       } else {
         console.error(tokenRecord);
       }
@@ -281,18 +293,50 @@ export default async function (req: VercelRequest, res: VercelResponse) {
           xVolume = volume24 / (tokenXUsdPrice ?? 1);
           yVolume = volume24 / tokenYUsdPrice;
         }
-        const ticker: Ticker = {
-          base_volume: formatNumber(xVolume),
-          target_volume: formatNumber(yVolume),
-          liquidity_in_usd: formatNumber(liquidity_in_usd),
-          ticker_id: [tokenX, tokenY].join("_"),
-          last_price: printBN(priceWithDecimals, PRICE_PRECISION),
-          pool_id,
-          base_currency: tokenX,
-          target_currency: tokenY,
-        };
+        const tokenXPosition = targetTokenOrder.get(tokenX);
+        const tokenYPosition = targetTokenOrder.get(tokenY);
+        let flipPrice: boolean;
+        if (tokenXPosition !== undefined && tokenYPosition !== undefined) {
+          if (tokenXPosition < tokenYPosition) {
+            flipPrice = true;
+          } else {
+            flipPrice = false;
+          }
+        } else if (tokenXPosition !== undefined) {
+          flipPrice = true;
+        } else {
+          flipPrice = false;
+        }
 
-        tickers.push(ticker);
+        if (!flipPrice) {
+          const ticker: Ticker = {
+            base_volume: formatNumber(xVolume),
+            target_volume: formatNumber(yVolume),
+            liquidity_in_usd: formatNumber(liquidity_in_usd),
+            ticker_id: [tokenX, tokenY].join("_"),
+            last_price: printBN(priceWithDecimals, PRICE_PRECISION),
+            pool_id,
+            base_currency: tokenX,
+            target_currency: tokenY,
+          };
+          tickers.push(ticker);
+        } else {
+          const flippedPrice = new BN(10)
+            .pow(new BN(PRICE_PRECISION * 2))
+            .div(priceWithDecimals);
+
+          const ticker: Ticker = {
+            base_volume: formatNumber(yVolume),
+            target_volume: formatNumber(xVolume),
+            liquidity_in_usd: formatNumber(liquidity_in_usd),
+            ticker_id: [tokenY, tokenX].join("_"),
+            last_price: printBN(flippedPrice, PRICE_PRECISION),
+            pool_id,
+            base_currency: tokenY,
+            target_currency: tokenX,
+          };
+          tickers.push(ticker);
+        }
       } catch (e) {
         console.error(e);
       }
