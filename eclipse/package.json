@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
-    "@invariant-labs/locker-eclipse-sdk": "^0.0.11",
+    "@invariant-labs/locker-eclipse-sdk": "^0.0.12",
     "@invariant-labs/sdk-eclipse": "^0.0.49",
     "@invariant-labs/staker-sdk": "0.2.11",
     "@solana/spl-token": "^0.4.9",
