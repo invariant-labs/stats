@@ -457,6 +457,8 @@ export interface PoolStatsDataWithString {
   volume24: number;
   tvl: number;
   apy: number;
+  lockedX: number;
+  lockedY: number;
 }
 
 export const getPoolsFromAdresses = async (
