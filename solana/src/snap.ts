@@ -15,10 +15,12 @@ import {
   devnetTokensData,
   getJupPricesData,
   getTokensData,
+  getTokensPrices,
   getUsdValue24,
   PoolSnapshot,
   PoolStatsData,
   TokenData,
+  tokensPriceViaCoingecko,
 } from "./utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -48,6 +50,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
   }
 
   const jupPrices = await getJupPricesData(Object.keys(tokensData));
+
+  const coingeckoIds =  tokensPriceViaCoingecko.map(token => token.coingeckoId)
+  const coingeckoAddresses = tokensPriceViaCoingecko.map(token => token.address)
+  const coingeckoPrices = await getTokensPrices(coingeckoIds, coingeckoAddresses)
+
+  Object.entries(coingeckoPrices).forEach(([address, price]) => {
+    jupPrices[address] = price.toString()
+  });
 
   const connection = provider.connection;
 
