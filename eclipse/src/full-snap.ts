@@ -138,9 +138,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
         tvl: 0,
         tokenX: poolsDataObject[address].tokenX.toString(),
         tokenY: poolsDataObject[address].tokenY.toString(),
-        fee: +printBN(poolsDataObject[address].fee, DECIMAL - 2),
+        // @ts-expect-error
+        fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
         apy: poolsApy[address].apy ?? 0,
         poolAddress: new PublicKey(address).toString(),
+        liquidityX: 0,
+        liquidityY: 0,
         lockedX: 0,
         lockedY: 0,
       });
@@ -175,9 +178,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
           : 0,
       tokenX: poolsDataObject[address].tokenX.toString(),
       tokenY: poolsDataObject[address].tokenY.toString(),
-      fee: +printBN(poolsDataObject[address].fee, DECIMAL - 2),
+      // @ts-expect-error
+      fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
       apy: poolsApy[address]?.apy ?? 0,
       poolAddress: new PublicKey(address).toString(),
+      liquidityX: lastSnapshot.liquidityX.usdValue24,
+      liquidityY: lastSnapshot.liquidityY.usdValue24,
       lockedX: lastSnapshot.lockedX?.usdValue24 ?? 0,
       lockedY: lastSnapshot.lockedY?.usdValue24 ?? 0,
     });
