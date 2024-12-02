@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { MOCK_TOKENS, Network } from "@invariant-labs/sdk";
-import { Network as StakerNetwork } from "@invariant-labs/staker-sdk";
-import { Market, PoolStructure, Tick } from "@invariant-labs/sdk/lib/market";
+import { MOCK_TOKENS, Network } from "@invariant-labs/sdk-eclipse";
+// import { Network as StakerNetwork } from "@invariant-labs/staker-sdk";
+import {
+  Market,
+  PoolStructure,
+  Tick,
+} from "@invariant-labs/sdk-eclipse/lib/market";
 import { Market as EclipseMarket } from "@invariant-labs/sdk-eclipse/lib/market";
-import { DECIMAL, Range } from "@invariant-labs/sdk/lib/utils";
+import { DECIMAL, Range } from "@invariant-labs/sdk-eclipse/lib/utils";
 import BN from "bn.js";
 import { PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
@@ -329,14 +333,15 @@ export const jsonToTicks = (data: Record<string, any[]>) => {
           index: tick.index,
           sign: tick.sign,
           bump: tick.bump,
-          liquidityChange: { v: new BN(tick.liquidityChange.v, "hex") },
-          liquidityGross: { v: new BN(tick.liquidityGross.v, "hex") },
-          sqrtPrice: { v: new BN(tick.sqrtPrice.v, "hex") },
-          feeGrowthOutsideX: { v: new BN(tick.feeGrowthOutsideX.v, "hex") },
-          feeGrowthOutsideY: { v: new BN(tick.feeGrowthOutsideY.v, "hex") },
-          secondsPerLiquidityOutside: {
-            v: new BN(tick.secondsPerLiquidityOutside.v, "hex"),
-          },
+          liquidityChange: new BN(tick.liquidityChange.v, "hex"),
+          liquidityGross: new BN(tick.liquidityGross.v, "hex"),
+          sqrtPrice: new BN(tick.sqrtPrice.v, "hex"),
+          feeGrowthOutsideX: new BN(tick.feeGrowthOutsideX.v, "hex"),
+          feeGrowthOutsideY: new BN(tick.feeGrowthOutsideY.v, "hex"),
+          secondsPerLiquidityOutside: new BN(
+            tick.secondsPerLiquidityOutside.v,
+            "hex"
+          ),
           pool: new PublicKey(address),
         });
       });
@@ -353,16 +358,16 @@ export const jsonToTicks = (data: Record<string, any[]>) => {
   return snaps;
 };
 
-export const marketToStakerNetwork = (network: Network): StakerNetwork => {
-  switch (network) {
-    case Network.DEV:
-      return StakerNetwork.DEV;
-    case Network.MAIN:
-      return StakerNetwork.MAIN;
-    default:
-      return StakerNetwork.DEV;
-  }
-};
+// export const marketToStakerNetwork = (network: Network): StakerNetwork => {
+//   switch (network) {
+//     case Network.DEV:
+//       return StakerNetwork.DEV;
+//     case Network.MAIN:
+//       return StakerNetwork.MAIN;
+//     default:
+//       return StakerNetwork.DEV;
+//   }
+// };
 
 export interface RewardsData {
   token: string;
@@ -391,14 +396,15 @@ export const jsonArrayToTicks = (address: string, data: any[]) => {
         index: tick.index,
         sign: tick.sign,
         bump: tick.bump,
-        liquidityChange: { v: new BN(tick.liquidityChange.v, "hex") },
-        liquidityGross: { v: new BN(tick.liquidityGross.v, "hex") },
-        sqrtPrice: { v: new BN(tick.sqrtPrice.v, "hex") },
-        feeGrowthOutsideX: { v: new BN(tick.feeGrowthOutsideX.v, "hex") },
-        feeGrowthOutsideY: { v: new BN(tick.feeGrowthOutsideY.v, "hex") },
-        secondsPerLiquidityOutside: {
-          v: new BN(tick.secondsPerLiquidityOutside.v, "hex"),
-        },
+        liquidityChange: new BN(tick.liquidityChange.v, "hex"),
+        liquidityGross: new BN(tick.liquidityGross.v, "hex"),
+        sqrtPrice: new BN(tick.sqrtPrice.v, "hex"),
+        feeGrowthOutsideX: new BN(tick.feeGrowthOutsideX.v, "hex"),
+        feeGrowthOutsideY: new BN(tick.feeGrowthOutsideY.v, "hex"),
+        secondsPerLiquidityOutside: new BN(
+          tick.secondsPerLiquidityOutside.v,
+          "hex"
+        ),
         pool: new PublicKey(address),
       });
     });
@@ -457,6 +463,8 @@ export interface PoolStatsDataWithString {
   volume24: number;
   tvl: number;
   apy: number;
+  lockedX: number;
+  lockedY: number;
 }
 
 export const getPoolsFromAdresses = async (

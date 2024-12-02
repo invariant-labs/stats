@@ -4,7 +4,7 @@ import {
   Market,
   Network,
 } from "@invariant-labs/sdk-eclipse";
-import { Provider } from "@project-serum/anchor";
+import { AnchorProvider } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
   getCoingeckoPricesData2,
@@ -24,26 +24,30 @@ import fs from "fs";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
 
 export const createSnapshotForNetwork = async (network: Network) => {
-  let provider: Provider;
+  let provider: AnchorProvider;
   let fileName: string;
   let dataFileName: string;
   let poolsApyFileName: string;
 
   switch (network) {
     case Network.DEV:
-      provider = Provider.local("https://staging-rpc.dev2.eclipsenetwork.xyz");
+      provider = AnchorProvider.local(
+        "https://staging-rpc.dev2.eclipsenetwork.xyz"
+      );
       fileName = "../data/eclipse/full_devnet.json";
       dataFileName = "../data/eclipse/devnet.json";
       poolsApyFileName = "../data/eclipse/pool_apy_devnet.json";
       break;
     case Network.TEST:
-      provider = Provider.local("https://testnet.dev2.eclipsenetwork.xyz");
+      provider = AnchorProvider.local(
+        "https://testnet.dev2.eclipsenetwork.xyz"
+      );
       fileName = "../data/eclipse/full_testnet.json";
       dataFileName = "../data/eclipse/testnet.json";
       poolsApyFileName = "../data/eclipse/pool_apy_testnet.json";
       break;
     case Network.MAIN:
-      provider = Provider.local("https://eclipse.helius-rpc.com");
+      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
       fileName = "../data/eclipse/full_mainnet.json";
       dataFileName = "../data/eclipse/mainnet.json";
       poolsApyFileName = "../data/eclipse/pool_apy_mainnet.json";
@@ -134,9 +138,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
         tvl: 0,
         tokenX: poolsDataObject[address].tokenX.toString(),
         tokenY: poolsDataObject[address].tokenY.toString(),
-        fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
+        fee: +printBN(poolsDataObject[address].fee, DECIMAL - 2),
         apy: poolsApy[address].apy ?? 0,
         poolAddress: new PublicKey(address).toString(),
+        lockedX: 0,
+        lockedY: 0,
       });
       return;
     }
@@ -169,9 +175,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
           : 0,
       tokenX: poolsDataObject[address].tokenX.toString(),
       tokenY: poolsDataObject[address].tokenY.toString(),
-      fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
+      fee: +printBN(poolsDataObject[address].fee, DECIMAL - 2),
       apy: poolsApy[address]?.apy ?? 0,
       poolAddress: new PublicKey(address).toString(),
+      lockedX: lastSnapshot.lockedX?.usdValue24 ?? 0,
+      lockedY: lastSnapshot.lockedY?.usdValue24 ?? 0,
     });
 
     snapshots.slice(-30).forEach((snapshot) => {
@@ -291,14 +299,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
 //   }
 // );
 
-// createSnapshotForNetwork(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Full testnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.TEST).then(
+  () => {
+    console.log("Eclipse: Full testnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {
