@@ -3,7 +3,7 @@ import DEVNET_APY from "../../../../data/pool_apy_archive_devnet.json";
 import MAINNET_APY from "../../../../data/pool_apy_archive_mainnet.json";
 import ECLIPSE_DEVNET_APY from "../../../../data/eclipse/pool_apy_archive_devnet.json";
 import ECLIPSE_MAINNET_APY from "../../../../data/eclipse/pool_apy_archive_mainnet.json";
-import { PoolApyArchiveSnapshot } from "../../../../svm/src/utils";
+import { PoolApyArchiveSnapshot } from "../../../../solana/src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -31,7 +31,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     apyArchive = ECLIPSE_DEVNET_APY;
   } else if (net === "eclipse-mainnet") {
     apyArchive = ECLIPSE_MAINNET_APY;
-  }else {
+  } else {
     res.status(400).send("INVALID NETWORK");
     return;
   }
@@ -43,7 +43,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     apy: snap.apy,
     tradingLowerTick: snap.range.tickLower,
     tradingUpperTick: snap.range.tickUpper,
-  }))
+  }));
 
   res.json(
     formattedData.slice(-(Number(limit) + Number(skip))).slice(0, Number(limit))

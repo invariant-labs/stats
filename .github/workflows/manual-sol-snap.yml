@@ -41,7 +41,7 @@ jobs:
           solana --version
           solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
       - name: sol snapshot
-        working-directory: ./svm
+        working-directory: ./solana
         run: |
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"

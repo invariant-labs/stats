@@ -4,7 +4,7 @@ import DEVNET_DATA from "../../../../data/devnet.json";
 import MAINNET_DATA from "../../../../data/mainnet.json";
 import ECLIPSE_DEVNET_DATA from "../../../../data/eclipse/devnet.json";
 import ECLIPSE_MAINNET_DATA from "../../../../data/eclipse/mainnet.json";
-import { PoolStatsData, printBN } from "../../../../svm/src/utils";
+import { PoolStatsData, printBN } from "../../../../solana/src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error

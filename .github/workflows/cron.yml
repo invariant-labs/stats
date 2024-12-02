@@ -44,7 +44,7 @@ jobs:
           solana --version
           solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
       - name: sol snapshot
-        working-directory: ./svm
+        working-directory: ./solana
         run: |
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
@@ -186,10 +186,10 @@ jobs:
           name: alph-snapshot-${{ github.run_id }}
           path: ./data/alph/
         continue-on-error: true
-      - name: Download svm snapshot
+      - name: Download solana snapshot
         uses: actions/download-artifact@v4
         with:
-          name: svm-snapshot-${{ github.run_id }}
+          name: sol-snapshot-${{ github.run_id }}
           path: ./data/
         continue-on-error: true
       - name: Download vara snapshot

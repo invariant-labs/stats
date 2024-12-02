@@ -5,7 +5,7 @@ import {
   PoolStatsDataWithString,
   TimeData,
   TokenStatsDataWithString,
-} from "../../../svm/src/utils";
+} from "../../../solana/src/utils";
 
 interface FullSnap {
   volume24: {

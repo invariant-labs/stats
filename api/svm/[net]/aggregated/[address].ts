@@ -11,7 +11,7 @@ import ECLIPSE_MAINNET_APY from "../../../../data/eclipse/pool_apy_archive_mainn
 import {
   PoolApyArchiveSnapshot,
   PoolStatsData,
-} from "../../../../svm/src/utils";
+} from "../../../../solana/src/utils";
 import { printBN } from "../../../utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
@@ -39,8 +39,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   } else if (net === "mainnet") {
     data = MAINNET_DATA;
     apyArchive = MAINNET_APY;
-  }
-  else if (net === "eclipse-devnet") {
+  } else if (net === "eclipse-devnet") {
     data = ECLIPSE_DEVNET_DATA;
     apyArchive = ECLIPSE_DEVNET_APY;
   } else if (net === "eclipse-mainnet") {

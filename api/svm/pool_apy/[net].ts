@@ -3,7 +3,7 @@ import DEVNET_APY from "../../../data/pool_apy_devnet.json";
 import MAINNET_APY from "../../../data/pool_apy_mainnet.json";
 import ECLIPSE_DEVNET_APY from "../../../data/eclipse/pool_apy_devnet.json";
 import ECLIPSE_MAINNET_APY from "../../../data/eclipse/pool_apy_archive_mainnet.json";
-import { ApySnapshot } from "../../../svm/src/utils";
+import { ApySnapshot } from "../../../solana/src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error

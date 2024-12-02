@@ -1,7 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import DEVNET_APY from "../../../data/incentive_apy_devnet.json";
 import MAINNET_APY from "../../../data/incentive_apy_mainnet.json";
-import { IncentiveApySnapshot, RewardsData } from "../../../svm/src/utils";
+import { IncentiveApySnapshot, RewardsData } from "../../../solana/src/utils";
 import DEVNET_REWARDS from "../../../data/rewards_data_devnet.json";
 import MAINNET_REWARDS from "../../../data/rewards_data_mainnet.json";
 
@@ -47,7 +47,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     if (!data[address]) {
       data[address] = {
         apy: 0,
-        ...rewards
+        ...rewards,
       };
     }
   });
