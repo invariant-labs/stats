@@ -82,31 +82,37 @@ export const createSnapshotForNetwork = async (network: Network) => {
     new PublicKey(getMarketAddress(network))
   );
 
-  const locker = Locker.build(network, provider.wallet as IWallet, connection);
-
   const allPools = await market.getAllPools();
-  const allLocks = await locker.getAllLockedPositions(market);
-
   const poolsDict: Record<string, PoolStructure> = {};
   const poolLocks: Record<string, PoolLock> = {};
 
-  allLocks.forEach((lock) => {
-    const pool = lock.pool.toString();
-    if (!poolLocks[pool]) {
-      poolLocks[pool] = {
-        lockedX: lock.amountTokenX,
-        lockedY: lock.amountTokenY,
-      };
-    } else {
-      const newX = poolLocks[pool].lockedX.add(lock.amountTokenX);
-      const newY = poolLocks[pool].lockedY.add(lock.amountTokenY);
+  try {
+    const locker = Locker.build(
+      network,
+      provider.wallet as IWallet,
+      connection
+    );
+    const allLocks = await locker.getAllLockedPositions(market);
+    allLocks.forEach((lock) => {
+      const pool = lock.pool.toString();
+      if (!poolLocks[pool]) {
+        poolLocks[pool] = {
+          lockedX: lock.amountTokenX,
+          lockedY: lock.amountTokenY,
+        };
+      } else {
+        const newX = poolLocks[pool].lockedX.add(lock.amountTokenX);
+        const newY = poolLocks[pool].lockedY.add(lock.amountTokenY);
 
-      poolLocks[pool] = {
-        lockedX: newX,
-        lockedY: newY,
-      };
-    }
-  });
+        poolLocks[pool] = {
+          lockedX: newX,
+          lockedY: newY,
+        };
+      }
+    });
+  } catch (e) {
+    console.log("Error getting locks for network", network, e);
+  }
 
   let poolsData: any[] = [];
 
@@ -354,11 +360,11 @@ createSnapshotForNetwork(Network.TEST).then(
   }
 );
 
-// createSnapshotForNetwork(Network.MAIN).then(
-//   () => {
-//     console.log("Eclipse: Mainnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("Eclipse: Mainnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
