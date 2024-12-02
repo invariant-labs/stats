@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { MOCK_TOKENS, Network } from "@invariant-labs/sdk-eclipse";
-import { Network as StakerNetwork } from "@invariant-labs/staker-sdk";
+// import { Network as StakerNetwork } from "@invariant-labs/staker-sdk";
 import { Market, PoolStructure, Tick } from "@invariant-labs/sdk/lib/market";
 import { Market as EclipseMarket } from "@invariant-labs/sdk-eclipse/lib/market";
 import { DECIMAL, Range } from "@invariant-labs/sdk/lib/utils";
@@ -353,16 +353,16 @@ export const jsonToTicks = (data: Record<string, any[]>) => {
   return snaps;
 };
 
-export const marketToStakerNetwork = (network: Network): StakerNetwork => {
-  switch (network) {
-    case Network.DEV:
-      return StakerNetwork.DEV;
-    case Network.MAIN:
-      return StakerNetwork.MAIN;
-    default:
-      return StakerNetwork.DEV;
-  }
-};
+// export const marketToStakerNetwork = (network: Network): StakerNetwork => {
+//   switch (network) {
+//     case Network.DEV:
+//       return StakerNetwork.DEV;
+//     case Network.MAIN:
+//       return StakerNetwork.MAIN;
+//     default:
+//       return StakerNetwork.DEV;
+//   }
+// };
 
 export interface RewardsData {
   token: string;
