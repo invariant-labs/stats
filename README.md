@@ -3,6 +3,7 @@
 The historical data is available inside the `/data` directory. The content of these files is described below:
 
 Pool data is stored in the files below, depending on the network's location:
+
 - Solana: `mainnet.json`
 - Solana devnet: `devnet.json`
 - Eclipse devnet: `eclipse/devnet.json`
@@ -29,7 +30,7 @@ All of this data has the same JSON structure:
         ]
         tokenX: TokenInfo
         tokenY: TokenInfo
-    } 
+    }
 }
 
 interface TokenInfo {
@@ -47,6 +48,7 @@ interface TokenAmount {
 # Generated data
 
 List of snapshot files:
+
 - data/a0/testnet.json
 - data/a0/mainnet.json
 - data/alph/testnet.json
@@ -59,32 +61,34 @@ List of snapshot files:
 - data/pool_apy_devnet.json
 - data/pool_apy_mainnet.json
 - data/ticks
-    - devnet
-        - [tick_address.json]
-        - ...
-    - mainnet
-        - [tick_address.json]
-        - ...
-
+  - devnet
+    - [tick_address.json]
+    - ...
+  - mainnet
+    - [tick_address.json]
+    - ...
 
 # Querying archive data
 
 There is an API that allows querying historical data for specific pools
+
 ```bash
 https://stats.invariant.app/[*UNDERLYING_VM]/pool_daily_data/[NETWORK]/aggregated/[**POOL_ADDRESS]?{limit=N}
 ```
-*svm, alph or a0 
-**for Aleph Zero and Alephium POOL_ADDRESS is stringified PoolKey
+
+\*solana, alph or a0
+\*\*for Aleph Zero and Alephium POOL_ADDRESS is stringified PoolKey
 
 Below is an example of a query:
+
 ```bash
 https://stats.invariant.app/svm/pool_daily_data/mainnet/aggregated/BRt1iVYDNoohkL1upEb8UfHE8yji6gEDAmuN9Y4yekyc?limit=10
 ```
 
 # Most popular pool addresses
 
-| Token X                                          | Token Y                                          | Fee      | Address                                                                                                     |
-|--------------------------------------------------|--------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------|
-| [USDC](https://solscan.io/token/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v)         | [USDT](https://solscan.io/token/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB)         | 0.001%  | [BRt1iVYDNoohkL1upEb8UfHE8yji6gEDAmuN9Y4yekyc](https://solscan.io/account/BRt1iVYDNoohkL1upEb8UfHE8yji6gEDAmuN9Y4yekyc) |
-| [stSOL](https://solscan.io/token/7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj)        | [mSOL](https://solscan.io/token/mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So)         | 0.01%    | [HbMbeaDH8xtB1a8WpwjNqcXBBGraKJjJ2xFkXEdAy1rY](https://solscan.io/account/HbMbeaDH8xtB1a8WpwjNqcXBBGraKJjJ2xFkXEdAy1rY)  |
-| [SNY](https://solscan.io/token/4dmKkXNHdgYsXqBHCuMikNQWwVomZURhYvkkX5c4pQ7y)          | [USDC](https://solscan.io/token/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v)         | 0.3%     | [AvNeVrKZy1FaEG9suboRXNPgmnMwomiU5EvkF6jGxGrX](https://solscan.io/account/AvNeVrKZy1FaEG9suboRXNPgmnMwomiU5EvkF6jGxGrX) |
+| Token X                                                                        | Token Y                                                                       | Fee    | Address                                                                                                                 |
+| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------- |
+| [USDC](https://solscan.io/token/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v)  | [USDT](https://solscan.io/token/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB) | 0.001% | [BRt1iVYDNoohkL1upEb8UfHE8yji6gEDAmuN9Y4yekyc](https://solscan.io/account/BRt1iVYDNoohkL1upEb8UfHE8yji6gEDAmuN9Y4yekyc) |
+| [stSOL](https://solscan.io/token/7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj) | [mSOL](https://solscan.io/token/mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So)  | 0.01%  | [HbMbeaDH8xtB1a8WpwjNqcXBBGraKJjJ2xFkXEdAy1rY](https://solscan.io/account/HbMbeaDH8xtB1a8WpwjNqcXBBGraKJjJ2xFkXEdAy1rY) |
+| [SNY](https://solscan.io/token/4dmKkXNHdgYsXqBHCuMikNQWwVomZURhYvkkX5c4pQ7y)   | [USDC](https://solscan.io/token/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v) | 0.3%   | [AvNeVrKZy1FaEG9suboRXNPgmnMwomiU5EvkF6jGxGrX](https://solscan.io/account/AvNeVrKZy1FaEG9suboRXNPgmnMwomiU5EvkF6jGxGrX) |

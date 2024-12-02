@@ -3,50 +3,58 @@ import {
   Market,
   Pair,
   getMarketAddress,
+  IWallet,
 } from "@invariant-labs/sdk-eclipse";
 import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
-import { BN, Provider } from "@project-serum/anchor";
+import { AnchorProvider } from "@coral-xyz/anchor";
+import BN from "bn.js";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
-import DEVNET_DATA from "../../../data/eclipse/devnet.json";
-import TESTNET_DATA from "../../../data/eclipse/testnet.json";
-import MAINNET_DATA from "../../../data/eclipse/mainnet.json";
+import DEVNET_DATA from "../../data/eclipse/devnet.json";
+import TESTNET_DATA from "../../data/eclipse/testnet.json";
+import MAINNET_DATA from "../../data/eclipse/mainnet.json";
 import {
   eclipseDevnetTokensData,
   eclipseMainnetTokensData,
   eclipseTestnetTokensData,
   getTokensPrices,
   getUsdValue24,
+  PoolLock,
   PoolSnapshot,
   PoolStatsData,
   supportedTokens,
   TokenData,
-} from "../utils";
+} from "./utils";
+import { Locker } from "@invariant-labs/locker-eclipse-sdk";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
-  let provider: Provider;
+  let provider: AnchorProvider;
   let fileName: string;
   let snaps: Record<string, PoolStatsData>;
   let tokensData: Record<string, TokenData>;
 
   switch (network) {
     case Network.DEV:
-      provider = Provider.local("https://staging-rpc.dev2.eclipsenetwork.xyz");
+      provider = AnchorProvider.local(
+        "https://staging-rpc.dev2.eclipsenetwork.xyz"
+      );
       fileName = "../data/eclipse/devnet.json";
       snaps = DEVNET_DATA;
       tokensData = eclipseDevnetTokensData;
       break;
     case Network.TEST:
-      provider = Provider.local("https://testnet.dev2.eclipsenetwork.xyz");
+      provider = AnchorProvider.local(
+        "https://testnet.dev2.eclipsenetwork.xyz"
+      );
       fileName = "../data/eclipse/testnet.json";
       snaps = TESTNET_DATA;
       tokensData = eclipseTestnetTokensData;
       break;
     case Network.MAIN:
-      provider = Provider.local("https://eclipse.helius-rpc.com");
+      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
       fileName = "../data/eclipse/mainnet.json";
       snaps = MAINNET_DATA;
       tokensData = eclipseMainnetTokensData;
@@ -67,16 +75,44 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const connection = provider.connection;
 
-  const market = await Market.build(
+  const market = Market.build(
     network,
-    provider.wallet,
+    provider.wallet as IWallet,
     connection,
     new PublicKey(getMarketAddress(network))
   );
 
   const allPools = await market.getAllPools();
-
   const poolsDict: Record<string, PoolStructure> = {};
+  const poolLocks: Record<string, PoolLock> = {};
+
+  try {
+    const locker = Locker.build(
+      network,
+      provider.wallet as IWallet,
+      connection
+    );
+    const allLocks = await locker.getAllLockedPositions(market);
+    allLocks.forEach((lock) => {
+      const pool = lock.pool.toString();
+      if (!poolLocks[pool]) {
+        poolLocks[pool] = {
+          lockedX: lock.amountTokenX,
+          lockedY: lock.amountTokenY,
+        };
+      } else {
+        const newX = poolLocks[pool].lockedX.add(lock.amountTokenX);
+        const newY = poolLocks[pool].lockedY.add(lock.amountTokenY);
+
+        poolLocks[pool] = {
+          lockedX: newX,
+          lockedY: newY,
+        };
+      }
+    });
+  } catch (e) {
+    console.log("Error getting locks for network", network, e);
+  }
 
   let poolsData: any[] = [];
 
@@ -100,7 +136,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   for (let pool of allPools) {
     const pair = new Pair(pool.tokenX, pool.tokenY, {
-      fee: pool.fee.v,
+      fee: pool.fee,
       tickSpacing: pool.tickSpacing,
     });
     const [address, volumes, liq, fees] = await Promise.all([
@@ -167,6 +203,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
       feeY = new BN(lastSnapshot?.feeY.tokenBNFromBeginning ?? "0");
     }
 
+    const lockedX = poolLocks[address.toString()]
+      ? poolLocks[address.toString()].lockedX
+      : new BN(0);
+
+    const lockedY = poolLocks[address.toString()]
+      ? poolLocks[address.toString()].lockedY
+      : new BN(0);
+
     poolsData.push({
       address: address.toString(),
       stats: {
@@ -232,6 +276,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
               : new BN(0)
           ),
         },
+        lockedX: {
+          tokenBNFromBeginning: lockedX.toString(),
+          usdValue24: getUsdValue24(
+            lockedX,
+            tokenXData.decimals,
+            tokenXPrice,
+            new BN(0)
+          ),
+        },
+        lockedY: {
+          tokenBNFromBeginning: lockedY.toString(),
+          usdValue24: getUsdValue24(
+            lockedY,
+            tokenYData.decimals,
+            tokenYPrice,
+            new BN(0)
+          ),
+        },
       },
     });
   }
@@ -289,14 +351,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
 //   }
 // );
 
-// createSnapshotForNetwork(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Testnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.TEST).then(
+  () => {
+    console.log("Eclipse: Testnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {

@@ -1,4 +1,4 @@
-name: "Manual svm snap"
+name: "Manual eclipse snap"
 
 on: workflow_dispatch
 
@@ -6,7 +6,7 @@ env:
   solana_version: 1.18.18
 
 jobs:
-  svm-snap:
+  eclipse-snap:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,8 +40,8 @@ jobs:
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           solana --version
           solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
-      - name: svm snapshot
-        working-directory: ./svm
+      - name: eclipse snapshot
+        working-directory: ./eclipse
         run: |
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
@@ -49,7 +49,7 @@ jobs:
           npm run snap
       - uses: actions/upload-artifact@v4
         with:
-          name: svm-snapshot-${{ github.run_id }}
+          name: eclipse-snapshot-${{ github.run_id }}
           path: |
             ./data/*.json
             ./data/eclipse/
@@ -59,7 +59,7 @@ jobs:
           git config --global user.email stats@invariant.app
           git config --global user.name invariantStats
           git add ./data/
-          git commit -m "SVM snapshot of data done!!"
+          git commit -m "ECLIPSE snapshot of data done!!"
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.6.0
         with:

@@ -3,7 +3,7 @@ import DEVNET_DATA from "../../../data/devnet.json";
 import MAINNET_DATA from "../../../data/mainnet.json";
 import ECLIPSE_DEVNET_DATA from "../../../data/eclipse/devnet.json";
 import ECLIPSE_TESTNET_DATA from "../../../data/eclipse/testnet.json";
-import { PoolSnapshot, PoolStatsData } from "../../../svm/src/utils";
+import { PoolSnapshot, PoolStatsData } from "../../../solana/src/utils";
 
 const onlySnaps = (
   data: Record<string, PoolStatsData>

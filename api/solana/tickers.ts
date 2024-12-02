@@ -11,7 +11,7 @@ import {
   PoolStatsDataWithString,
   TimeData,
   TokenStatsDataWithString,
-} from "../../svm/src/utils";
+} from "../../solana/src/utils";
 
 type NewType = TimeData;
 
@@ -140,7 +140,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
   // for some reason they're set to 0 in the last snap
   decimals.set("jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v", 9);
   decimals.set("5LafQUrVco6o7KMz42eqVEJ9LW31StPyGjeeu5sKoMtA", 6);
-  
+
   const typedFullData = fullData as FullSnap;
 
   const usdPrices = new Map<string, number>();
@@ -148,7 +148,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
   typedFullData.tokensData.forEach((tokenRecord) => {
     if (decimals.get(tokenRecord.address) !== undefined) {
       if (tokenRecord.price) {
-          usdPrices.set(tokenRecord.address, tokenRecord.price);
+        usdPrices.set(tokenRecord.address, tokenRecord.price);
       } else {
         console.error(tokenRecord);
       }
