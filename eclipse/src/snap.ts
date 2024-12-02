@@ -360,11 +360,11 @@ createSnapshotForNetwork(Network.TEST).then(
   }
 );
 
-createSnapshotForNetwork(Network.MAIN).then(
-  () => {
-    console.log("Eclipse: Mainnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+// createSnapshotForNetwork(Network.MAIN).then(
+//   () => {
+//     console.log("Eclipse: Mainnet snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
