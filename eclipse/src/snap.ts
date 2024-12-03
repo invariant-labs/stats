@@ -92,7 +92,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
       provider.wallet as IWallet,
       connection
     );
+
     const allLocks = await locker.getAllLockedPositions(market);
+
     allLocks.forEach((lock) => {
       const pool = lock.pool.toString();
       if (!poolLocks[pool]) {
