@@ -26,7 +26,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.MAIN:
       provider = Provider.local(
-        "https://mainnet.helius-rpc.com/?api-key=6f17ef70-139f-463a-bfaa-85a120eee8d3"
+        "https://mainnet.helius-rpc.com/?api-key=ef843b40-9876-4a02-a181-a1e6d3e61b4c"
       );
       fileName = "../data/full_mainnet.json";
       dataFileName = "../data/mainnet.json";
