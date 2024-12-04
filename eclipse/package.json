@@ -5,6 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "snap": "sh ./snap.sh",
+    "snap-locks": "sh ./snap-locks.sh",
     "totalMainnetVolume": "ts-node ./src/calcTotalMainnetVolume.ts"
   },
   "author": "",
