@@ -130,10 +130,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     const recent = snaps.length - 1;
     const lastSnapshot = snaps[recent];
 
-    let tokenXData = tokensData?.[poolStatsData.tokenX.toString()] ?? {
+    let tokenXData = tokensData?.[poolStatsData.tokenX.address] ?? {
       decimals: 0,
     };
-    let tokenYData = tokensData?.[poolStatsData.tokenY.toString()] ?? {
+    let tokenYData = tokensData?.[poolStatsData.tokenY.address] ?? {
       decimals: 0,
     };
     let tokenXPrice = tokenXData.coingeckoId
@@ -143,16 +143,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
       ? coingeckoPrices[tokenYData.coingeckoId] ?? 0
       : 0;
 
-    if (
-      Object.keys(supportedTokens).includes(poolStatsData.tokenX.toString())
-    ) {
-      tokenXPrice = supportedTokensWithPrices[poolStatsData.tokenX.toString()];
+    if (Object.keys(supportedTokens).includes(poolStatsData.tokenX.address)) {
+      tokenXPrice = supportedTokensWithPrices[poolStatsData.tokenX.address];
     }
 
-    if (
-      Object.keys(supportedTokens).includes(poolStatsData.tokenY.toString())
-    ) {
-      tokenYPrice = supportedTokensWithPrices[poolStatsData.tokenY.toString()];
+    if (Object.keys(supportedTokens).includes(poolStatsData.tokenY.address)) {
+      tokenYPrice = supportedTokensWithPrices[poolStatsData.tokenY.address];
     }
 
     if (!poolLocks[address]) {
