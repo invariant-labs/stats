@@ -1,11 +1,9 @@
 import {
   Network,
   Market,
-  Pair,
   getMarketAddress,
   IWallet,
 } from "@invariant-labs/sdk-eclipse";
-import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import BN from "bn.js";
 import { PublicKey } from "@solana/web3.js";

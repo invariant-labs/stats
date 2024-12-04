@@ -149,7 +149,12 @@ export interface TokenData {
   solAddress?: string;
 }
 
-export const tokensPriceViaCoingecko = [{address:'4dmKkXNHdgYsXqBHCuMikNQWwVomZURhYvkkX5c4pQ7y', coingeckoId: 'synthetify-token' }]
+export const tokensPriceViaCoingecko = [
+  {
+    address: "4dmKkXNHdgYsXqBHCuMikNQWwVomZURhYvkkX5c4pQ7y",
+    coingeckoId: "synthetify-token",
+  },
+];
 
 export const getTokensData = async (): Promise<Record<string, TokenData>> => {
   const tokensObj: Record<string, TokenData> = {};
@@ -172,13 +177,12 @@ export const getTokensPrices = async (
   const prices = await getCoingeckoPricesData(idsList);
   const snaps = {};
 
-  if(addresses?.length !== 0 && addresses) {
+  if (addresses?.length !== 0 && addresses) {
     prices.forEach(({ id, current_price }, index) => {
-    snaps[addresses[index]] = current_price ?? 0;
-  })
+      snaps[addresses[index]] = current_price ?? 0;
+    });
     return snaps;
   }
-
 
   prices.forEach(({ id, current_price }) => {
     snaps[id] = current_price ?? 0;
