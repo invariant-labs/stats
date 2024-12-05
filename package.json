@@ -8,16 +8,27 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@vercel/node": "^3.2.11",
-    "axios": "^0.26.1",
-    "bn.js": "^5.2.1",
-    "ts-node": "^10.5.0",
-    "tsx": "^4.19.0",
     "@invariant-labs/sdk": "0.9.67",
+    "@invariant-labs/sdk-eclipse": "^0.0.51",
     "@project-serum/anchor": "0.21.0",
     "@solana/spl-token": "0.1.6",
     "@solana/spl-token-registry": "^0.2.2821",
-    "@solana/web3.js": "1.31.0"
+    "@vercel/node": "^3.2.11",
+    "anchor-eclipse": "npm:@coral-xyz/anchor@^0.29.0",
+    "axios": "^0.26.1",
+    "bn.js": "^5.2.1",
+    "spl-token-eclipse": "npm:@solana/spl-token@0.4.9",
+    "ts-node": "^10.5.0",
+    "tsx": "^4.19.0",
+    "web3-eclipse": "npm:@solana/web3.js@^1.95.4"
+  },
+  "overrides": {
+    "@invariant-labs/sdk-eclipse": {
+      "@solana/web3.js": "web3-eclipse"
+    },
+    "spl-token-eclipse": {
+      "@solana/web3.js": "web3-eclipse"
+    }
   },
   "devDependencies": {
     "typescript": "^4.5.5"
