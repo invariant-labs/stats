@@ -22,6 +22,7 @@ import {
   TokenData,
   tokensPriceViaCoingecko,
 } from "./utils";
+import { token } from "anchor-eclipse/dist/cjs/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -38,25 +39,32 @@ export const createSnapshotForNetwork = async (network: Network) => {
         "https://mainnet.helius-rpc.com/?api-key=ef843b40-9876-4a02-a181-a1e6d3e61b4c"
       );
       fileName = "../data/mainnet.json";
-      snaps = MAINNET_DATA;
+      snaps = MAINNET_DATA as Record<string, PoolStatsData>;
       tokensData = await getTokensData();
       break;
     case Network.DEV:
     default:
       provider = Provider.local("https://api.devnet.solana.com");
       fileName = "../data/devnet.json";
-      snaps = DEVNET_DATA;
+      snaps = DEVNET_DATA as Record<string, PoolStatsData>;
       tokensData = devnetTokensData;
   }
 
   const jupPrices = await getJupPricesData(Object.keys(tokensData));
 
-  const coingeckoIds =  tokensPriceViaCoingecko.map(token => token.coingeckoId)
-  const coingeckoAddresses = tokensPriceViaCoingecko.map(token => token.address)
-  const coingeckoPrices = await getTokensPrices(coingeckoIds, coingeckoAddresses)
+  const coingeckoIds = tokensPriceViaCoingecko.map(
+    (token) => token.coingeckoId
+  );
+  const coingeckoAddresses = tokensPriceViaCoingecko.map(
+    (token) => token.address
+  );
+  const coingeckoPrices = await getTokensPrices(
+    coingeckoIds,
+    coingeckoAddresses
+  );
 
   Object.entries(coingeckoPrices).forEach(([address, price]) => {
-    jupPrices[address] = price.toString()
+    jupPrices[address] = price.toString();
   });
 
   const connection = provider.connection;
@@ -191,6 +199,28 @@ export const createSnapshotForNetwork = async (network: Network) => {
             tokenYPrice,
             typeof lastSnapshot !== "undefined"
               ? new BN(lastSnapshot.feeY.tokenBNFromBeginning)
+              : new BN(0)
+          ),
+        },
+        protocolFeeX: {
+          tokenBNFromBeginning: "0",
+          usdValue24: getUsdValue24(
+            pool.feeProtocolTokenX,
+            tokenXData.decimals,
+            tokenXPrice,
+            typeof lastSnapshot !== "undefined" && lastSnapshot.protocolFeeX
+              ? new BN(lastSnapshot.protocolFeeX.tokenBNFromBeginning)
+              : new BN(0)
+          ),
+        },
+        protocolFeeY: {
+          tokenBNFromBeginning: "0",
+          usdValue24: getUsdValue24(
+            pool.feeProtocolTokenY,
+            tokenYData.decimals,
+            tokenYPrice,
+            typeof lastSnapshot !== "undefined" && lastSnapshot.protocolFeeY
+              ? new BN(lastSnapshot.protocolFeeY.tokenBNFromBeginning)
               : new BN(0)
           ),
         },
