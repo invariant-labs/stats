@@ -25,7 +25,7 @@ import {
   TokenData,
 } from "./utils";
 import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
-import { AnchorProvider, BN } from "anchor-eclipse";
+import { AnchorProvider, BN } from "@coral-xyz/anchor";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
