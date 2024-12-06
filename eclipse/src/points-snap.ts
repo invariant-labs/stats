@@ -25,7 +25,7 @@ enum EventTypes {
 const fetchAllSignatures = async (
   connection: Connection,
   programId: PublicKey,
-  lastTxHash: string
+  lastTxHash: string | undefined
 ) => {
   const allSignatures: ConfirmedSignatureInfo[] = [];
   let beforeTxHash: string | undefined = undefined;
@@ -44,7 +44,10 @@ const fetchAllSignatures = async (
     }
 
     allSignatures.push(...signatures);
-
+    if (lastTxHash === undefined) {
+      done = true;
+      break;
+    }
     if (signatures[signatures.length - 1].signature === lastTxHash) {
       done = true;
     } else {
@@ -88,8 +91,12 @@ const fetchTransactionLogs = async (
   ).flat();
 };
 
-const extractEvents = (market: Market, transactionLog: string[]) => {
-  const eventsObject = {};
+const extractEvents = (
+  initialEvents: any,
+  market: Market,
+  transactionLog: string[]
+) => {
+  const eventsObject = initialEvents;
   const eventLogs = transactionLog.filter((log) =>
     log.startsWith("Program data:")
   );
@@ -118,13 +125,24 @@ export const createPointsSnap = async (network: Network) => {
   const MAX_SIGNATURES_PER_CALL = 300;
   let provider: AnchorProvider;
   let lastTxHashFileName: string;
-  let snapFileName: string;
+  let eventsSnapFilename: string;
+  let pointsFileName: string;
 
   switch (network) {
     case Network.MAIN:
       provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
       lastTxHashFileName = "../data/eclipse/points/last_tx_hash_mainnet.json";
-      snapFileName = "../data/eclipse/points/points.json";
+      eventsSnapFilename = "../data/eclipse/points/events_snap_mainnet.json";
+      pointsFileName = "../data/eclipse/points/points_mainnet.json";
+      break;
+    case Network.TEST:
+      provider = AnchorProvider.local(
+        "https://testnet.dev2.eclipsenetwork.xyz"
+      );
+      lastTxHashFileName = "../data/eclipse/points/last_tx_hash_testnet.json";
+      eventsSnapFilename = "../data/eclipse/points/events_snap_testnet.json";
+      pointsFileName = "../data/eclipse/points/points_testnet.json";
+
       break;
     default:
       throw new Error("Unknown network");
@@ -140,9 +158,9 @@ export const createPointsSnap = async (network: Network) => {
     programId
   );
 
-  const lastTxHash: string = JSON.parse(
-    fs.readFileSync(lastTxHashFileName, "utf-8")
-  ).lastTxHash;
+  const lastTxHash: string | undefined =
+    JSON.parse(fs.readFileSync(lastTxHashFileName, "utf-8")).lastTxHash ??
+    undefined;
   const sigs = await fetchAllSignatures(connection, programId, lastTxHash);
   if (sigs.length === 0) return;
   const data = { lastTxHash: sigs[0] };
@@ -154,9 +172,11 @@ export const createPointsSnap = async (network: Network) => {
   );
 
   const finalLogs = txLogs.flat();
-
-  const events = extractEvents(market, finalLogs);
-  fs.writeFileSync(snapFileName, JSON.stringify(events, null, 2));
+  const initialEvents = JSON.parse(
+    fs.readFileSync(lastTxHashFileName, "utf-8")
+  );
+  const events = extractEvents(initialEvents, market, finalLogs);
+  fs.writeFileSync(eventsSnapFilename, JSON.stringify(events, null, 2));
 };
 
-createPointsSnap(Network.MAIN);
+createPointsSnap(Network.TEST);
