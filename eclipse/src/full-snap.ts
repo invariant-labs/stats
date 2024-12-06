@@ -138,7 +138,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
         tvl: 0,
         tokenX: poolsDataObject[address].tokenX.toString(),
         tokenY: poolsDataObject[address].tokenY.toString(),
-        // @ts-expect-error
         fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
         apy: poolsApy[address].apy ?? 0,
         poolAddress: new PublicKey(address).toString(),
@@ -178,7 +177,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
           : 0,
       tokenX: poolsDataObject[address].tokenX.toString(),
       tokenY: poolsDataObject[address].tokenY.toString(),
-      // @ts-expect-error
       fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
       apy: poolsApy[address]?.apy ?? 0,
       poolAddress: new PublicKey(address).toString(),
