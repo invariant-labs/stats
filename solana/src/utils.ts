@@ -7,6 +7,7 @@ import { DECIMAL, Range } from "@invariant-labs/sdk/lib/utils";
 import { BN } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
+// @ts-ignore
 import MAINNET_TOKENS from "../../data/mainnet_tokens.json";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Network as EclipseNetwork } from "@invariant-labs/sdk-eclipse";

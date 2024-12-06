@@ -1,6 +1,9 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+//@ts-ignore
 import DEVNET_DATA from "../../../data/devnet.json";
+//@ts-ignore
 import MAINNET_DATA from "../../../data/mainnet.json";
+//@ts-ignore
 import ECLIPSE_DEVNET_DATA from "../../../data/eclipse/devnet.json";
 import { PoolStatsData } from "../../../solana/src/utils";
 

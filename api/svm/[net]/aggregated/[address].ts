@@ -1,12 +1,20 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import BN from "bn.js";
+//@ts-ignore
 import DEVNET_DATA from "../../../../data/devnet.json";
+//@ts-ignore
 import MAINNET_DATA from "../../../../data/mainnet.json";
+//@ts-ignore
 import ECLIPSE_DEVNET_DATA from "../../../../data/eclipse/devnet.json";
+//@ts-ignore
 import ECLIPSE_MAINNET_DATA from "../../../../data/eclipse/mainnet.json";
+//@ts-ignore
 import DEVNET_APY from "../../../../data/pool_apy_archive_devnet.json";
+//@ts-ignore
 import MAINNET_APY from "../../../../data/pool_apy_archive_mainnet.json";
+//@ts-ignore
 import ECLIPSE_DEVNET_APY from "../../../../data/eclipse/pool_apy_archive_devnet.json";
+//@ts-ignore
 import ECLIPSE_MAINNET_APY from "../../../../data/eclipse/pool_apy_archive_mainnet.json";
 import {
   PoolApyArchiveSnapshot,
