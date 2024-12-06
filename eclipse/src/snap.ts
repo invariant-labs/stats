@@ -141,11 +141,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
       fee: pool.fee,
       tickSpacing: pool.tickSpacing,
     });
-    const [address, volumes, liq, fees] = await Promise.all([
+    const [address, volumes, fees, dataX, dataY] = await Promise.all([
       pair.getAddress(market.program.programId),
       market.getVolume(pair),
-      market.getPairLiquidityValues(pair),
       market.getGlobalFee(pair),
+      connection.getParsedAccountInfo(pool.tokenXReserve),
+      connection.getParsedAccountInfo(pool.tokenYReserve),
     ]);
 
     poolsDict[address.toString()] = pool;
@@ -190,8 +191,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
 
     try {
-      liquidityX = liq.liquidityX;
-      liquidityY = liq.liquidityY;
+      liquidityX = new BN(
+        (dataX?.value?.data as any).parsed.info.tokenAmount.amount
+      );
+      liquidityY = new BN(
+        (dataY?.value?.data as any).parsed.info.tokenAmount.amount
+      );
     } catch {
       liquidityX = new BN("0");
       liquidityY = new BN("0");

@@ -51,12 +51,19 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const jupPrices = await getJupPricesData(Object.keys(tokensData));
 
-  const coingeckoIds =  tokensPriceViaCoingecko.map(token => token.coingeckoId)
-  const coingeckoAddresses = tokensPriceViaCoingecko.map(token => token.address)
-  const coingeckoPrices = await getTokensPrices(coingeckoIds, coingeckoAddresses)
+  const coingeckoIds = tokensPriceViaCoingecko.map(
+    (token) => token.coingeckoId
+  );
+  const coingeckoAddresses = tokensPriceViaCoingecko.map(
+    (token) => token.address
+  );
+  const coingeckoPrices = await getTokensPrices(
+    coingeckoIds,
+    coingeckoAddresses
+  );
 
   Object.entries(coingeckoPrices).forEach(([address, price]) => {
-    jupPrices[address] = price.toString()
+    jupPrices[address] = price.toString();
   });
 
   const connection = provider.connection;
@@ -112,9 +119,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
 
     try {
-      const liq = await market.getPairLiquidityValues(pair);
-      liquidityX = liq.liquidityX;
-      liquidityY = liq.liquidityY;
+      const dataX = await connection.getParsedAccountInfo(pool.tokenXReserve);
+      const dataY = await connection.getParsedAccountInfo(pool.tokenYReserve);
+      liquidityX = new BN(
+        (dataX?.value?.data as any).parsed.info.tokenAmount.amount
+      );
+      liquidityY = new BN(
+        (dataY?.value?.data as any).parsed.info.tokenAmount.amount
+      );
     } catch {
       liquidityX = new BN("0");
       liquidityY = new BN("0");
