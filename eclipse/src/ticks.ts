@@ -19,9 +19,19 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.DEV:
-    default:
       provider = Provider.local("https://staging-rpc.dev2.eclipsenetwork.xyz");
       folderName = "../data/eclipse/ticks/devnet/";
+      break;
+    case Network.TEST:
+      provider = Provider.local("https://testnet.dev2.eclipsenetwork.xyz");
+      folderName = "../data/eclipse/ticks/testnet/";
+      break;
+    case Network.MAIN:
+      provider = Provider.local("https://eclipse.helius-rpc.com");
+      folderName = "../data/eclipse/ticks/mainnet/";
+      break;
+    default:
+      throw new Error("Unknown network");
   }
 
   const connection = provider.connection;
@@ -101,3 +111,21 @@ export const createSnapshotForNetwork = async (network: Network) => {
 //     console.log(err)
 //   }
 // )
+
+createSnapshotForNetwork(Network.TEST).then(
+  () => {
+    console.log("Eclipse: Testnet ticks snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
+
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("Eclipse: Mainnet ticks snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
