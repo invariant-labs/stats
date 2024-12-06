@@ -7,7 +7,6 @@ import {
   IWallet,
 } from "@invariant-labs/sdk-eclipse";
 import { poolAPY, WeeklyData } from "@invariant-labs/sdk-eclipse/lib/utils";
-import { BN, Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import DEVNET_APY from "../../data/eclipse/pool_apy_devnet.json";
@@ -26,12 +25,13 @@ import {
   TokenData,
 } from "./utils";
 import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
+import { AnchorProvider, BN } from "anchor-eclipse";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
-  let provider: Provider;
+  let provider: AnchorProvider;
   let fileName: string;
   let archiveFileName: string;
   let ticksFolder: string;
@@ -41,7 +41,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.DEV:
-      provider = Provider.local("https://staging-rpc.dev2.eclipsenetwork.xyz");
+      provider = AnchorProvider.local(
+        "https://staging-rpc.dev2.eclipsenetwork.xyz"
+      );
       fileName = "../data/eclipse/pool_apy_devnet.json";
       archiveFileName = "../data/eclipse/pool_apy_archive_devnet.json";
       ticksFolder = "../data/eclipse/ticks/devnet/";
@@ -50,7 +52,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokensData = eclipseDevnetTokensData;
       break;
     case Network.TEST:
-      provider = Provider.local("https://testnet.dev2.eclipsenetwork.xyz");
+      provider = AnchorProvider.local(
+        "https://testnet.dev2.eclipsenetwork.xyz"
+      );
       fileName = "../data/eclipse/pool_apy_testnet.json";
       archiveFileName = "../data/eclipse/pool_apy_archive_testnet.json";
       ticksFolder = "../data/eclipse/ticks/testnet/";
@@ -59,7 +63,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokensData = eclipseTestnetTokensData;
       break;
     case Network.MAIN:
-      provider = Provider.local("https://eclipse.helius-rpc.com");
+      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
       fileName = "../data/eclipse/pool_apy_mainnet.json";
       archiveFileName = "../data/eclipse/pool_apy_archive_mainnet.json";
       ticksFolder = "../data/eclipse/ticks/mainnet/";
