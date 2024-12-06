@@ -85,6 +85,19 @@ Below is an example of a query:
 https://stats.invariant.app/svm/pool_daily_data/mainnet/aggregated/BRt1iVYDNoohkL1upEb8UfHE8yji6gEDAmuN9Y4yekyc?limit=10
 ```
 
+# Scripts
+
+## Cumulative Stats
+
+Usage:
+
+```bash
+npm run get-cumulative-stats -- <chain> <network> <startTimestamp> <endTimestamp>
+```
+
+Possible chains: `solana`, `eclipse`, `aleph-zero`, `alephium`, `vara`
+Possible networks: `mainnet`, `testnet`, `devnet`
+
 # Most popular pool addresses
 
 | Token X                                                                        | Token Y                                                                       | Fee    | Address                                                                                                                 |
