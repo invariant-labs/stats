@@ -297,7 +297,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
           ),
         },
         protocolFeeX: {
-          tokenBNFromBeginning: "0",
+          tokenBNFromBeginning: pool.feeProtocolTokenX.toString(),
           usdValue24: getUsdValue24(
             pool.feeProtocolTokenX,
             tokenXData.decimals,
@@ -308,7 +308,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
           ),
         },
         protocolFeeY: {
-          tokenBNFromBeginning: "0",
+          tokenBNFromBeginning: pool.feeProtocolTokenY.toString(),
           usdValue24: getUsdValue24(
             pool.feeProtocolTokenY,
             tokenYData.decimals,
