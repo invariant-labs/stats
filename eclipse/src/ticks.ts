@@ -1,3 +1,4 @@
+import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
   Network,
   Market,
@@ -6,7 +7,6 @@ import {
   sleep,
   IWallet,
 } from "@invariant-labs/sdk-eclipse";
-import { BN, Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 
@@ -14,20 +14,24 @@ import fs from "fs";
 require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
-  let provider: Provider;
+  let provider: AnchorProvider;
   let folderName: string;
 
   switch (network) {
     case Network.DEV:
-      provider = Provider.local("https://staging-rpc.dev2.eclipsenetwork.xyz");
+      provider = AnchorProvider.local(
+        "https://staging-rpc.dev2.eclipsenetwork.xyz"
+      );
       folderName = "../data/eclipse/ticks/devnet/";
       break;
     case Network.TEST:
-      provider = Provider.local("https://testnet.dev2.eclipsenetwork.xyz");
+      provider = AnchorProvider.local(
+        "https://testnet.dev2.eclipsenetwork.xyz"
+      );
       folderName = "../data/eclipse/ticks/testnet/";
       break;
     case Network.MAIN:
-      provider = Provider.local("https://eclipse.helius-rpc.com");
+      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
       folderName = "../data/eclipse/ticks/mainnet/";
       break;
     default:
