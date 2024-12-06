@@ -15,5 +15,5 @@
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true
   },
-  "exclude": ["a0", "alph", "solana", "eclipse"]
+  "exclude": ["a0", "alph", "solana", "eclipse", "data"]
 }
