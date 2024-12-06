@@ -12,9 +12,15 @@ import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import DEVNET_APY from "../../data/eclipse/pool_apy_devnet.json";
 import DEVNET_ARCHIVE from "../../data/eclipse/pool_apy_archive_devnet.json";
+import TESTNET_APY from "../../data/eclipse/pool_apy_testnet.json";
+import TESTNET_ARCHIVE from "../../data/eclipse/pool_apy_archive_testnet.json";
+import MAINNET_APY from "../../data/eclipse/pool_apy_mainnet.json";
+import MAINNET_ARCHIVE from "../../data/eclipse/pool_apy_archive_mainnet.json";
 import {
   ApySnapshot,
   eclipseDevnetTokensData,
+  eclipseMainnetTokensData,
+  eclipseTestnetTokensData,
   jsonArrayToTicks,
   PoolApyArchiveSnapshot,
   TokenData,
@@ -35,7 +41,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.DEV:
-    default:
       provider = Provider.local("https://staging-rpc.dev2.eclipsenetwork.xyz");
       fileName = "../data/eclipse/pool_apy_devnet.json";
       archiveFileName = "../data/eclipse/pool_apy_archive_devnet.json";
@@ -43,6 +48,27 @@ export const createSnapshotForNetwork = async (network: Network) => {
       apySnaps = DEVNET_APY;
       apyArchive = DEVNET_ARCHIVE;
       tokensData = eclipseDevnetTokensData;
+      break;
+    case Network.TEST:
+      provider = Provider.local("https://testnet.dev2.eclipsenetwork.xyz");
+      fileName = "../data/eclipse/pool_apy_testnet.json";
+      archiveFileName = "../data/eclipse/pool_apy_archive_testnet.json";
+      ticksFolder = "../data/eclipse/ticks/testnet/";
+      apySnaps = TESTNET_APY;
+      apyArchive = TESTNET_ARCHIVE;
+      tokensData = eclipseTestnetTokensData;
+      break;
+    case Network.MAIN:
+      provider = Provider.local("https://eclipse.helius-rpc.com");
+      fileName = "../data/eclipse/pool_apy_mainnet.json";
+      archiveFileName = "../data/eclipse/pool_apy_archive_mainnet.json";
+      ticksFolder = "../data/eclipse/ticks/mainnet/";
+      apySnaps = MAINNET_APY;
+      apyArchive = MAINNET_ARCHIVE;
+      tokensData = eclipseMainnetTokensData;
+      break;
+    default:
+      throw new Error("Unknown network");
   }
 
   const connection = provider.connection;
@@ -337,3 +363,21 @@ export const createSnapshotForNetwork = async (network: Network) => {
 //     console.log(err)
 //   }
 // )
+
+createSnapshotForNetwork(Network.TEST).then(
+  () => {
+    console.log("Eclipse: Testnet pool apy snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
+
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("Eclipse: Mainnet pool apy snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
