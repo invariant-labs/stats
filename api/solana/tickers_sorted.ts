@@ -5,8 +5,11 @@ import { getMarketAddress, Market, Network } from "@invariant-labs/sdk";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { PoolStructure } from "@invariant-labs/sdk/lib/market";
 import { PoolSnapshot, printBN } from "../utils";
+// @ts-ignore
 import data from "../../data/mainnet.json";
+// @ts-ignore
 import fullData from "../../data/full_mainnet.json";
+
 import {
   PoolStatsDataWithString,
   TimeData,

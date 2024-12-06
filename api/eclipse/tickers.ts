@@ -8,7 +8,9 @@ import {
   PoolStructure,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import { PoolSnapshot, printBN } from "../utils";
+//@ts-ignore
 import data from "../../data/eclipse/mainnet.json";
+//@ts-ignore
 import fullData from "../../data/eclipse/full_mainnet.json";
 import {
   PoolStatsDataWithString,

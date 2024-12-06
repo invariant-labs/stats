@@ -1,7 +1,11 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+//@ts-ignore
 import DEVNET_APY from "../../../../data/pool_apy_archive_devnet.json";
+//@ts-ignore
 import MAINNET_APY from "../../../../data/pool_apy_archive_mainnet.json";
+//@ts-ignore
 import ECLIPSE_DEVNET_APY from "../../../../data/eclipse/pool_apy_archive_devnet.json";
+//@ts-ignore
 import ECLIPSE_MAINNET_APY from "../../../../data/eclipse/pool_apy_archive_mainnet.json";
 import { PoolApyArchiveSnapshot } from "../../../../solana/src/utils";
 

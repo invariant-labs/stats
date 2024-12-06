@@ -1,8 +1,13 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+//@ts-ignore
 import DEVNET_DATA from "../../../data/full_devnet.json";
+//@ts-ignore
 import MAINNET_DATA from "../../../data/full_mainnet.json";
+//@ts-ignore
 import ECLIPSE_DEVNET_DATA from "../../../data/eclipse/full_devnet.json";
+//@ts-ignore
 import ECLIPSE_TESTNET_DATA from "../../../data/eclipse/full_testnet.json";
+//@ts-ignore
 import ECLIPSE_MAINNET_DATA from "../../../data/eclipse/full_mainnet.json";
 import {
   PoolStatsDataWithString,

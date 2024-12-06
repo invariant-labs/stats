@@ -1,8 +1,12 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+//@ts-ignore
 import DEVNET_APY from "../../../data/incentive_apy_devnet.json";
+//@ts-ignore
 import MAINNET_APY from "../../../data/incentive_apy_mainnet.json";
 import { IncentiveApySnapshot, RewardsData } from "../../../solana/src/utils";
+//@ts-ignore
 import DEVNET_REWARDS from "../../../data/rewards_data_devnet.json";
+//@ts-ignore
 import MAINNET_REWARDS from "../../../data/rewards_data_mainnet.json";
 
 export default function (req: VercelRequest, res: VercelResponse) {

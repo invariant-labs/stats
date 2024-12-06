@@ -1,5 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+//@ts-ignore
 import TESTNET_DATA from "../../../data/alph/testnet.json";
+//@ts-ignore
 import MAINNET_DATA from "../../../data/alph/mainnet.json";
 import { PoolStatsData, ALPHNetwork as Network } from "../../utils";
 
