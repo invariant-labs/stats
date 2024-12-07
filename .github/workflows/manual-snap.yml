@@ -1,0 +1,165 @@
+name: "Create snapshot of stats"
+
+on: workflow_dispatch
+
+env:
+  solana_version: 1.18.18
+
+jobs:
+  sol-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+      - name: install global mocha
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          npm install -g mocha
+          npm install -g ts-mocha
+          npm install -g typescript
+          npm install -g @project-serum/anchor
+          ts-mocha -h
+      - name: install essential
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config build-essential libudev-dev
+      - name: install solana
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.solana_version }}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          solana --version
+      - name: setup solana
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          solana --version
+          solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
+      - name: sol snapshot
+        working-directory: ./solana
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
+          npm install
+          npm run snap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sol-snapshot-${{ github.run_id }}
+          path: |
+            ./data/*.json
+            ./data/ticks/
+  eclipse-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+      - name: install global mocha
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          npm install -g mocha
+          npm install -g ts-mocha
+          npm install -g typescript
+          npm install -g @project-serum/anchor
+          ts-mocha -h
+      - name: install essential
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config build-essential libudev-dev
+      - name: install solana
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.solana_version }}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          solana --version
+      - name: setup solana
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          solana --version
+          solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
+      - name: eclipse snapshot
+        working-directory: ./eclipse
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
+          npm install
+          npm run snap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eclipse-snapshot-${{ github.run_id }}
+          path: |
+            ./data/*.json
+            ./data/eclipse/
+            ./data/ticks/
+  a0-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+      - name: install global mocha
+        run: |
+          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+          npm install -g mocha
+          npm install -g ts-mocha
+          npm install -g typescript
+          ts-mocha -h
+      - name: install essential
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config build-essential libudev-dev
+      - name: a0 snapshot
+        working-directory: ./a0
+        run: |
+          npm install
+          npm run snap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a0-snapshot-${{ github.run_id }}
+          path: |
+            ./data/a0/
+  alph-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+      - name: alph snapshot
+        working-directory: ./alph
+        run: |
+          npm install
+          npm run snap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alph-snapshot-${{ github.run_id }}
+          path: |
+            ./data/alph/
+  vara-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+      - name: vara snapshot
+        working-directory: ./vara
+        run: |
+          npm install
+          npm run snap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vara-snapshot-${{ github.run_id }}
+          path: |
+            ./data/vara/
