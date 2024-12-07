@@ -1,4 +1,4 @@
-name: "Manual snapshot (with deploy)"
+name: "Manual snapshot (without deploy)"
 
 on: workflow_dispatch
 
