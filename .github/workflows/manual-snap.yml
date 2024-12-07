@@ -1,4 +1,4 @@
-name: "Create snapshot of stats"
+name: "Manual snapshot (with deploy)"
 
 on: workflow_dispatch
 
