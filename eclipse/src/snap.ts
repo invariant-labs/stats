@@ -296,28 +296,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
             new BN(0)
           ),
         },
-        protocolFeeX: {
-          tokenBNFromBeginning: pool.feeProtocolTokenX.toString(),
-          usdValue24: getUsdValue24(
-            pool.feeProtocolTokenX,
-            tokenXData.decimals,
-            tokenXPrice,
-            typeof lastSnapshot !== "undefined" && lastSnapshot.protocolFeeX
-              ? new BN(lastSnapshot.protocolFeeX.tokenBNFromBeginning)
-              : new BN(0)
-          ),
-        },
-        protocolFeeY: {
-          tokenBNFromBeginning: pool.feeProtocolTokenY.toString(),
-          usdValue24: getUsdValue24(
-            pool.feeProtocolTokenY,
-            tokenYData.decimals,
-            tokenYPrice,
-            typeof lastSnapshot !== "undefined" && lastSnapshot.protocolFeeY
-              ? new BN(lastSnapshot.protocolFeeY.tokenBNFromBeginning)
-              : new BN(0)
-          ),
-        },
+        protocolFeeX: pool.feeProtocolTokenX.toString(),
+        protocolFeeY: pool.feeProtocolTokenY.toString(),
       },
     });
   }

@@ -30,8 +30,8 @@ export interface PoolSnapshot {
   feeY: SnapshotValueData;
   lockedX?: SnapshotValueData;
   lockedY?: SnapshotValueData;
-  protocolFeeX?: SnapshotValueData;
-  protocolFeeY?: SnapshotValueData;
+  protocolFeeX?: string;
+  protocolFeeY?: string;
 }
 
 export interface PoolStatsData {
