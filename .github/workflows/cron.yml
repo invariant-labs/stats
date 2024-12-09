@@ -101,9 +101,7 @@ jobs:
         with:
           name: eclipse-snapshot-${{ github.run_id }}
           path: |
-            ./data/*.json
             ./data/eclipse/
-            ./data/ticks/
   a0-snap:
     runs-on: ubuntu-latest
     steps:
