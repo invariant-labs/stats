@@ -301,6 +301,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
             new BN(0)
           ),
         },
+        protocolFeeX: pool.feeProtocolTokenX.toString(),
+        protocolFeeY: pool.feeProtocolTokenY.toString(),
       },
     });
   }

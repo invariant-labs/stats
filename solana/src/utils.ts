@@ -25,6 +25,8 @@ export interface PoolSnapshot {
   liquidityY: SnapshotValueData;
   feeX: SnapshotValueData;
   feeY: SnapshotValueData;
+  protocolFeeX?: string;
+  protocolFeeY?: string;
 }
 
 export interface PoolStatsData {
