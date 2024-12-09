@@ -188,64 +188,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       feeY = new BN(lastSnapshot?.feeY.tokenBNFromBeginning ?? "0");
     }
 
-    console.log({
-      volumeX: {
-        tokenBNFromBeginning: volumeX.toString(),
-        usdValue24: getUsdValue24(
-          volumeX,
-          tokenXData.decimals,
-          tokenXPrice,
-          lastVolumeX
-        ),
-      },
-      volumeY: {
-        tokenBNFromBeginning: volumeY.toString(),
-        usdValue24: getUsdValue24(
-          volumeY,
-          tokenYData.decimals,
-          tokenYPrice,
-          lastVolumeY
-        ),
-      },
-      liquidityX: {
-        tokenBNFromBeginning: liquidityX.toString(),
-        usdValue24: getUsdValue24(
-          liquidityX,
-          tokenXData.decimals,
-          tokenXPrice,
-          new BN(0)
-        ),
-      },
-      liquidityY: {
-        tokenBNFromBeginning: liquidityY.toString(),
-        usdValue24: getUsdValue24(
-          liquidityY,
-          tokenYData.decimals,
-          tokenYPrice,
-          new BN(0)
-        ),
-      },
-      feeX: {
-        tokenBNFromBeginning: feeX.toString(),
-        usdValue24: getUsdValue24(
-          feeX,
-          tokenXData.decimals,
-          tokenXPrice,
-          lastFeeX
-        ),
-      },
-      feeY: {
-        tokenBNFromBeginning: feeY.toString(),
-        usdValue24: getUsdValue24(
-          feeY,
-          tokenYData.decimals,
-          tokenYPrice,
-          lastFeeY
-        ),
-      },
-      protocolFeeX: pool.feeProtocolTokenX.toString(),
-      protocolFeeY: pool.feeProtocolTokenY.toString(),
-    });
     poolsData.push({
       address: address.toString(),
       stats: {
