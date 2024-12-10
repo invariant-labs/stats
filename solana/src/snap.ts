@@ -22,7 +22,6 @@ import {
   TokenData,
   tokensPriceViaCoingecko,
 } from "./utils";
-import { token } from "anchor-eclipse/dist/cjs/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
