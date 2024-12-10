@@ -187,7 +187,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         ? lastSnapshot.protocolFeeX
           ? new BN(lastSnapshot.protocolFeeX)
           : feeProtocolTokenX
-        : feeProtocolTokenY;
+        : feeProtocolTokenX;
     const lastProtocolFeeY =
       typeof lastSnapshot !== "undefined"
         ? lastSnapshot.protocolFeeY
