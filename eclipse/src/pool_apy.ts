@@ -209,7 +209,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             });
 
             input[address.toString()] = {
-              feeTier: { fee: pool.fee.v.toString() },
+              feeTier: { fee: pool.fee.toString() },
               volumeX: +new BN(currentSnap.volumeX)
                 .sub(new BN(prevSnap.volumeX))
                 .toString(),
@@ -220,13 +220,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 index: tick.index,
                 sign: tick.sign,
                 bump: tick.bump,
-                liquidityChange: { v: tick.liquidityChange.v.toString() },
-                liquidityGross: { v: tick.liquidityGross.v.toString() },
-                sqrtPrice: { v: tick.sqrtPrice.v.toString() },
-                feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.v.toString() },
-                feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.v.toString() },
+                liquidityChange: { v: tick.liquidityChange.toString() },
+                liquidityGross: { v: tick.liquidityGross.toString() },
+                sqrtPrice: { v: tick.sqrtPrice.toString() },
+                feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.toString() },
+                feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.toString() },
                 secondsPerLiquidityOutside: {
-                  v: tick.secondsPerLiquidityOutside.v.toString(),
+                  v: tick.secondsPerLiquidityOutside.toString(),
                 },
                 pool: tick.pool.toString(),
               })),
@@ -234,13 +234,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 index: tick.index,
                 sign: tick.sign,
                 bump: tick.bump,
-                liquidityChange: { v: tick.liquidityChange.v.toString() },
-                liquidityGross: { v: tick.liquidityGross.v.toString() },
-                sqrtPrice: { v: tick.sqrtPrice.v.toString() },
-                feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.v.toString() },
-                feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.v.toString() },
+                liquidityChange: { v: tick.liquidityChange.toString() },
+                liquidityGross: { v: tick.liquidityGross.toString() },
+                sqrtPrice: { v: tick.sqrtPrice.toString() },
+                feeGrowthOutsideX: { v: tick.feeGrowthOutsideX.toString() },
+                feeGrowthOutsideY: { v: tick.feeGrowthOutsideY.toString() },
                 secondsPerLiquidityOutside: {
-                  v: tick.secondsPerLiquidityOutside.v.toString(),
+                  v: tick.secondsPerLiquidityOutside.toString(),
                 },
                 pool: tick.pool.toString(),
               })),
