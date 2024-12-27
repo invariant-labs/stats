@@ -298,7 +298,6 @@ export const eclipseMainnetTokensData = {
     decimals: 9,
     coingeckoId: "turbo-eth",
     ticker: "tETH",
-    solAddress: "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
   },
   // 2022 tokens
   AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE: {
