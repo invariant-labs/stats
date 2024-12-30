@@ -93,8 +93,32 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "5WFyCtryxTK3v7LMS1169m1Vz1xUauxJYHfRyMh8uhoH", // USDC/ETH 1%
     "FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9", // tETH/ETH 0.01%
     "DA75rd2KfPyYJY286qgwtYMfwfjTY6T53sM5Hto9FWfi", // USDC/SOL 0.01%
-    "92ca6jVdjE6STduV4tAg7ijuy436jimacWMyjM9Yzmcj", // LAIKA/ETH 1%
+    "92ca6jVdjE6STduV4tAg7ijuy436jimacWMyjM9Yzmcj", // LAIKA/ETH 0.1%
     "4x7P9KXWm9QdueFFvoVY5Sd8B4YKsGUBB7xQ3iDQQQoa", // SOL/ETH 1%
+    "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce", // USDC/ETH 0.09%
+    "462Jv897HxksDUnvAH7ZHvmTtXNEeTrikuHrTrz5uZhE", // USDC/USDT 0.1%
+    "2YMcH9VEBXKzA4c2DHua487ZpGaZarYeRjgNBXPxHSRj", // USDC/SOL 0.3%
+    "2MPKn48cLpMYrqJv3Yucet2LDduZQMi6FBsdqKANvg6X", // tETH/ETH 0.02%
+    "3f8r3ioxkAZViSp5PcA319K9HB2ZF7aSK2CeaL6w1Lho", // USDC/ETH 0.05% 
+    "8SwgHaEeN9s8iT1iz6ud2etCNHixiUqRFBN1SJ48rPXC", // USDC/tETH 0.01%
+    "5nVk1wDt6TnLXiPvTDmfKzLoRbBJKuHm4pSneTPPWWS2", // SOL/ETH 0.1%
+    "3N8EhmmZXdAkQni1wJKKtXe4Z9vGHv47ZfH1zQE3ooNG", // TIA/ETH 0.01%
+    "4E8HzjsxvBpiMYPshihf9qUiuvL6nh833kuxzRYvQ642", // USDC/ETH 0.02%
+    "FdEcxaJ9cDW5Y3AZ79eDtzdvK7uaxSEfn5vPb47ew5yg", // tETH/ETH 0.1%
+    "9YdHK4nPkFS9f3wJ9JTmHnya55nbpRr1nBU3LHZvSBme", // tETH/ETH 0.05%
+    "6kzPN6Z9b1jXi71p1QNS9otZuix7TuPcUTBLa7iiPLo6", // SOL/tETH 0.01%
+    "EY4Q8BpxKpbNVxdVnZAFf6wykszhxm2xhQzd8DmYHnpY", // USDC/LAIKA 1%
+    "ykVrPy3CWKLpfeTt7rCaRouz37kdcWqBaAcArEtGToq", // tETH/ETH 0.3%
+    "71CfrFotPRQR9Br4ngoosHUDF1PSE671iRPe7TcrXb9T", // LAIKA/ETH 0.02%
+    "HrMrnPC6F9c9CV2ZinEgWP26pupRDNaKLuB4UXKHzBGd", //tETH/ETH 1%
+    "2KKE2Wr2WCpq9LoCGLLrjRwHZje8BFRAbTDeufY7swPe", // LAIKA/ETH 1%
+    "B2UXDFqCsMn3bGSd8YsAFNxw4MMk2Lku1Ah2T3W6y2Xz", // LAIKA/ETH 0.01%
+    "9za12Ea7dH51N4kdhSpaKJxekSPWXgKHavdiFG8DEVXc", // tETH/ETH 0.09%
+    "GxBRDmb8pUZC8yXfn1CwKHpCaEWXdDp9CvjQMiznxX1r", // LAIKA/ETH 0.3%
+    "B9ZJQnvVecnxgNSALuyvzKVNCdd9uxTqADMQB86wswMy", // GSVM/ETH 1%
+    "FSBb5Atma2HpUhembdBT1edYw1kmVPHVqvtR1Q11jBGL", // SOL/ETH 0.02%
+    "86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM", // SOL/ETH 0.09%
+    "7owDutq5guBRS94XCbVy1Q1tW6nXNhHeeQPeDTQ1xTYb", // SOL/ETH 0.05%
   ];
 
   // Tokens which price should be evaluated last, the lower the value the less likely the token is to be the base_currency
@@ -103,9 +127,9 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     ["BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL", 10], // SOL
     ["So11111111111111111111111111111111111111112", 20], // ETH
     ["GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn", 30], // tETH
+    ["CEBP3CqAbW4zdZA57H2wfaSG1QNdzQ72GiQEbQXyW9Tm", 40], // USDT
   ]);
   const connection = new Connection("https://eclipse.helius-rpc.com");
-  const keypair = new Keypair();
 
   const network = Network.MAIN;
   const market = await Market.buildWithoutProvider(network, connection);
@@ -136,8 +160,8 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     }
   });
   // for some reason they're set to 0 in the last snap
-  decimals.set("jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v", 9);
-  decimals.set("5LafQUrVco6o7KMz42eqVEJ9LW31StPyGjeeu5sKoMtA", 6);
+  decimals.set("137EXM1L3m8hDeq29ducnGhYCwEDCAnxcJ7kqD4TcFFC", 9);
+  decimals.set("9RryNMhAVJpAwAGjCAMKbbTFwgjapqPkzpGMfTQhEjf8", 6);
 
   const typedFullData = fullData as FullSnap;
 
