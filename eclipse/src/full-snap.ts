@@ -11,6 +11,7 @@ import {
   getEclipseTokensData,
   getJupPricesData2,
   getPoolsFromAdresses,
+  getTokensPrices,
   PoolsApyStatsData,
   PoolStatsData,
   PoolStatsDataWithString,
@@ -219,6 +220,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
     Object.entries(allTokens).forEach(([address, tokenData]) => {
       if (solAddress === tokenData.solAddress && tokensDataObject[address]) {
         tokensDataObject[address].price = priceData.price;
+      }
+    });
+  });
+
+  const idsList: string[] = [];
+
+  Object.values(allTokens).forEach((token) => {
+    if (typeof token?.coingeckoId !== "undefined") {
+      idsList.push(token.coingeckoId);
+    }
+  });
+
+  const coingeckoPrices = await getTokensPrices(idsList);
+
+  Object.entries(coingeckoPrices).forEach(([coingeckoId, price]) => {
+    Object.entries(allTokens).forEach(([address, tokenData]) => {
+      if (coingeckoId === tokenData.coingeckoId && tokensDataObject[address]) {
+        tokensDataObject[address].price = price;
       }
     });
   });
