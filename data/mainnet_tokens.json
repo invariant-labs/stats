@@ -11609,5 +11609,15 @@
     "logoURI": "https://ipfs.io/ipfs/QmPfaJVTTSLSzoVaauMKAn6Xa2bs76YeVMDERiay4UmX5b",
     "tags": [],
     "extensions": { "coingeckoId": "doginhood" }
+  },
+  {
+    "address": "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN",
+    "chainId": 101,
+    "decimals": 6,
+    "name": "OFFICIAL TRUMP",
+    "symbol": "TRUMP",
+    "logoURI": "https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f617277656176652e6e65742f565172506a4143776e51526d78644b4254714e775069796f363578374c415437373374384b643759427a77",
+    "tags": [],
+    "extensions": { "coingeckoId": "official-trump" }
   }
 ]
