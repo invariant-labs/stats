@@ -9,6 +9,10 @@ import ECLIPSE_DEVNET_DATA from "../../../data/eclipse/full_devnet.json";
 import ECLIPSE_TESTNET_DATA from "../../../data/eclipse/full_testnet.json";
 //@ts-ignore
 import ECLIPSE_MAINNET_DATA from "../../../data/eclipse/full_mainnet.json";
+//@ts-ignore
+import SOON_TESTNET_DATA from "../../../data/soon/full_testnet.json";
+//@ts-ignore
+import SOON_MAINNET_DATA from "../../../data/soon/full_mainnet.json";
 import {
   PoolStatsDataWithString,
   TimeData,
@@ -62,6 +66,10 @@ export default function (req: VercelRequest, res: VercelResponse) {
     data = ECLIPSE_TESTNET_DATA as unknown as FullSnap;
   } else if (net === "eclipse-mainnet") {
     data = ECLIPSE_MAINNET_DATA as unknown as FullSnap;
+  } else if (net === "soon-testnet") {
+    data = SOON_TESTNET_DATA as unknown as FullSnap;
+  } else if (net === "soon-mainnet") {
+    data = SOON_MAINNET_DATA as unknown as FullSnap;
   } else {
     return res.status(400).send("INVALID NETWORK");
   }
