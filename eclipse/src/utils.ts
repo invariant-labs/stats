@@ -114,8 +114,14 @@ export interface IPriceData {
 export const getTokensPrices = async (
   network: Network
 ): Promise<Record<string, { price: number }>> => {
+  const supportedNetworks = {
+    [Network.TEST]: "eclipse-testnet",
+    [Network.MAIN]: "eclipse-mainnet",
+  };
   const { data } = await axios.get<IPriceData>(
-    `https://price.invariant.app/${network}`
+    `https://price.invariant.app/${
+      supportedNetworks[network] ?? "eclipse-testnet"
+    }`
   );
 
   return data.data;
