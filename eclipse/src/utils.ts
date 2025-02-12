@@ -255,6 +255,16 @@ export const eclipseMainnetTokensData = {
     ticker: "WIF",
     solAddress: "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
   },
+  "9RryNMhAVJpAwAGjCAMKbbTFwgjapqPkzpGMfTQhEjf8": {
+    decimals: 6,
+    coingeckoId: "bridged-tia-hyperlane",
+    ticker: "TIA",
+  },
+  V5m1Cc9VK61mKL8xVYrjR7bjD2BC5VpADLa6ws3G8KM: {
+    decimals: 6,
+    coingeckoId: "stride-staked-tia",
+    ticker: "stTIA",
+  },
 };
 
 export interface QuotientSnapshot {

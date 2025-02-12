@@ -155,12 +155,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
     let tokenYData = tokensData?.[pool.tokenY.toString()] ?? {
       decimals: 0,
     };
-    let tokenXPrice = tokenXData.coingeckoId
-      ? tokenPrices[tokenXData.coingeckoId] ?? 0
-      : 0;
-    let tokenYPrice = tokenYData.coingeckoId
-      ? tokenPrices[tokenYData.coingeckoId] ?? 0
-      : 0;
+    let tokenXPrice = tokenPrices[pool.tokenX.toString()] ?? 0;
+    let tokenYPrice = tokenPrices[pool.tokenY.toString()] ?? 0;
 
     if (Object.keys(supportedTokens).includes(pool.tokenX.toString())) {
       tokenXPrice = supportedTokensWithPrices[pool.tokenX.toString()];
