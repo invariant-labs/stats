@@ -79,7 +79,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const result = await market.getCurrentTokenStats(
         supportedToken,
         "So11111111111111111111111111111111111111112",
-        coingeckoPrices["ethereum"]
+        coingeckoPrices["solana"]
       );
 
       if (!("error" in result)) {

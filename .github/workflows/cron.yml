@@ -266,7 +266,7 @@ jobs:
         eclipse-snap,
         vara-snap,
         soon-snap,
-        "sonic-snap",
+        sonic-snap,
       ]
     if: ${{ always() }}
     runs-on: ubuntu-latest

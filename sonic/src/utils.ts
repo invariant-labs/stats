@@ -208,19 +208,19 @@ export const getUsdValue24 = (
 };
 
 export const sonicTestnetTokensData = {
-  "6oVfVHd9nDJhCNGsXLRKx1Zfm8LmQC4rQ3gRCwfRkaVf": {
+  "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL": {
     decimals: 6,
     coingeckoId: "usd-coin",
     ticker: "USDC",
     solAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
   },
-  "9Ejfzo8wfNjjhA5tgASyVqxrQoGPiQUWJ6cGaUdfw3bg": {
+  CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs: {
     decimals: 6,
     coingeckoId: "bitcoin",
     ticker: "BTC",
     solAddress: "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh",
   },
-  So11111111111111111111111111111111111111112: {
+  "8bE8wsnfsjFvzJzQCTgPVEzVktWBVDpK1aisCvZAgPQw": {
     decimals: 9,
     coingeckoId: "ethereum",
     ticker: "WETH",
@@ -228,14 +228,7 @@ export const sonicTestnetTokensData = {
   },
 };
 
-export const sonicMainnetTokensData = {
-  So11111111111111111111111111111111111111112: {
-    decimals: 9,
-    coingeckoId: "ethereum",
-    ticker: "WETH",
-    solAddress: "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
-  },
-};
+export const sonicMainnetTokensData = {};
 
 export interface QuotientSnapshot {
   timestamp: number;
