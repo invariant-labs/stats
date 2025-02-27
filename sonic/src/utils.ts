@@ -113,12 +113,12 @@ export const getTokensPrices = async (
   network: Network
 ): Promise<Record<string, { price: number }>> => {
   const supportedNetworks = {
-    [Network.TEST]: "eclipse-testnet",
-    [Network.MAIN]: "eclipse-mainnet",
+    [Network.TEST]: "sonic-testnet",
+    [Network.MAIN]: "sonic-mainnet",
   };
   const { data } = await axios.get<IPriceData>(
     `https://price.invariant.app/${
-      supportedNetworks[network] ?? "eclipse-testnet"
+      supportedNetworks[network] ?? "sonic-testnet"
     }`
   );
 
