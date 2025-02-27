@@ -145,23 +145,29 @@ export const getUsdValue24 = (
 };
 
 export const sonicTestnetTokensData = {
-  "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL": {
-    decimals: 6,
+  "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL": {
+    decimals: 9,
     coingeckoId: "usd-coin",
     ticker: "USDC",
     solAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
   },
-  CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs: {
-    decimals: 6,
+  "87ZPWWeTNS8iCMakTPwbEpkn7zAfVzxRNUmZCgBdjj4H": {
+    decimals: 9,
     coingeckoId: "bitcoin",
     ticker: "BTC",
     solAddress: "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh",
   },
-  "8bE8wsnfsjFvzJzQCTgPVEzVktWBVDpK1aisCvZAgPQw": {
+  "62rMuAVWh2mQYE9wP4cPhaLDsbn8SzQNbHyJqUM6oQCB": {
     decimals: 9,
     coingeckoId: "ethereum",
     ticker: "WETH",
     solAddress: "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
+  },
+  So11111111111111111111111111111111111111112: {
+    decimals: 9,
+    coingeckoId: "solana",
+    ticker: "SOL",
+    solAddress: "So11111111111111111111111111111111111111112",
   },
 };
 

@@ -1,1 +1,190 @@
-{"volume24":{"value":0,"change":null},"tvl24":{"value":2891796941.8586802,"change":null},"fees24":{"value":0,"change":null},"tokensData":[{"address":"2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL","price":0.999988,"volume24":0,"tvl":88382.89472899999},{"address":"So11111111111111111111111111111111111111112","price":140.2698365,"volume24":0,"tvl":2805397150},{"address":"CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs","price":86311.40887764,"volume24":0,"tvl":86311408.96395099}],"poolsData":[{"volume24":0,"tvl":140.000001,"tokenX":"2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL","tokenY":"So11111111111111111111111111111111111111112","fee":0.02,"apy":0,"poolAddress":"6hazit4tPXaDn4LRRBnaTuScymikenW33xNQKQ5oyidp","liquidityX":0.000001,"liquidityY":140,"lockedX":0,"lockedY":0},{"volume24":0,"tvl":0.086313,"tokenX":"2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL","tokenY":"CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs","fee":0.02,"apy":0,"poolAddress":"3ucvWHX27sWrVP7V88U9V6Namx5ixtgTDerTSqsKcj6C","liquidityX":0.000002,"liquidityY":0.086311,"lockedX":0,"lockedY":0},{"volume24":0,"tvl":0,"tokenX":"2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL","tokenY":"CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs","fee":0.05,"apy":0,"poolAddress":"GTv2JneYJRTXr8oW6JGycRvyCiFKjCHViJwu7yD42SrR","liquidityX":0,"liquidityY":0,"lockedX":0,"lockedY":0},{"volume24":0,"tvl":2805484392.912831,"tokenX":"2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL","tokenY":"So11111111111111111111111111111111111111112","fee":0.1,"apy":0,"poolAddress":"4gzRFbuavfPFr33pygLJ2czYUcPWikU61oFHfoBqd9Jx","liquidityX":87382.912831,"liquidityY":2805397010,"lockedX":0,"lockedY":0},{"volume24":0,"tvl":0,"tokenX":"2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL","tokenY":"CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs","fee":0.09,"apy":0,"poolAddress":"GVRHXAUhvBP5SusRTLt3oVGn6h2UN5T8hV2LMjjiXpD2","liquidityX":0,"liquidityY":0,"lockedX":0,"lockedY":0},{"volume24":0,"tvl":86312408.859535,"tokenX":"2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL","tokenY":"CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs","fee":0.01,"apy":0,"poolAddress":"6eyLcJAjPW5ejnPbDJfG24BgiJrnTbhg5GVd1hvfP719","liquidityX":999.981895,"liquidityY":86311408.87764,"lockedX":0,"lockedY":0}],"volumePlot":[{"timestamp":1740657600000,"value":0}],"liquidityPlot":[{"timestamp":1740657600000,"value":2891796941.8586802}]}
+{
+  "volume24": { "value": 0, "change": null },
+  "tvl24": { "value": 5443.469315709, "change": null },
+  "fees24": { "value": 0, "change": null },
+  "tokensData": [
+    {
+      "address": "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL",
+      "price": 0,
+      "volume24": 0,
+      "tvl": 0
+    },
+    {
+      "address": "So11111111111111111111111111111111111111112",
+      "price": 139.4678385,
+      "volume24": 0,
+      "tvl": 0.964288257
+    },
+    {
+      "address": "CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs",
+      "price": 0,
+      "volume24": 0,
+      "tvl": 0
+    },
+    {
+      "address": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
+      "price": 0.999784,
+      "volume24": 0,
+      "tvl": 3000.619041353
+    },
+    {
+      "address": "87ZPWWeTNS8iCMakTPwbEpkn7zAfVzxRNUmZCgBdjj4H",
+      "price": 85972.87719061,
+      "volume24": 0,
+      "tvl": 204.735283811
+    },
+    {
+      "address": "62rMuAVWh2mQYE9wP4cPhaLDsbn8SzQNbHyJqUM6oQCB",
+      "price": 2337.49,
+      "volume24": 0,
+      "tvl": 2237.150702288
+    }
+  ],
+  "poolsData": [
+    {
+      "volume24": 0,
+      "tvl": 1.39e-7,
+      "tokenX": "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL",
+      "tokenY": "So11111111111111111111111111111111111111112",
+      "fee": 0.02,
+      "apy": 0,
+      "poolAddress": "6hazit4tPXaDn4LRRBnaTuScymikenW33xNQKQ5oyidp",
+      "liquidityX": 0,
+      "liquidityY": 1.39e-7,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 0,
+      "tokenX": "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL",
+      "tokenY": "CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs",
+      "fee": 0.05,
+      "apy": 0,
+      "poolAddress": "GTv2JneYJRTXr8oW6JGycRvyCiFKjCHViJwu7yD42SrR",
+      "liquidityX": 0,
+      "liquidityY": 0,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 0,
+      "tokenX": "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL",
+      "tokenY": "CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs",
+      "fee": 0.09,
+      "apy": 0,
+      "poolAddress": "GVRHXAUhvBP5SusRTLt3oVGn6h2UN5T8hV2LMjjiXpD2",
+      "liquidityX": 0,
+      "liquidityY": 0,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 1.960506703,
+      "tokenX": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
+      "tokenY": "So11111111111111111111111111111111111111112",
+      "fee": 0.09,
+      "apy": 0,
+      "poolAddress": "HjujFgVe4Yr7z8ge7JhokoQvuuu7e668k5d95zFsaG1S",
+      "liquidityX": 0.999951,
+      "liquidityY": 0.960555703,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 304.73040138199997,
+      "tokenX": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
+      "tokenY": "87ZPWWeTNS8iCMakTPwbEpkn7zAfVzxRNUmZCgBdjj4H",
+      "fee": 1,
+      "apy": 0,
+      "poolAddress": "CgRCNR26rs7MLpZuCw5wpErw53Yk7kMqrq7XS3G263tp",
+      "liquidityX": 99.995117571,
+      "liquidityY": 204.735283811,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 0,
+      "tokenX": "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL",
+      "tokenY": "CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs",
+      "fee": 0.02,
+      "apy": 0,
+      "poolAddress": "3ucvWHX27sWrVP7V88U9V6Namx5ixtgTDerTSqsKcj6C",
+      "liquidityX": 0,
+      "liquidityY": 0,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 5135.768212007,
+      "tokenX": "62rMuAVWh2mQYE9wP4cPhaLDsbn8SzQNbHyJqUM6oQCB",
+      "tokenY": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
+      "fee": 0.1,
+      "apy": 0,
+      "poolAddress": "H4QcXPqL88TUhgD2U5CgJRQEn1qMcBbxRkdczTPxP71f",
+      "liquidityX": 2237.150699952,
+      "liquidityY": 2898.617512055,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 0.000028425,
+      "tokenX": "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL",
+      "tokenY": "So11111111111111111111111111111111111111112",
+      "fee": 0.1,
+      "apy": 0,
+      "poolAddress": "4gzRFbuavfPFr33pygLJ2czYUcPWikU61oFHfoBqd9Jx",
+      "liquidityX": 0,
+      "liquidityY": 0.000028425,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 0.006512067000000001,
+      "tokenX": "62rMuAVWh2mQYE9wP4cPhaLDsbn8SzQNbHyJqUM6oQCB",
+      "tokenY": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
+      "fee": 0.09,
+      "apy": 0,
+      "poolAddress": "vjYLL5XGYjgQBmUed2xZJgDP15RaDVSLwrh5oDAzzVa",
+      "liquidityX": 0.000002336,
+      "liquidityY": 0.006509731,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 0,
+      "tokenX": "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL",
+      "tokenY": "CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs",
+      "fee": 0.01,
+      "apy": 0,
+      "poolAddress": "6eyLcJAjPW5ejnPbDJfG24BgiJrnTbhg5GVd1hvfP719",
+      "liquidityX": 0,
+      "liquidityY": 0,
+      "lockedX": 0,
+      "lockedY": 0
+    },
+    {
+      "volume24": 0,
+      "tvl": 1.0036549860000001,
+      "tokenX": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
+      "tokenY": "So11111111111111111111111111111111111111112",
+      "fee": 0.1,
+      "apy": 0,
+      "poolAddress": "CsCeK4DejG1UvhVY1xeZ2kvnJCmfEsv53dyZwcjCD83Z",
+      "liquidityX": 0.999950996,
+      "liquidityY": 0.00370399,
+      "lockedX": 0,
+      "lockedY": 0
+    }
+  ],
+  "volumePlot": [{ "timestamp": 1740657600000, "value": 0 }],
+  "liquidityPlot": [{ "timestamp": 1740657600000, "value": 5443.469315709 }]
+}
