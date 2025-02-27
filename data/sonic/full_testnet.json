@@ -1,7 +1,7 @@
 {
-  "volume24": { "value": 0, "change": null },
-  "tvl24": { "value": 5443.469315709, "change": null },
-  "fees24": { "value": 0, "change": null },
+  "volume24": { "value": 2347.52, "change": null },
+  "tvl24": { "value": 10923.356439751, "change": null },
+  "fees24": { "value": 2.34752, "change": null },
   "tokensData": [
     {
       "address": "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL",
@@ -11,9 +11,9 @@
     },
     {
       "address": "So11111111111111111111111111111111111111112",
-      "price": 139.4678385,
+      "price": 138.6651105,
       "volume24": 0,
-      "tvl": 0.964288257
+      "tvl": 0.962163716
     },
     {
       "address": "CsHREb2WNe6zcUL9TxjRQmuvB1EUF9fDuPM3Qy8SqQBs",
@@ -23,21 +23,21 @@
     },
     {
       "address": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
-      "price": 0.999784,
+      "price": 0.999978,
       "volume24": 0,
-      "tvl": 3000.619041353
+      "tvl": 678.9172871470001
     },
     {
       "address": "87ZPWWeTNS8iCMakTPwbEpkn7zAfVzxRNUmZCgBdjj4H",
-      "price": 85972.87719061,
+      "price": 85763.03903476,
       "volume24": 0,
-      "tvl": 204.735283811
+      "tvl": 204.747067033
     },
     {
       "address": "62rMuAVWh2mQYE9wP4cPhaLDsbn8SzQNbHyJqUM6oQCB",
-      "price": 2337.49,
-      "volume24": 0,
-      "tvl": 2237.150702288
+      "price": 2344.08,
+      "volume24": 2347.52,
+      "tvl": 4595.260606146
     }
   ],
   "poolsData": [
@@ -82,27 +82,27 @@
     },
     {
       "volume24": 0,
-      "tvl": 1.960506703,
+      "tvl": 1.9584553850000002,
       "tokenX": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
       "tokenY": "So11111111111111111111111111111111111111112",
       "fee": 0.09,
       "apy": 0,
       "poolAddress": "HjujFgVe4Yr7z8ge7JhokoQvuuu7e668k5d95zFsaG1S",
-      "liquidityX": 0.999951,
-      "liquidityY": 0.960555703,
+      "liquidityX": 1.000016,
+      "liquidityY": 0.958439385,
       "lockedX": 0,
       "lockedY": 0
     },
     {
       "volume24": 0,
-      "tvl": 304.73040138199997,
+      "tvl": 304.748684605,
       "tokenX": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
       "tokenY": "87ZPWWeTNS8iCMakTPwbEpkn7zAfVzxRNUmZCgBdjj4H",
       "fee": 1,
       "apy": 0,
       "poolAddress": "CgRCNR26rs7MLpZuCw5wpErw53Yk7kMqrq7XS3G263tp",
-      "liquidityX": 99.995117571,
-      "liquidityY": 204.735283811,
+      "liquidityX": 100.001617572,
+      "liquidityY": 204.747067033,
       "lockedX": 0,
       "lockedY": 0
     },
@@ -120,41 +120,41 @@
       "lockedY": 0
     },
     {
-      "volume24": 0,
-      "tvl": 5135.768212007,
+      "volume24": 2347.52,
+      "tvl": 5172.169731225,
       "tokenX": "62rMuAVWh2mQYE9wP4cPhaLDsbn8SzQNbHyJqUM6oQCB",
       "tokenY": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
       "fee": 0.1,
       "apy": 0,
       "poolAddress": "H4QcXPqL88TUhgD2U5CgJRQEn1qMcBbxRkdczTPxP71f",
-      "liquidityX": 2237.150699952,
-      "liquidityY": 2898.617512055,
+      "liquidityX": 4595.260603799,
+      "liquidityY": 576.909127426,
       "lockedX": 0,
       "lockedY": 0
     },
     {
       "volume24": 0,
-      "tvl": 0.000028425,
+      "tvl": 0.000028363,
       "tokenX": "2QYThuyCoSHJH6ZEbbqj1ZHc397fQ5xnHCdeEAfu8nGL",
       "tokenY": "So11111111111111111111111111111111111111112",
       "fee": 0.1,
       "apy": 0,
       "poolAddress": "4gzRFbuavfPFr33pygLJ2czYUcPWikU61oFHfoBqd9Jx",
       "liquidityX": 0,
-      "liquidityY": 0.000028425,
+      "liquidityY": 0.000028363,
       "lockedX": 0,
       "lockedY": 0
     },
     {
       "volume24": 0,
-      "tvl": 0.006512067000000001,
+      "tvl": 0.0065125009999999995,
       "tokenX": "62rMuAVWh2mQYE9wP4cPhaLDsbn8SzQNbHyJqUM6oQCB",
       "tokenY": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
       "fee": 0.09,
       "apy": 0,
       "poolAddress": "vjYLL5XGYjgQBmUed2xZJgDP15RaDVSLwrh5oDAzzVa",
-      "liquidityX": 0.000002336,
-      "liquidityY": 0.006509731,
+      "liquidityX": 0.000002347,
+      "liquidityY": 0.006510154,
       "lockedX": 0,
       "lockedY": 0
     },
@@ -173,18 +173,18 @@
     },
     {
       "volume24": 0,
-      "tvl": 1.0036549860000001,
+      "tvl": 1.003711824,
       "tokenX": "6B8zhSGkjZcQxHCE9RFwYMxT8ipifJ4JZLFTskLMcMeL",
       "tokenY": "So11111111111111111111111111111111111111112",
       "fee": 0.1,
       "apy": 0,
       "poolAddress": "CsCeK4DejG1UvhVY1xeZ2kvnJCmfEsv53dyZwcjCD83Z",
-      "liquidityX": 0.999950996,
-      "liquidityY": 0.00370399,
+      "liquidityX": 1.000015995,
+      "liquidityY": 0.003695829,
       "lockedX": 0,
       "lockedY": 0
     }
   ],
-  "volumePlot": [{ "timestamp": 1740657600000, "value": 0 }],
-  "liquidityPlot": [{ "timestamp": 1740657600000, "value": 5443.469315709 }]
+  "volumePlot": [{ "timestamp": 1740657600000, "value": 2347.52 }],
+  "liquidityPlot": [{ "timestamp": 1740657600000, "value": 10923.356439751 }]
 }
