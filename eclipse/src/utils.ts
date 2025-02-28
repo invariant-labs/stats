@@ -265,7 +265,6 @@ export const eclipseMainnetTokensData = {
     coingeckoId: "stride-staked-tia",
     ticker: "stTIA",
   },
-<<<<<<< HEAD
   "2tGbYEm4nuPFyS6zjDTELzEhvVKizgKewi6xT7AaSKzn": {
     decimals: 6,
     coingeckoId: "orca",
@@ -275,8 +274,6 @@ export const eclipseMainnetTokensData = {
   HgD4Dc6qYCj3UanMDiuC4qANheeTsAvk6DY91B3F8gnL: {
     decimals: 5,
   },
-=======
->>>>>>> parent of 08a9b856e9 (Merge pull request #136 from invariant-labs/revert-134-price-api-for-stats)
 };
 
 export interface QuotientSnapshot {
