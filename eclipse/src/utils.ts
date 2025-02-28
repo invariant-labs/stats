@@ -265,6 +265,15 @@ export const eclipseMainnetTokensData = {
     coingeckoId: "stride-staked-tia",
     ticker: "stTIA",
   },
+  "2tGbYEm4nuPFyS6zjDTELzEhvVKizgKewi6xT7AaSKzn": {
+    decimals: 6,
+    coingeckoId: "orca",
+    ticker: "ORCA",
+    solAddress: "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE",
+  },
+  HgD4Dc6qYCj3UanMDiuC4qANheeTsAvk6DY91B3F8gnL: {
+    decimals: 5,
+  },
 };
 
 export interface QuotientSnapshot {
