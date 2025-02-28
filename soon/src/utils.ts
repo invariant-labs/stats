@@ -226,6 +226,12 @@ export const soonTestnetTokensData = {
     ticker: "WETH",
     solAddress: "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
   },
+  EmwhbR6EUWTD4Sju7YqDwyTaJb318Jku3ngeG4m6trYE: {
+    decimals: 9,
+    coingeckoId: "solana",
+    ticker: "SOL",
+    solAddress: "So11111111111111111111111111111111111111112",
+  },
 };
 
 export const soonMainnetTokensData = {

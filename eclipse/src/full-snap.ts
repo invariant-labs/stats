@@ -7,7 +7,9 @@ import {
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
+  getCoingeckoPricesData2,
   getEclipseTokensData,
+  getJupPricesData2,
   getPoolsFromAdresses,
   getTokensPrices,
   PoolsApyStatsData,
@@ -209,12 +211,35 @@ export const createSnapshotForNetwork = async (network: Network) => {
     });
   });
 
-  const tokenPrices = await getTokensPrices(network);
+  const allTokens = getEclipseTokensData(network);
+  const tokensPricesData = await getJupPricesData2(
+    Object.values(allTokens).map((tokenData) => tokenData.solAddress ?? "")
+  );
 
-  Object.entries(tokenPrices).forEach(([addr, { price }]) => {
-    if (tokensDataObject[addr]) {
-      tokensDataObject[addr].price = price;
+  Object.entries(tokensPricesData).forEach(([solAddress, priceData]) => {
+    Object.entries(allTokens).forEach(([address, tokenData]) => {
+      if (solAddress === tokenData.solAddress && tokensDataObject[address]) {
+        tokensDataObject[address].price = priceData.price;
+      }
+    });
+  });
+
+  const idsList: string[] = [];
+
+  Object.values(allTokens).forEach((token) => {
+    if (typeof token?.coingeckoId !== "undefined") {
+      idsList.push(token.coingeckoId);
     }
+  });
+
+  const coingeckoPrices = await getTokensPrices(idsList);
+
+  Object.entries(coingeckoPrices).forEach(([coingeckoId, price]) => {
+    Object.entries(allTokens).forEach(([address, tokenData]) => {
+      if (coingeckoId === tokenData.coingeckoId && tokensDataObject[address]) {
+        tokensDataObject[address].price = price;
+      }
+    });
   });
 
   const volumePlot: TimeData[] = Object.entries(volumeForTimestamps)
@@ -265,7 +290,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const result = await market.getCurrentTokenStats(
         supportedToken,
         "So11111111111111111111111111111111111111112",
-        tokenPrices["So11111111111111111111111111111111111111112"].price
+        tokensPricesData["7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"].price
       );
 
       if (!("error" in result) && tokensDataObject[supportedToken]) {
