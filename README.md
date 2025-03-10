@@ -27,8 +27,8 @@ All of this data has the same JSON structure:
                feeX: TokenAmount,
                feeY: TokenAmount,
             }
-        ]
-        tokenX: TokenInfo
+        ],
+        tokenX: TokenInfo,
         tokenY: TokenInfo
     }
 }
