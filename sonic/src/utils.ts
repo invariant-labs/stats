@@ -171,7 +171,20 @@ export const sonicTestnetTokensData = {
   },
 };
 
-export const sonicMainnetTokensData = {};
+export const sonicMainnetTokensData = {
+  HbDgpvHVxeNSRCGEUFvapCYmtYfqxexWcCbxtYecruy8: {
+    decimals: 6,
+    coingeckoId: "usd-coin",
+    ticker: "USDC",
+    solAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  },
+  So11111111111111111111111111111111111111112: {
+    decimals: 9,
+    coingeckoId: "solana",
+    ticker: "SOL",
+    solAddress: "So11111111111111111111111111111111111111112",
+  },
+};
 
 export interface QuotientSnapshot {
   timestamp: number;

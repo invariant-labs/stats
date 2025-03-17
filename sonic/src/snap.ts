@@ -43,7 +43,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokensData = sonicTestnetTokensData;
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://rpc.mainnet.soo.network/rpc");
+      provider = AnchorProvider.local("https://api.mainnet-alpha.sonic.game");
       fileName = "../data/sonic/mainnet.json";
       snaps = MAINNET_DATA as Record<string, PoolStatsData>;
       tokensData = sonicMainnetTokensData;
@@ -380,11 +380,11 @@ createSnapshotForNetwork(Network.TEST).then(
   }
 );
 
-// createSnapshotForNetwork(Network.MAIN).then(
-//   () => {
-//     console.log("sonic: Mainnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("sonic: Mainnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);

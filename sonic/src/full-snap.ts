@@ -36,7 +36,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       poolsApyFileName = "../data/sonic/pool_apy_testnet.json";
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://rpc.mainnet.soo.network/rpc");
+      provider = AnchorProvider.local("https://api.mainnet-alpha.sonic.game");
       fileName = "../data/sonic/full_mainnet.json";
       dataFileName = "../data/sonic/mainnet.json";
       poolsApyFileName = "../data/sonic/pool_apy_mainnet.json";
@@ -256,7 +256,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const result = await market.getCurrentTokenStats(
         supportedToken,
         "So11111111111111111111111111111111111111112",
-        tokensPricesData["So11111111111111111111111111111111111111112"].price
+        tokenPrices["So11111111111111111111111111111111111111112"].price
       );
 
       if (!("error" in result) && tokensDataObject[supportedToken]) {
@@ -288,11 +288,11 @@ createSnapshotForNetwork(Network.TEST).then(
   }
 );
 
-// createSnapshotForNetwork(Network.MAIN).then(
-//   () => {
-//     console.log("sonic: Full mainnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("sonic: Full mainnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
