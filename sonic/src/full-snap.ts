@@ -256,7 +256,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const result = await market.getCurrentTokenStats(
         supportedToken,
         "So11111111111111111111111111111111111111112",
-        tokensPricesData["So11111111111111111111111111111111111111112"].price
+        tokenPrices["So11111111111111111111111111111111111111112"].price
       );
 
       if (!("error" in result) && tokensDataObject[supportedToken]) {
@@ -288,11 +288,11 @@ createSnapshotForNetwork(Network.TEST).then(
   }
 );
 
-// createSnapshotForNetwork(Network.MAIN).then(
-//   () => {
-//     console.log("sonic: Full mainnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("sonic: Full mainnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);

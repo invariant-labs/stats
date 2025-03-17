@@ -380,11 +380,11 @@ createSnapshotForNetwork(Network.TEST).then(
   }
 );
 
-// createSnapshotForNetwork(Network.MAIN).then(
-//   () => {
-//     console.log("sonic: Mainnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("sonic: Mainnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
