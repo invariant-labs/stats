@@ -1,36 +1,36 @@
 {
-  "volume24": { "value": 0, "change": null },
-  "tvl24": { "value": 8.01344082, "change": null },
-  "fees24": { "value": 0, "change": null },
+  "volume24": { "value": 1.800122, "change": null },
+  "tvl24": { "value": 8.052787287000001, "change": null },
+  "fees24": { "value": 0.0018, "change": null },
   "tokensData": [
     {
       "address": "HbDgpvHVxeNSRCGEUFvapCYmtYfqxexWcCbxtYecruy8",
-      "price": 1.00003,
-      "volume24": 0,
-      "tvl": 4.000123
+      "price": 1.000068,
+      "volume24": 1.800122,
+      "tvl": 3.238645
     },
     {
       "address": "So11111111111111111111111111111111111111112",
-      "price": 128.6777115,
+      "price": 129.2892235,
       "volume24": 0,
-      "tvl": 4.01331782
+      "tvl": 4.814142287
     }
   ],
   "poolsData": [
     {
-      "volume24": 0,
-      "tvl": 8.01344082,
+      "volume24": 1.800122,
+      "tvl": 8.052787287000001,
       "tokenX": "HbDgpvHVxeNSRCGEUFvapCYmtYfqxexWcCbxtYecruy8",
       "tokenY": "So11111111111111111111111111111111111111112",
       "fee": 0.1,
       "apy": 0,
       "poolAddress": "4UzNwpTSqx28uRSsBdG8kXpo7reTLjLZLwmXyhZy64Xy",
-      "liquidityX": 4.000123,
-      "liquidityY": 4.01331782,
+      "liquidityX": 3.238645,
+      "liquidityY": 4.814142287,
       "lockedX": 0,
       "lockedY": 0
     }
   ],
-  "volumePlot": [{ "timestamp": 1742212800000, "value": 0 }],
-  "liquidityPlot": [{ "timestamp": 1742212800000, "value": 8.01344082 }]
+  "volumePlot": [{ "timestamp": 1742212800000, "value": 1.800122 }],
+  "liquidityPlot": [{ "timestamp": 1742212800000, "value": 8.052787287000001 }]
 }
