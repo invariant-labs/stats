@@ -1,1 +1,36 @@
-{}
+{
+  "volume24": { "value": 0, "change": null },
+  "tvl24": { "value": 8.01344082, "change": null },
+  "fees24": { "value": 0, "change": null },
+  "tokensData": [
+    {
+      "address": "HbDgpvHVxeNSRCGEUFvapCYmtYfqxexWcCbxtYecruy8",
+      "price": 1.00003,
+      "volume24": 0,
+      "tvl": 4.000123
+    },
+    {
+      "address": "So11111111111111111111111111111111111111112",
+      "price": 128.6777115,
+      "volume24": 0,
+      "tvl": 4.01331782
+    }
+  ],
+  "poolsData": [
+    {
+      "volume24": 0,
+      "tvl": 8.01344082,
+      "tokenX": "HbDgpvHVxeNSRCGEUFvapCYmtYfqxexWcCbxtYecruy8",
+      "tokenY": "So11111111111111111111111111111111111111112",
+      "fee": 0.1,
+      "apy": 0,
+      "poolAddress": "4UzNwpTSqx28uRSsBdG8kXpo7reTLjLZLwmXyhZy64Xy",
+      "liquidityX": 4.000123,
+      "liquidityY": 4.01331782,
+      "lockedX": 0,
+      "lockedY": 0
+    }
+  ],
+  "volumePlot": [{ "timestamp": 1742212800000, "value": 0 }],
+  "liquidityPlot": [{ "timestamp": 1742212800000, "value": 8.01344082 }]
+}

@@ -36,7 +36,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       poolsApyFileName = "../data/sonic/pool_apy_testnet.json";
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://rpc.mainnet.soo.network/rpc");
+      provider = AnchorProvider.local("https://api.mainnet-alpha.sonic.game");
       fileName = "../data/sonic/full_mainnet.json";
       dataFileName = "../data/sonic/mainnet.json";
       poolsApyFileName = "../data/sonic/pool_apy_mainnet.json";
