@@ -184,6 +184,18 @@ export const sonicMainnetTokensData = {
     ticker: "SOL",
     solAddress: "So11111111111111111111111111111111111111112",
   },
+  qPzdrTCvxK3bxoh2YoTZtDcGVgRUwm37aQcC3abFgBy: {
+    decimals: 6,
+    coingeckoId: "tether",
+    ticker: "USDT",
+    solAddress: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+  },
+  mrujEYaN1oyQXDHeYNxBYpxWKVkQ2XsGxfznpifu4aL: {
+    decimals: 9,
+    coingeckoId: "sonic",
+    ticker: "SONIC",
+    solAddress: "SonicxvLud67EceaEzCLRnMTBqzYUUYNr93DBkBdDES",
+  },
 };
 
 export interface QuotientSnapshot {
