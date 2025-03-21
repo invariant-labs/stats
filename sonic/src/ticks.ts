@@ -23,7 +23,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       folderName = "../data/sonic/ticks/testnet/";
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://rpc.mainnet.soo.network/rpc");
+      provider = AnchorProvider.local("https://api.mainnet-alpha.sonic.game");
       folderName = "../data/sonic/ticks/mainnet/";
       break;
     default:
@@ -108,11 +108,11 @@ createSnapshotForNetwork(Network.TEST).then(
   }
 );
 
-// createSnapshotForNetwork(Network.MAIN).then(
-//   () => {
-//     console.log("sonic: Mainnet ticks snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("sonic: Mainnet ticks snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);

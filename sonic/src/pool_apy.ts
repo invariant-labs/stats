@@ -47,7 +47,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokensData = sonicTestnetTokensData;
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://rpc.mainnet.soo.network/rpc");
+      provider = AnchorProvider.local("https://api.mainnet-alpha.sonic.game");
       fileName = "../data/sonic/pool_apy_mainnet.json";
       archiveFileName = "../data/sonic/pool_apy_archive_mainnet.json";
       ticksFolder = "../data/sonic/ticks/mainnet/";
@@ -352,11 +352,11 @@ createSnapshotForNetwork(Network.TEST).then(
   }
 );
 
-// createSnapshotForNetwork(Network.MAIN).then(
-//   () => {
-//     console.log("sonic: Mainnet pool apy snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("sonic: Mainnet pool apy snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
