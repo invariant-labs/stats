@@ -25,9 +25,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = Provider.local(
-        "https://mainnet.helius-rpc.com/?api-key=ef843b40-9876-4a02-a181-a1e6d3e61b4c"
-      );
+      const rpcUrl =
+        process.env.SOLANA_RPC_URL ??
+        "https://mainnet.helius-rpc.com/?api-key=ef843b40-9876-4a02-a181-a1e6d3e61b4c";
+      provider = Provider.local(rpcUrl);
       fileName = "../data/full_mainnet.json";
       dataFileName = "../data/mainnet.json";
       poolsApyFileName = "../data/pool_apy_mainnet.json";
@@ -190,17 +191,23 @@ export const createSnapshotForNetwork = async (network: Network) => {
     Object.keys(tokensDataObject)
   );
 
-  const coingeckoIds =  tokensPriceViaCoingecko.map(token => token.coingeckoId)
-  const coingeckoAddresses = tokensPriceViaCoingecko.map(token => token.address)
-  const coingeckoPrices = await getTokensPrices(coingeckoIds, coingeckoAddresses)
-
+  const coingeckoIds = tokensPriceViaCoingecko.map(
+    (token) => token.coingeckoId
+  );
+  const coingeckoAddresses = tokensPriceViaCoingecko.map(
+    (token) => token.address
+  );
+  const coingeckoPrices = await getTokensPrices(
+    coingeckoIds,
+    coingeckoAddresses
+  );
 
   Object.entries(tokensPricesData).forEach(([address, token]) => {
     tokensDataObject[address].price = token.price;
   });
 
   Object.entries(coingeckoPrices).forEach(([address, price]) => {
-    tokensDataObject[address].price = price
+    tokensDataObject[address].price = price;
   });
 
   const volumePlot: TimeData[] = Object.entries(volumeForTimestamps)
