@@ -28,16 +28,21 @@ import {
 require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
+  console.log("Starting snapshot for network:", network);
   let provider: Provider;
   let fileName: string;
   let snaps: Record<string, PoolStatsData>;
   let tokensData: Record<string, TokenData>;
 
+  const helloWorld = process.env.HELLO_WORLD;
+  console.log("HELLO_WORLD:", helloWorld);
   switch (network) {
     case Network.MAIN:
       const rpcUrl = process.env.SOLANA_RPC_URL;
       if (!rpcUrl) {
         throw new Error("SOLANA_RPC_URL is not defined");
+      } else {
+        console.log("RPC URL is defined");
       }
 
       provider = Provider.local(rpcUrl);

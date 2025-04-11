@@ -4,7 +4,8 @@ on: workflow_dispatch
 
 env:
   solana_version: 1.18.18
-
+  SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
+  HELLO_WORLD: "Hello, world!"
 jobs:
   sol-snap:
     runs-on: ubuntu-latest
@@ -42,11 +43,11 @@ jobs:
           solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
       - name: sol snapshot
         working-directory: ./solana
-        env:
-          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
         run: |
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
+          export SOLANA_RPC_URL="${{ secrets.SOLANA_RPC_URL }}"
+          export HELLO_WORLD="Hello, world!"
           npm install
           npm run snap
       - uses: actions/upload-artifact@v4
