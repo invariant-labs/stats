@@ -25,10 +25,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      const args = process.argv.slice(2);
-      const cmdLineRpcUrl = args[0];
-
-      provider = Provider.local(cmdLineRpcUrl);
+      const rpcUrl = process.env.SOLANA_RPC_URL;
+      if (!rpcUrl) {
+        throw new Error("RPC is not defined");
+      }
+      provider = Provider.local(rpcUrl);
       fileName = "../data/full_mainnet.json";
       dataFileName = "../data/mainnet.json";
       poolsApyFileName = "../data/pool_apy_mainnet.json";

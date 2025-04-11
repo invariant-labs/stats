@@ -42,11 +42,13 @@ jobs:
           solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
       - name: sol snapshot
         working-directory: ./solana
+        env:
+          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
         run: |
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
           npm install
-          sh ./snap.sh "${{ secrets.SOLANA_RPC_PUBLIC }}"
+          npm run snap
       - uses: actions/upload-artifact@v4
         with:
           name: sol-snapshot-${{ github.run_id }}
