@@ -39,12 +39,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const args = process.argv.slice(2);
       const cmdLineRpcUrl = args[0];
 
-      if (!cmdLineRpcUrl) {
-        throw new Error("RPC is not defined");
-      } else {
-        console.log("RPC URL is defined");
-      }
-
       provider = Provider.local(cmdLineRpcUrl);
       fileName = "../data/mainnet.json";
       snaps = MAINNET_DATA as Record<string, PoolStatsData>;

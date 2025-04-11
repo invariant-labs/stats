@@ -25,10 +25,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      const rpcUrl =
-        process.env.SOLANA_RPC_URL ??
-        "https://mainnet.helius-rpc.com/?api-key=ef843b40-9876-4a02-a181-a1e6d3e61b4c";
-      provider = Provider.local(rpcUrl);
+      const args = process.argv.slice(2);
+      const cmdLineRpcUrl = args[0];
+
+      provider = Provider.local(cmdLineRpcUrl);
       fileName = "../data/full_mainnet.json";
       dataFileName = "../data/mainnet.json";
       poolsApyFileName = "../data/pool_apy_mainnet.json";
