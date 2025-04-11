@@ -28,7 +28,6 @@ import {
 require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
-  console.log("Starting snapshot for network:", network);
   let provider: Provider;
   let fileName: string;
   let snaps: Record<string, PoolStatsData>;
