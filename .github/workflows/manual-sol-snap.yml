@@ -4,6 +4,7 @@ on: workflow_dispatch
 
 env:
   solana_version: 1.18.18
+  rpc_url: ${{ secrets.SOLANA_RPC_PUBLIC }}
 jobs:
   sol-snap:
     runs-on: ubuntu-latest
@@ -45,12 +46,7 @@ jobs:
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
           npm install
-
-          if [ -z "${{ secrets.SOLANA_RPC_PUBLIC }}" ]; then
-            echo   "Warning: SOLANA_RPC_PUBLIC secret is empty"    
-          fi
-
-          sh ./snap.sh "${{ secrets.SOLANA_RPC_PUBLIC }}"
+          sh ./snap.sh ${{env.rpc_url}}
       - uses: actions/upload-artifact@v4
         with:
           name: sol-snapshot-${{ github.run_id }}
