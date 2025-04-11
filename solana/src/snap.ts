@@ -34,18 +34,18 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let snaps: Record<string, PoolStatsData>;
   let tokensData: Record<string, TokenData>;
 
-  const helloWorld = process.env.HELLO_WORLD;
-  console.log("HELLO_WORLD:", helloWorld);
   switch (network) {
     case Network.MAIN:
-      const rpcUrl = process.env.SOLANA_RPC_URL;
-      if (!rpcUrl) {
-        throw new Error("SOLANA_RPC_URL is not defined");
+      const args = process.argv.slice(2);
+      const cmdLineRpcUrl = args[0];
+
+      if (!cmdLineRpcUrl) {
+        throw new Error("RPC is not defined");
       } else {
         console.log("RPC URL is defined");
       }
 
-      provider = Provider.local(rpcUrl);
+      provider = Provider.local(cmdLineRpcUrl);
       fileName = "../data/mainnet.json";
       snaps = MAINNET_DATA as Record<string, PoolStatsData>;
       tokensData = await getTokensData();
