@@ -35,8 +35,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
+      console.log("Args ", process.argv);
       const args = process.argv.slice(2);
       const cmdLineRpcUrl = args[0];
+      console.log("RPC URL", cmdLineRpcUrl);
 
       provider = Provider.local(cmdLineRpcUrl);
       fileName = "../data/mainnet.json";
