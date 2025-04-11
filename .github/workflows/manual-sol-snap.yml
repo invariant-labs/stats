@@ -46,6 +46,7 @@ jobs:
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
           npm install
+          export SOLANA_RPC_URL="$SOLANA_RPC_URL"
           npm run snap
       - uses: actions/upload-artifact@v4
         with:
