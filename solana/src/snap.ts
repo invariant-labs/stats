@@ -35,9 +35,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = Provider.local(
-        "https://mainnet.helius-rpc.com/?api-key=ef843b40-9876-4a02-a181-a1e6d3e61b4c"
-      );
+      const rpcUrl = process.env.SOLANA_RPC_URL;
+      if (!rpcUrl) {
+        throw new Error("RPC is not defined");
+      }
+      provider = Provider.local(rpcUrl);
       fileName = "../data/mainnet.json";
       snaps = MAINNET_DATA as Record<string, PoolStatsData>;
       tokensData = await getTokensData();
