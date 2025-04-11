@@ -45,6 +45,11 @@ jobs:
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
           npm install
+
+          if [ -z "${{ secrets.SOLANA_RPC_PUBLIC }}" ]; then
+            echo   "Warning: SOLANA_RPC_PUBLIC secret is empty"    
+          fi
+
           sh ./snap.sh "${{ secrets.SOLANA_RPC_PUBLIC }}"
       - uses: actions/upload-artifact@v4
         with:
