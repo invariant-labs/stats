@@ -46,7 +46,7 @@ jobs:
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
           npm install
-          sh ./snap.sh ${{ secrets.SOLANA_RPC_PUBLIC }}
+          sh ./snap.sh "${{ secrets.SOLANA_RPC_PUBLIC }}"
       - uses: actions/upload-artifact@v4
         with:
           name: sol-snapshot-${{ github.run_id }}
