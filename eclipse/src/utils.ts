@@ -236,6 +236,9 @@ export const eclipseMainnetTokensData = {
     coingeckoId: "turbo-eth",
     ticker: "tETH",
   },
+  "64mggk2nXg6vHC1qCdsZdEFzd5QGN4id54Vbho4PswCF": {
+    decimals: 11,
+  },
   // 2022 tokens
   AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE: {
     decimals: 6,
