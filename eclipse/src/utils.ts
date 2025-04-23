@@ -57,6 +57,12 @@ export interface PoolLock {
   lockedY: BN;
 }
 
+export interface DailyApyData {
+  apy: number;
+  volumeX: number;
+  tokenXamount: BN;
+}
+
 export const printBN = (amount: BN, decimals: number): string => {
   const balanceString = amount.toString();
   if (balanceString.length <= decimals) {
@@ -348,8 +354,8 @@ export interface RewardsData {
 
 export interface ApySnapshot {
   apy: number;
-  weeklyFactor: number[];
-  weeklyRange: Range[];
+  weeklyFactor?: number[];
+  weeklyRange?: Range[];
 }
 
 export interface IncentiveApySnapshot {
@@ -368,13 +374,13 @@ export const jsonArrayToTicks = (address: string, data: any[]) => {
         index: tick.index,
         sign: tick.sign,
         bump: tick.bump,
-        liquidityChange: new BN(tick.liquidityChange.v, "hex"),
-        liquidityGross: new BN(tick.liquidityGross.v, "hex"),
-        sqrtPrice: new BN(tick.sqrtPrice.v, "hex"),
-        feeGrowthOutsideX: new BN(tick.feeGrowthOutsideX.v, "hex"),
-        feeGrowthOutsideY: new BN(tick.feeGrowthOutsideY.v, "hex"),
+        liquidityChange: new BN(tick.liquidityChange, "hex"),
+        liquidityGross: new BN(tick.liquidityGross, "hex"),
+        sqrtPrice: new BN(tick.sqrtPrice, "hex"),
+        feeGrowthOutsideX: new BN(tick.feeGrowthOutsideX, "hex"),
+        feeGrowthOutsideY: new BN(tick.feeGrowthOutsideY, "hex"),
         secondsPerLiquidityOutside: new BN(
-          tick.secondsPerLiquidityOutside.v,
+          tick.secondsPerLiquidityOutside,
           "hex"
         ),
         pool: new PublicKey(address),
@@ -395,7 +401,7 @@ export const jsonArrayToTicks = (address: string, data: any[]) => {
 export interface PoolApyArchiveSnapshot {
   timestamp: number;
   apy: number;
-  range: Range;
+  range?: Range;
   tokenXAmount?: string;
   volumeX?: number;
   weeklyFactor?: number[];
