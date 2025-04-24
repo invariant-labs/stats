@@ -58,7 +58,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const data: Record<string, PoolStatsData> = JSON.parse(
     fs.readFileSync(dataFileName, "utf-8")
   );
-  const poolsApy: Record<string, PoolsApyStatsData> = JSON.parse(
+  const poolsApy: Record<string, number> = JSON.parse(
     fs.readFileSync(poolsApyFileName, "utf-8")
   );
 
@@ -138,7 +138,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         tokenX: poolsDataObject[address].tokenX.toString(),
         tokenY: poolsDataObject[address].tokenY.toString(),
         fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
-        apy: poolsApy[address].apy ?? 0,
+        apy: poolsApy[address] ?? 0,
         poolAddress: new PublicKey(address).toString(),
         liquidityX: 0,
         liquidityY: 0,
@@ -177,7 +177,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokenX: poolsDataObject[address].tokenX.toString(),
       tokenY: poolsDataObject[address].tokenY.toString(),
       fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
-      apy: poolsApy[address]?.apy ?? 0,
+      apy: poolsApy[address] ?? 0,
       poolAddress: new PublicKey(address).toString(),
       liquidityX: lastSnapshot.liquidityX.usdValue24,
       liquidityY: lastSnapshot.liquidityY.usdValue24,

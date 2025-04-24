@@ -60,7 +60,8 @@ export interface PoolLock {
 export interface DailyApyData {
   apy: number;
   volumeX: number;
-  tokenXamount: BN;
+  tokenXAmount: BN;
+  range: Range;
 }
 
 export const printBN = (amount: BN, decimals: number): string => {
@@ -352,12 +353,6 @@ export interface RewardsData {
   total: number;
 }
 
-export interface ApySnapshot {
-  apy: number;
-  weeklyFactor?: number[];
-  weeklyRange?: Range[];
-}
-
 export interface IncentiveApySnapshot {
   apy: number;
   apySingleTick: number;
@@ -398,12 +393,8 @@ export const jsonArrayToTicks = (address: string, data: any[]) => {
   return snaps;
 };
 
-export interface PoolApyArchiveSnapshot {
+export interface PoolApyArchiveSnapshot extends DailyApyData {
   timestamp: number;
-  apy: number;
-  range?: Range;
-  tokenXAmount?: string;
-  volumeX?: number;
   weeklyFactor?: number[];
   tokenX?: {
     address: string;

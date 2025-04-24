@@ -9,21 +9,9 @@ import {
 } from "@invariant-labs/sdk-eclipse";
 import {
   arithmeticalAvg,
-  calculatePoolLiquidityFromSnapshot,
-  calculateTokensAndLiquidity,
   calculateTokensRange,
   dailyFactorPool,
-  DENOMINATOR,
-  getMaxTick,
-  getMinTick,
-  getTokensAndLiquidity,
-  getTokensInRange,
-  getVolume,
-  ParsedTick,
-  parseLiquidityOnTicks,
-  poolAPY,
   PRICE_DENOMINATOR,
-  WeeklyData,
 } from "@invariant-labs/sdk-eclipse/lib/utils";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
@@ -33,8 +21,9 @@ import fs from "fs";
 // import TESTNET_ARCHIVE from "../../data/eclipse/pool_apy_archive_testnet.json";
 // import MAINNET_APY from "../../data/eclipse/pool_apy_mainnet.json";
 // import MAINNET_ARCHIVE from "../../data/eclipse/pool_apy_archive_mainnet.json";
+import MAINNET_APY from "../../data/eclipse/daily_pool_apy_mainnet.json";
+import MAINNET_ARCHIVE from "../../data/eclipse/daily_pool_apy_archive_mainnet.json";
 import {
-  ApySnapshot,
   DailyApyData,
   eclipseDevnetTokensData,
   eclipseMainnetTokensData,
@@ -46,15 +35,16 @@ import {
 import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import BN from "bn.js";
-import { parseFeeGrowthAndLiquidityOnTicksArray } from "@invariant-labs/sdk-eclipse/lib/utils";
-import { getXfromLiquidity } from "@invariant-labs/sdk-eclipse/lib/math";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
   let fileName: string;
   let archiveFileName: string;
   let ticksFolder: string;
-  let apySnaps: Record<string, ApySnapshot>;
+  // let apySnaps: Record<string, number>;
   let apyArchive: Record<string, PoolApyArchiveSnapshot[]>;
   let tokensData: Record<string, TokenData>;
 
@@ -83,11 +73,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
       break;
     case Network.MAIN:
       provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
-      fileName = "../data/eclipse/pool_apy_mainnet.json";
-      archiveFileName = "../data/eclipse/pool_apy_archive_mainnet.json";
+      fileName = "../data/eclipse/daily_pool_apy_mainnet.json";
+      archiveFileName = "../data/eclipse/daily_pool_apy_archive_mainnet.json";
       ticksFolder = "../data/eclipse/ticks/mainnet/";
       // apySnaps = MAINNET_APY;
-      // apyArchive = MAINNET_ARCHIVE;
+      apyArchive = MAINNET_ARCHIVE;
       tokensData = eclipseMainnetTokensData;
       break;
     default:
@@ -103,30 +93,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     new PublicKey(getMarketAddress(network))
   );
 
-  // const allPools = await market.getAllPools();
-  const allPools = [
-    await market.getPoolByAddress(
-      new PublicKey("HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce")
-    ),
-    // await market.getPoolByAddress(
-    //   new PublicKey("86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM")
-    // ),
-    // await market.getPoolByAddress(
-    //   new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC")
-    // ),
-    // await market.getPoolByAddress(
-    //   new PublicKey("HG7iQMk29cgs74ZhSwrnye3C6SLQwKnfsbXqJVRi1x8H")
-    // ),
-    // await market.getPoolByAddress(
-    //   new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9")
-    // ),
-    // await market.getPoolByAddress(
-    //   new PublicKey("HHHGD7BZ7H5fPLh3DNEPFezpLoYBJ16WsmbwRJXXEFSg")
-    // ),
-  ];
+  const allPools = await market.getAllPools();
 
   const dailyData: Record<string, DailyApyData> = {};
-  const apy: Record<string, ApySnapshot> = {};
+  const apy: Record<string, number> = {};
   const poolsData: Record<string, PoolStructure> = {};
 
   for (let pool of allPools) {
@@ -135,14 +105,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tickSpacing: pool.tickSpacing,
     });
     const address = pair.getAddress(market.program.programId);
-    console.log("----------------------------");
-    console.log("Pool: ", address.toString());
     poolsData[address.toString()] = pool;
 
-    const activeTokens = await market.getActiveLiquidityInTokens(
-      address,
-      pool.currentTickIndex
-    );
+    const { value: accounts } = await connection.getMultipleParsedAccounts([
+      pool.tokenXReserve,
+      pool.tokenYReserve,
+    ]);
+
+    const [reserveX, reserveY] = accounts;
 
     await fs.promises
       .readFile(ticksFolder + address.toString() + ".json", "utf-8")
@@ -157,8 +127,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
         ) {
           dailyData[address.toString()] = {
             apy: 0,
-            tokenXamount: new BN(0),
+            tokenXAmount: new BN(0),
             volumeX: 0,
+            range: { tickLower: null, tickUpper: null },
           };
         } else {
           const len = snaps.length;
@@ -195,106 +166,82 @@ export const createSnapshotForNetwork = async (network: Network) => {
             };
           }
 
-          try {
-            let apy = 0;
-            let tokenXAmount = new BN(0);
-            let volumeX = 0;
-            try {
-              const {
-                tickLower,
-                tickUpper,
-                tokens: avgTokensInRange,
-              } = calculateTokensRange(
-                prevSnap.ticks,
-                currentSnap.ticks,
-                pool.currentTickIndex
-              );
+          let prevTokenXAmount = new BN(0);
+          const archiveSnaps = apyArchive[address.toString()];
 
-              const prevTickArray = parseFeeGrowthAndLiquidityOnTicksArray(
-                prevSnap.ticks
-              );
-              const { tokens: previousXamount } = getTokensAndLiquidity(
-                prevTickArray,
-                pool.currentTickIndex // redundant
-              );
+          if (archiveSnaps) {
+            let mostRecent = archiveSnaps[0];
 
-              const currTickArray = parseFeeGrowthAndLiquidityOnTicksArray(
-                currentSnap.ticks
-              );
+            for (const snapshot of archiveSnaps) {
+              if (!snapshot.timestamp) continue;
 
-              const { tokens: currentXamount } = getTokensAndLiquidity(
-                currTickArray,
-                pool.currentTickIndex // Redundant
-              );
-
-              console.log("Previous X", previousXamount.toString());
-              console.log("Current X", currentXamount.toString());
-              console.log("Active Tokens", activeTokens.toString());
-              // 217.200.755_793551
-
-              // const avgTokens = arithmeticalAvg(
-              //   previousXamount,
-              //   currentXamount
-              // );
-              // console.log("Global avg tokens in pool", avgTokens.toString());
-              // 232.704.892_411855
-
-              console.log("Avg Tokens X In Range", avgTokensInRange.toString());
-              // 77382_249919
-              // 77382_249919
-
-              const avgTokens = avgTokensInRange;
-
-              const volumeY = new BN(currentSnap.volumeY).sub(
-                new BN(prevSnap.volumeY)
-              );
-              const previousSqrtPrice = calculatePriceSqrt(tickLower);
-              const currentSqrtPrice = calculatePriceSqrt(tickUpper);
-              const price = previousSqrtPrice
-                .mul(currentSqrtPrice)
-                .div(PRICE_DENOMINATOR);
-
-              const denominatedVolumeY = new BN(volumeY)
-                .mul(PRICE_DENOMINATOR)
-                .div(price);
-
-              const volume = new BN(currentSnap.volumeX)
-                .sub(new BN(prevSnap.volumeX))
-                .add(denominatedVolumeY);
-
-              // 699963_886641
-              console.log("Volume: ", volume.toString());
-              console.log("Avg Tokens: ", avgTokens.toString());
-              console.log("Fee", pool.fee.toString());
-
-              const feeTier = { fee: pool.fee, tickSpacing: pool.tickSpacing };
-              const dailyFactor = dailyFactorPool(
-                avgTokens,
-                volume.toNumber(),
-                feeTier
-              );
-
-              console.log("Daily Factor: ", dailyFactor.toString());
-              const APY = (Math.pow(dailyFactor + 1, 365) - 1) * 100;
-
-              console.log("APY: ", APY);
-              tokenXAmount = avgTokens;
-              volumeX = volume;
-              apy = APY;
-            } catch (e) {
-              console.log(e);
+              if (snapshot.timestamp > mostRecent.timestamp) {
+                mostRecent = snapshot;
+              }
             }
 
+            prevTokenXAmount = mostRecent.tokenXAmount;
+          }
+
+          try {
+            const { tickLower, tickUpper } = calculateTokensRange(
+              prevSnap.ticks,
+              currentSnap.ticks,
+              pool.currentTickIndex
+            );
+
+            const volumeY = new BN(currentSnap.volumeY).sub(
+              new BN(prevSnap.volumeY)
+            );
+            const previousSqrtPrice = calculatePriceSqrt(tickLower);
+            const currentSqrtPrice = calculatePriceSqrt(tickUpper);
+            const price = previousSqrtPrice
+              .mul(currentSqrtPrice)
+              .div(PRICE_DENOMINATOR);
+
+            const denominatedVolumeY = new BN(volumeY)
+              .mul(PRICE_DENOMINATOR)
+              .div(price);
+
+            const volume = Math.abs(
+              new BN(currentSnap.volumeX)
+                .sub(new BN(prevSnap.volumeX))
+                .add(denominatedVolumeY)
+                .toNumber()
+            );
+
+            // @ts-expect-error
+            const lpX = reserveX?.data.parsed.info.tokenAmount.amount;
+            // @ts-expect-error
+            const lpY = reserveY?.data.parsed.info.tokenAmount.amount;
+
+            const denominatedLpY = new BN(lpY)
+              .mul(PRICE_DENOMINATOR)
+              .div(price);
+
+            const currentXamount = new BN(lpX).add(denominatedLpY);
+            const previousXAmount = prevSnap.totalXamount ?? new BN(0);
+            const avgTvl = previousXAmount.eqn(0)
+              ? currentXamount
+              : arithmeticalAvg(currentXamount, previousXAmount);
+
+            // -1710_68676455187
+            const feeTier = { fee: pool.fee, tickSpacing: pool.tickSpacing };
+            const dailyFactor = dailyFactorPool(avgTvl, volume, feeTier);
+
+            const APY = (Math.pow(dailyFactor + 1, 365) - 1) * 100;
+
             dailyData[address.toString()] = {
-              apy: isNaN(+JSON.stringify(apy)) ? 0 : apy,
-              tokenXamount: tokenXAmount,
-              volumeX: volumeX,
+              apy: isNaN(+JSON.stringify(APY)) ? 0 : APY,
+              tokenXAmount: currentXamount,
+              volumeX: volume,
+              range: { tickLower, tickUpper },
             };
           } catch (_error) {
-            console.log(_error);
             dailyData[address.toString()] = {
               apy: 0,
-              tokenXamount: new BN(0),
+              tokenXAmount: new BN(0),
+              range: { tickLower: null, tickUpper: null },
               volumeX: 0,
             };
           }
@@ -303,8 +250,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
       .catch(() => {
         dailyData[address.toString()] = {
           apy: 0,
-          tokenXamount: new BN(0),
+          tokenXAmount: new BN(0),
           volumeX: 0,
+          range: { tickLower: null, tickUpper: null },
         };
       });
 
@@ -316,50 +264,42 @@ export const createSnapshotForNetwork = async (network: Network) => {
     Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
     1000 * 60 * 60 * 12;
 
-  // Object.entries(dailyData).forEach(([address, data]) => {
-  //   if (!apyArchive[address]) {
-  //     apyArchive[address] = [];
-  //   }
-  //   apyArchive[address].push({
-  //     timestamp,
-  //     apy: data.apy,
-  //     // range: data.weeklyRange[data.weeklyRange.length - 1],
-  //     // weeklyFactor: data.weeklyFactor,
-  //     tokenXAmount: data.tokenXamount.toString(),
-  //     volumeX: data.volumeX,
-  //     tokenX: {
-  //       address: poolsData[address].tokenX.toString(),
-  //       ticker:
-  //         tokensData?.[poolsData[address].tokenX.toString()]?.ticker ?? "",
-  //       decimals:
-  //         tokensData?.[poolsData[address].tokenX.toString()]?.decimals ?? 0,
-  //     },
-  //     tokenY: {
-  //       address: poolsData[address].tokenY.toString(),
-  //       ticker:
-  //         tokensData?.[poolsData[address].tokenY.toString()]?.ticker ?? "",
-  //       decimals:
-  //         tokensData?.[poolsData[address].tokenY.toString()]?.decimals ?? 0,
-  //     },
-  //   });
-  //   apy[address] = {
-  //     apy: data.apy,
-  //     // weeklyFactor: data.weeklyFactor,
-  //     // weeklyRange: data.weeklyRange,
-  //   };
-  // });
+  Object.entries(dailyData).forEach(([address, data]) => {
+    if (!apyArchive[address]) {
+      apyArchive[address] = [];
+    }
+    apyArchive[address].push({
+      timestamp,
+      ...data,
+      tokenX: {
+        address: poolsData[address].tokenX.toString(),
+        ticker:
+          tokensData?.[poolsData[address].tokenX.toString()]?.ticker ?? "",
+        decimals:
+          tokensData?.[poolsData[address].tokenX.toString()]?.decimals ?? 0,
+      },
+      tokenY: {
+        address: poolsData[address].tokenY.toString(),
+        ticker:
+          tokensData?.[poolsData[address].tokenY.toString()]?.ticker ?? "",
+        decimals:
+          tokensData?.[poolsData[address].tokenY.toString()]?.decimals ?? 0,
+      },
+    });
+    apy[address] = data.apy;
+  });
 
-  //   fs.writeFile(fileName, JSON.stringify(apy), (err) => {
-  //     if (err) {
-  //       throw err;
-  //     }
-  //   });
+  fs.writeFile(fileName, JSON.stringify(apy), (err) => {
+    if (err) {
+      throw err;
+    }
+  });
 
-  //   fs.writeFile(archiveFileName, JSON.stringify(apyArchive), (err) => {
-  //     if (err) {
-  //       throw err;
-  //     }
-  //   });
+  fs.writeFile(archiveFileName, JSON.stringify(apyArchive), (err) => {
+    if (err) {
+      throw err;
+    }
+  });
 };
 
 // createSnapshotForNetwork(Network.DEV).then(
