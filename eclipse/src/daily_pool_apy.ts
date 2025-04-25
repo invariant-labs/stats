@@ -66,9 +66,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
       fileName = "../data/eclipse/daily_pool_apy_testnet.json";
       archiveFileName = "../data/eclipse/pool_apy_archive_testnet.json";
       apyArchive = TESTNET_ARCHIVE;
-      poolsCacheFileName = "../data/eclipse/devnet/testnet_pools_cache.json";
+      poolsCacheFileName = "../data/eclipse/cache/testnet_pools_cache.json";
       reservesCacheFileName =
-        "../data/eclipse/devnet/testnet_reserves_cache.json";
+        "../data/eclipse/cache/testnet_reserves_cache.json";
       tokensData = eclipseTestnetTokensData;
       break;
     case Network.MAIN:
@@ -264,14 +264,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
 //   }
 // )
 
-createSnapshotForNetwork(Network.TEST).then(
-  () => {
-    console.log("Eclipse: Testnet pool apy snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+// createSnapshotForNetwork(Network.TEST).then(
+//   () => {
+//     console.log("Eclipse: Testnet pool apy snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {

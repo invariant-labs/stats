@@ -51,9 +51,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
       fileName = "../data/eclipse/full_testnet.json";
       dataFileName = "../data/eclipse/testnet.json";
       poolsApyFileName = "../data/eclipse/pool_apy_testnet.json";
-      poolsCacheFileName = "../data/eclipse/devnet/testnet_pools_cache.json";
+      poolsCacheFileName = "../data/eclipse/cache/testnet_pools_cache.json";
       reservesCacheFileName =
-        "../data/eclipse/devnet/testnet_reserves_cache.json";
+        "../data/eclipse/cache/testnet_reserves_cache.json";
       break;
     case Network.MAIN:
       provider = AnchorProvider.local("https://eclipse.helius-rpc.com");

@@ -505,7 +505,6 @@ export const readReservesFromCache = (
 export const readPoolsFromCache = (cacheFileName: string): PoolStructure[] => {
   const rawData = readFileSync(cacheFileName, "utf-8");
   const parsedData = JSON.parse(rawData);
-  console.log(parsedData);
   const pools: PoolStructure[] = parsedData.map((pool: any) => {
     return {
       ...pool,

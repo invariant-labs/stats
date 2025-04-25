@@ -57,9 +57,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
         "https://testnet.dev2.eclipsenetwork.xyz"
       );
       fileName = "../data/eclipse/testnet.json";
-      poolsCacheFileName = "../data/eclipse/devnet/testnet_pools_cache.json";
+      poolsCacheFileName = "../data/eclipse/cache/testnet_pools_cache.json";
       reservesCacheFileName =
-        "../data/eclipse/devnet/testnet_reserves_cache.json";
+        "../data/eclipse/cache/testnet_reserves_cache.json";
       snaps = TESTNET_DATA;
       tokensData = eclipseTestnetTokensData;
       break;
@@ -165,7 +165,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
     const address = pair.getAddress(market.program.programId);
     const dataX = reserves[pool.tokenXReserve.toString()];
     const dataY = reserves[pool.tokenYReserve.toString()];
-    console.log(dataX, dataY);
 
     poolsDict[address.toString()] = pool;
 
