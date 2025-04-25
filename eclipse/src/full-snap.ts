@@ -50,7 +50,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       );
       fileName = "../data/eclipse/full_testnet.json";
       dataFileName = "../data/eclipse/testnet.json";
-      poolsApyFileName = "../data/eclipse/pool_apy_testnet.json";
+      poolsApyFileName = "../data/eclipse/daily_pool_apy_testnet.json";
       poolsCacheFileName = "../data/eclipse/cache/testnet_pools_cache.json";
       reservesCacheFileName =
         "../data/eclipse/cache/testnet_reserves_cache.json";
@@ -59,7 +59,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
       fileName = "../data/eclipse/full_mainnet.json";
       dataFileName = "../data/eclipse/mainnet.json";
-      poolsApyFileName = "../data/eclipse/pool_apy_mainnet.json";
+      poolsApyFileName = "../data/eclipse/daily_pool_apy_mainnet.json";
       poolsCacheFileName = "../data/eclipse/cache/mainnet_pools_cache.json";
       reservesCacheFileName =
         "../data/eclipse/cache/mainnet_reserves_cache.json";

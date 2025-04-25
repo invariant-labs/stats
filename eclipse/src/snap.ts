@@ -251,8 +251,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
 
     try {
-      liquidityX = new BN(dataX.parsed.info.tokenAmount.amount);
-      liquidityY = new BN(dataY.parsed.info.tokenAmount.amount);
+      // @ts-expect-error
+      liquidityX = new BN(dataX.data.parsed.info.tokenAmount.amount);
+      // @ts-expect-error
+      liquidityY = new BN(dataY.data.parsed.info.tokenAmount.amount);
     } catch {
       liquidityX = new BN("0");
       liquidityY = new BN("0");
