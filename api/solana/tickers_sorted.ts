@@ -114,7 +114,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     ["jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v", 70], // jupSOL
   ]);
   const connection = new Connection(
-    "https://mainnet.helius-rpc.com/?api-key=ef843b40-9876-4a02-a181-a1e6d3e61b4c"
+    "https://mainnet.helius-rpc.com/?api-key=3403a15b-efe7-40c8-9b87-800b6468c3f9"
   );
   const keypair = new Keypair();
   const wallet = new Wallet(keypair);
