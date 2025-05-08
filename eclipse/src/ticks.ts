@@ -1,4 +1,4 @@
-import { AnchorProvider, BN } from "@coral-xyz/anchor";
+import { AnchorProvider } from "@coral-xyz/anchor";
 import {
   Network,
   Market,
@@ -9,9 +9,7 @@ import {
 } from "@invariant-labs/sdk-eclipse";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require("dotenv").config();
+import BN from "bn.js";
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
