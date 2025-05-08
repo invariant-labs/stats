@@ -5,13 +5,10 @@ import {
   Pair,
   sleep,
   IWallet,
-  calculatePriceSqrt,
 } from "@invariant-labs/sdk-eclipse";
 import {
   arithmeticalAvg,
   dailyFactorPool,
-  getMaxTick,
-  getMinTick,
   PRICE_DENOMINATOR,
 } from "@invariant-labs/sdk-eclipse/lib/utils";
 import { PublicKey } from "@solana/web3.js";
@@ -156,12 +153,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
     } = prevSnap;
 
     try {
-      const tickLower = getMinTick(pool.tickSpacing);
-      const tickUpper = getMaxTick(pool.tickSpacing);
       const volumeY = new BN(currentVolumeY).sub(new BN(prevVolumeY));
-      const previousSqrtPrice = calculatePriceSqrt(tickLower);
-      const currentSqrtPrice = calculatePriceSqrt(tickUpper);
-      const price = previousSqrtPrice
+      const currentSqrtPrice = pool.sqrtPrice;
+      const price = currentSqrtPrice
         .mul(currentSqrtPrice)
         .div(PRICE_DENOMINATOR);
 
@@ -171,7 +165,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const volumeX = new BN(currentVolumeX).sub(new BN(prevVolumeX));
       const volume = Math.abs(volumeX.add(denominatedVolumeY).toNumber());
-
       // @ts-expect-error
       const lpX = reserveX?.data.parsed.info.tokenAmount.amount;
       // @ts-expect-error
