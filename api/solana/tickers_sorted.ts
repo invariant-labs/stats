@@ -113,8 +113,13 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     ["27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4", 60], // JLP
     ["jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v", 70], // jupSOL
   ]);
+
+  const rpcUrl = process.env.SOLANA_TICKERS_RPC_URL;
+  if (!rpcUrl) {
+    throw new Error("RPC is not defined");
+  } 
   const connection = new Connection(
-    "https://mainnet.helius-rpc.com/?api-key=ef843b40-9876-4a02-a181-a1e6d3e61b4c"
+    rpcUrl
   );
   const keypair = new Keypair();
   const wallet = new Wallet(keypair);
