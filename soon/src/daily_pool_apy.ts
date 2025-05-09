@@ -13,18 +13,16 @@ import {
 } from "@invariant-labs/sdk-eclipse/lib/utils";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
-import DEVNET_ARCHIVE from "../../data/eclipse/daily_pool_apy_archive_devnet.json";
 import TESTNET_ARCHIVE from "../../data/eclipse/daily_pool_apy_archive_testnet.json";
 import MAINNET_ARCHIVE from "../../data/eclipse/daily_pool_apy_archive_mainnet.json";
 import {
   DailyApyData,
-  eclipseDevnetTokensData,
-  eclipseMainnetTokensData,
-  eclipseTestnetTokensData,
   getParsedTokenAccountsFromAddresses,
   PoolApyArchiveSnapshot,
   readPoolsFromCache,
   readReservesFromCache,
+  soonMainnetTokensData,
+  soonTestnetTokensData,
   TokenData,
 } from "./utils";
 import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
@@ -44,39 +42,23 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const useCache = Boolean(args[0]);
 
   switch (network) {
-    case Network.DEV:
-      provider = AnchorProvider.local(
-        "https://staging-rpc.dev2.eclipsenetwork.xyz"
-      );
-      fileName = "../data/eclipse/daily_pool_apy_devnet.json";
-      archiveFileName = "../data/eclipse/pool_apy_archive_devnet.json";
-      apyArchive = DEVNET_ARCHIVE;
-      tokensData = eclipseDevnetTokensData;
-      poolsCacheFileName = "../data/eclipse/cache/devnet_pools_cache.json";
-      reservesCacheFileName =
-        "../data/eclipse/cache/devnet_reserves_cache.json";
-      break;
     case Network.TEST:
-      provider = AnchorProvider.local(
-        "https://testnet.dev2.eclipsenetwork.xyz"
-      );
-      fileName = "../data/eclipse/daily_pool_apy_testnet.json";
-      archiveFileName = "../data/eclipse/pool_apy_archive_testnet.json";
-      apyArchive = TESTNET_ARCHIVE;
-      poolsCacheFileName = "../data/eclipse/cache/testnet_pools_cache.json";
-      reservesCacheFileName =
-        "../data/eclipse/cache/testnet_reserves_cache.json";
-      tokensData = eclipseTestnetTokensData;
+      provider = AnchorProvider.local("https://rpc.testnet.soo.network/rpc");
+      fileName = "../data/soon/daily_pool_apy_testnet.json";
+      archiveFileName = "../data/soon/daily_pool_apy_archive_testnet.json";
+      poolsCacheFileName = "../data/soon/cache/testnet_pools_cache.json";
+      reservesCacheFileName = "../data/soon/cache/testnet_reserves_cache.json";
+      apyArchive = TESTNET_ARCHIVE as Record<string, PoolApyArchiveSnapshot[]>;
+      tokensData = soonTestnetTokensData;
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
-      fileName = "../data/eclipse/daily_pool_apy_mainnet.json";
-      archiveFileName = "../data/eclipse/daily_pool_apy_archive_mainnet.json";
-      poolsCacheFileName = "../data/eclipse/cache/mainnet_pools_cache.json";
-      reservesCacheFileName =
-        "../data/eclipse/cache/mainnet_reserves_cache.json";
-      apyArchive = MAINNET_ARCHIVE;
-      tokensData = eclipseMainnetTokensData;
+      provider = AnchorProvider.local("https://rpc.mainnet.soo.network/rpc");
+      fileName = "../data/soon/daily_pool_apy_mainnet.json";
+      archiveFileName = "../data/soon/daily_pool_apy_archive_mainnet.json";
+      poolsCacheFileName = "../data/soon/cache/mainnet_pools_cache.json";
+      reservesCacheFileName = "../data/soon/cache/mainnet_reserves_cache.json";
+      apyArchive = MAINNET_ARCHIVE as Record<string, PoolApyArchiveSnapshot[]>;
+      tokensData = soonMainnetTokensData;
       break;
     default:
       throw new Error("Unknown network");
@@ -250,27 +232,27 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
 // createSnapshotForNetwork(Network.DEV).then(
 //   () => {
-//     console.log('Eclipse: Devnet pool apy snapshot done!')
+//     console.log('Soon: Devnet pool apy snapshot done!')
 //   },
 //   (err) => {
 //     console.log(err)
 //   }
 // )
 
-// createSnapshotForNetwork(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Testnet pool apy snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
-createSnapshotForNetwork(Network.MAIN).then(
+createSnapshotForNetwork(Network.TEST).then(
   () => {
-    console.log("Eclipse: Mainnet pool apy snapshot done!");
+    console.log("Soon: Testnet pool apy snapshot done!");
   },
   (err) => {
     console.log(err);
   }
 );
+
+// createSnapshotForNetwork(Network.MAIN).then(
+//   () => {
+//     console.log("Soon: Mainnet pool apy snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );

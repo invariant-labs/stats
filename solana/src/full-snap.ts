@@ -1,15 +1,15 @@
-import { getMarketAddress, Market, Network } from "@invariant-labs/sdk";
+import { getMarketAddress, Market, Network, Pair } from "@invariant-labs/sdk";
 import { Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
   getJupPricesData2,
   getPoolsFromAdresses,
   getTokensPrices,
-  PoolsApyStatsData,
   PoolStatsData,
   PoolStatsDataWithString,
   PoolWithAddress,
   printBN,
+  readPoolsFromCache,
   TimeData,
   tokensPriceViaCoingecko,
   TokenStatsDataWithString,
@@ -22,6 +22,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let fileName: string;
   let dataFileName: string;
   let poolsApyFileName: string;
+  let poolsCacheFileName: string;
+  let reservesCacheFileName: string;
+  const args = process.argv.slice(2);
+  const useCache = Boolean(args[0]);
 
   switch (network) {
     case Network.MAIN:
@@ -32,20 +36,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
       provider = Provider.local(rpcUrl);
       fileName = "../data/full_mainnet.json";
       dataFileName = "../data/mainnet.json";
-      poolsApyFileName = "../data/pool_apy_mainnet.json";
+      poolsApyFileName = "../data/daily_pool_apy_mainnet.json";
+      poolsCacheFileName = "../data/cache/mainnet_pools_cache.json";
+      reservesCacheFileName = "../data/cache/mainnet_reserves_cache.json";
       break;
     default:
       provider = Provider.local("https://api.devnet.solana.com");
       fileName = "../data/full_devnet.json";
       dataFileName = "../data/devnet.json";
-      poolsApyFileName = "../data/pool_apy_devnet.json";
+      poolsApyFileName = "../data/daily_pool_apy_devnet.json";
+      poolsCacheFileName = "../data/cache/devnet_pools_cache.json";
+      reservesCacheFileName = "../data/cache/devnet_reserves_cache.json";
       break;
   }
 
   const data: Record<string, PoolStatsData> = JSON.parse(
     fs.readFileSync(dataFileName, "utf-8")
   );
-  const poolsApy: Record<string, PoolsApyStatsData> = JSON.parse(
+  const poolsApy: Record<string, number> = JSON.parse(
     fs.readFileSync(poolsApyFileName, "utf-8")
   );
 
@@ -58,15 +66,31 @@ export const createSnapshotForNetwork = async (network: Network) => {
     new PublicKey(getMarketAddress(network))
   );
 
-  const allPoolsData = await getPoolsFromAdresses(
-    Object.keys(data).map((addr) => new PublicKey(addr)),
-    market
-  );
   const poolsDataObject: Record<string, PoolWithAddress> = {};
-  allPoolsData.forEach((pool) => {
-    poolsDataObject[pool.address.toString()] = pool;
-  });
 
+  if (useCache) {
+    const pools = readPoolsFromCache(poolsCacheFileName);
+    for (const pool of pools) {
+      const pair = new Pair(pool.tokenX, pool.tokenY, {
+        fee: pool.fee.v,
+        tickSpacing: pool.tickSpacing,
+      });
+      const address = await pair.getAddress(market.program.programId);
+      poolsDataObject[address.toString()] = {
+        ...pool,
+        address,
+      };
+    }
+  } else {
+    const allPoolsData = await getPoolsFromAdresses(
+      Object.keys(data).map((addr) => new PublicKey(addr)),
+      market
+    );
+
+    allPoolsData.forEach((pool) => {
+      poolsDataObject[pool.address.toString()] = pool;
+    });
+  }
   const volume24 = {
     value: 0,
     change: 0,
@@ -125,7 +149,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         tokenX: poolsDataObject[address].tokenX.toString(),
         tokenY: poolsDataObject[address].tokenY.toString(),
         fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
-        apy: poolsApy[address].apy ?? 0,
+        apy: poolsApy[address] ?? 0,
         poolAddress: new PublicKey(address).toString(),
       });
       return;
@@ -160,7 +184,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokenX: poolsDataObject[address].tokenX.toString(),
       tokenY: poolsDataObject[address].tokenY.toString(),
       fee: +printBN(poolsDataObject[address].fee.v, DECIMAL - 2),
-      apy: poolsApy[address]?.apy ?? 0,
+      apy: poolsApy[address] ?? 0,
       poolAddress: new PublicKey(address).toString(),
     });
 
@@ -266,6 +290,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
       liquidityPlot,
     })
   );
+
+  // Cleanup cache
+  if (useCache) {
+    fs.writeFileSync(poolsCacheFileName, JSON.stringify({}));
+    fs.writeFileSync(reservesCacheFileName, JSON.stringify({}));
+  }
 };
 
 // createSnapshotForNetwork(Network.DEV).then(

@@ -23,6 +23,7 @@ import {
   PoolStatsData,
   supportedTokens,
   TokenData,
+  getParsedTokenAccountsFromAddresses,
 } from "./utils";
 import { Locker } from "@invariant-labs/locker-sonic-sdk";
 
@@ -34,6 +35,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let fileName: string;
   let snaps: Record<string, PoolStatsData>;
   let tokensData: Record<string, TokenData>;
+  let poolsCacheFileName: string;
+  let reservesCacheFileName: string;
+
+  const args = process.argv.slice(2);
+  const useCache = Boolean(args[0]);
 
   switch (network) {
     case Network.TEST:
@@ -41,12 +47,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
       fileName = "../data/sonic/testnet.json";
       snaps = TESTNET_DATA as Record<string, PoolStatsData>;
       tokensData = sonicTestnetTokensData;
+      poolsCacheFileName = "../data/sonic/cache/testnet_pools_cache.json";
+      reservesCacheFileName = "../data/sonic/cache/testnet_reserves_cache.json";
       break;
     case Network.MAIN:
       provider = AnchorProvider.local("https://api.mainnet-alpha.sonic.game");
       fileName = "../data/sonic/mainnet.json";
       snaps = MAINNET_DATA as Record<string, PoolStatsData>;
       tokensData = sonicMainnetTokensData;
+      poolsCacheFileName = "../data/sonic/cache/mainnet_pools_cache.json";
+      reservesCacheFileName = "../data/sonic/cache/mainnet_reserves_cache.json";
       break;
     default:
       throw new Error("Unknown network");
@@ -123,16 +133,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
   }
 
+  const reserveAddresses = allPools
+    .map((pool) => [pool.tokenXReserve, pool.tokenYReserve])
+    .flat();
+
+  const reserves = await getParsedTokenAccountsFromAddresses(
+    connection,
+    reserveAddresses
+  );
+
   for (let pool of allPools) {
     const pair = new Pair(pool.tokenX, pool.tokenY, {
       fee: pool.fee,
       tickSpacing: pool.tickSpacing,
     });
-    const [address, dataX, dataY] = await Promise.all([
-      pair.getAddress(market.program.programId),
-      connection.getParsedAccountInfo(pool.tokenXReserve),
-      connection.getParsedAccountInfo(pool.tokenYReserve),
-    ]);
+
+    const address = pair.getAddress(market.program.programId);
+    const dataX = reserves[pool.tokenXReserve.toString()];
+    const dataY = reserves[pool.tokenYReserve.toString()];
 
     poolsDict[address.toString()] = pool;
 
@@ -219,12 +237,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
 
     try {
-      liquidityX = new BN(
-        (dataX?.value?.data as any).parsed.info.tokenAmount.amount
-      );
-      liquidityY = new BN(
-        (dataY?.value?.data as any).parsed.info.tokenAmount.amount
-      );
+      // @ts-expect-error
+      liquidityX = new BN(dataX.data.parsed.info.tokenAmount.amount);
+      // @ts-expect-error
+      liquidityY = new BN(dataY.data.parsed.info.tokenAmount.amount);
     } catch {
       liquidityX = new BN("0");
       liquidityY = new BN("0");
@@ -369,6 +385,19 @@ export const createSnapshotForNetwork = async (network: Network) => {
       throw err;
     }
   });
+
+  if (useCache) {
+    fs.writeFile(poolsCacheFileName, JSON.stringify(allPools), (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+    fs.writeFile(reservesCacheFileName, JSON.stringify(reserves), (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+  }
 };
 
 createSnapshotForNetwork(Network.TEST).then(

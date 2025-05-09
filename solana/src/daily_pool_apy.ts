@@ -5,34 +5,33 @@ import {
   Pair,
   sleep,
   IWallet,
-} from "@invariant-labs/sdk-eclipse";
+} from "@invariant-labs/sdk";
 import {
   arithmeticalAvg,
   dailyFactorPool,
   PRICE_DENOMINATOR,
-} from "@invariant-labs/sdk-eclipse/lib/utils";
+} from "@invariant-labs/sdk/lib/utils";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
-import DEVNET_ARCHIVE from "../../data/eclipse/daily_pool_apy_archive_devnet.json";
-import TESTNET_ARCHIVE from "../../data/eclipse/daily_pool_apy_archive_testnet.json";
-import MAINNET_ARCHIVE from "../../data/eclipse/daily_pool_apy_archive_mainnet.json";
+import DEVNET_ARCHIVE from "../../data/daily_pool_apy_archive_devnet.json";
+import MAINNET_ARCHIVE from "../../data/daily_pool_apy_archive_mainnet.json";
 import {
   DailyApyData,
-  eclipseDevnetTokensData,
-  eclipseMainnetTokensData,
-  eclipseTestnetTokensData,
+  devnetTokensData,
   getParsedTokenAccountsFromAddresses,
+  getTokensData,
   PoolApyArchiveSnapshot,
   readPoolsFromCache,
   readReservesFromCache,
   TokenData,
 } from "./utils";
-import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
-import { AnchorProvider } from "@coral-xyz/anchor";
+import { PoolStructure } from "@invariant-labs/sdk/lib/market";
+
 import BN from "bn.js";
+import { Provider } from "@project-serum/anchor";
 
 export const createSnapshotForNetwork = async (network: Network) => {
-  let provider: AnchorProvider;
+  let provider: Provider;
   let fileName: string;
   let archiveFileName: string;
   let apyArchive: Record<string, PoolApyArchiveSnapshot[]>;
@@ -45,38 +44,26 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.DEV:
-      provider = AnchorProvider.local(
-        "https://staging-rpc.dev2.eclipsenetwork.xyz"
-      );
-      fileName = "../data/eclipse/daily_pool_apy_devnet.json";
-      archiveFileName = "../data/eclipse/pool_apy_archive_devnet.json";
+      provider = Provider.local("https://api.devnet.solana.com");
+      fileName = "../data/daily_pool_apy_devnet.json";
+      archiveFileName = "../data/pool_apy_archive_devnet.json";
       apyArchive = DEVNET_ARCHIVE;
-      tokensData = eclipseDevnetTokensData;
-      poolsCacheFileName = "../data/eclipse/cache/devnet_pools_cache.json";
-      reservesCacheFileName =
-        "../data/eclipse/cache/devnet_reserves_cache.json";
-      break;
-    case Network.TEST:
-      provider = AnchorProvider.local(
-        "https://testnet.dev2.eclipsenetwork.xyz"
-      );
-      fileName = "../data/eclipse/daily_pool_apy_testnet.json";
-      archiveFileName = "../data/eclipse/pool_apy_archive_testnet.json";
-      apyArchive = TESTNET_ARCHIVE;
-      poolsCacheFileName = "../data/eclipse/cache/testnet_pools_cache.json";
-      reservesCacheFileName =
-        "../data/eclipse/cache/testnet_reserves_cache.json";
-      tokensData = eclipseTestnetTokensData;
+      tokensData = devnetTokensData;
+      poolsCacheFileName = "../data/cache/devnet_pools_cache.json";
+      reservesCacheFileName = "../data/cache/devnet_reserves_cache.json";
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
-      fileName = "../data/eclipse/daily_pool_apy_mainnet.json";
-      archiveFileName = "../data/eclipse/daily_pool_apy_archive_mainnet.json";
-      poolsCacheFileName = "../data/eclipse/cache/mainnet_pools_cache.json";
-      reservesCacheFileName =
-        "../data/eclipse/cache/mainnet_reserves_cache.json";
+      const rpcUrl = process.env.SOLANA_RPC_URL;
+      if (!rpcUrl) {
+        throw new Error("RPC is not defined");
+      }
+      provider = Provider.local(rpcUrl);
+      fileName = "../data/daily_pool_apy_mainnet.json";
+      archiveFileName = "../data/daily_pool_apy_archive_mainnet.json";
+      poolsCacheFileName = "../data/cache/mainnet_pools_cache.json";
+      reservesCacheFileName = "../data/cache/mainnet_reserves_cache.json";
       apyArchive = MAINNET_ARCHIVE;
-      tokensData = eclipseMainnetTokensData;
+      tokensData = await getTokensData();
       break;
     default:
       throw new Error("Unknown network");
@@ -109,17 +96,17 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   for (let pool of allPools) {
     const pair = new Pair(pool.tokenX, pool.tokenY, {
-      fee: pool.fee,
+      fee: pool.fee.v,
       tickSpacing: pool.tickSpacing,
     });
-    const address = pair.getAddress(market.program.programId);
+    const address = await pair.getAddress(market.program.programId);
     poolsData[address.toString()] = pool;
 
     const reserveX = reserves[pool.tokenXReserve.toString()];
     const reserveY = reserves[pool.tokenYReserve.toString()];
 
     const { volumeX: currentVolumeX, volumeY: currentVolumeY } =
-      await market.getVolume(pair, pool);
+      await market.getVolume(pair);
 
     const associatedSnaps = apyArchive[address.toString()];
     let recentSnap: DailyApyData | null = null;
@@ -155,8 +142,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
     try {
       const volumeY = new BN(currentVolumeY).sub(new BN(prevVolumeY));
       const currentSqrtPrice = pool.sqrtPrice;
-      const price = currentSqrtPrice
-        .mul(currentSqrtPrice)
+      const price = currentSqrtPrice.v
+        .mul(currentSqrtPrice.v)
         .div(PRICE_DENOMINATOR);
 
       const denominatedVolumeY = new BN(volumeY)
@@ -165,10 +152,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const volumeX = new BN(currentVolumeX).sub(new BN(prevVolumeX));
       const volume = Math.abs(volumeX.add(denominatedVolumeY).toNumber());
-      // @ts-expect-error
-      const lpX = reserveX?.data.parsed.info.tokenAmount.amount;
-      // @ts-expect-error
-      const lpY = reserveY?.data.parsed.info.tokenAmount.amount;
+
+      const lpX = reserveX;
+      const lpY = reserveY;
 
       const denominatedLpY = new BN(lpY).mul(PRICE_DENOMINATOR).div(price);
 
@@ -180,11 +166,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
         ? currentXamount
         : arithmeticalAvg(currentXamount, previousXAmount);
 
-      const feeTier = { fee: pool.fee, tickSpacing: pool.tickSpacing };
+      const feeTier = { fee: pool.fee.v, tickSpacing: pool.tickSpacing };
       const dailyFactor = dailyFactorPool(avgTvl, volume, feeTier);
 
       const APY = (Math.pow(dailyFactor + 1, 365) - 1) * 100;
-
       dailyData[address.toString()] = {
         apy: APY === Infinity ? 1001 : isNaN(+JSON.stringify(APY)) ? 0 : APY,
         totalXAmount: currentXamount,
@@ -268,7 +253,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {
-    console.log("Eclipse: Mainnet pool apy snapshot done!");
+    console.log("Solana: Mainnet pool apy snapshot done!");
   },
   (err) => {
     console.log(err);

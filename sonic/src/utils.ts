@@ -7,11 +7,14 @@ import {
 import { Market as sonicMarket } from "@invariant-labs/sdk-sonic/lib/market";
 import { DECIMAL, Range } from "@invariant-labs/sdk-sonic/lib/utils";
 import { BN } from "@coral-xyz/anchor";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, ParsedAccountData, PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
 import MAINNET_TOKENS from "../../data/mainnet_tokens.json";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Network, Network as sonicNetwork } from "@invariant-labs/sdk-sonic";
+import { readFileSync } from "fs";
+
+export const MAX_ATAS_IN_BATCH = 100;
 
 export interface SnapshotValueData {
   tokenBNFromBeginning: string;
@@ -53,6 +56,13 @@ export interface PoolsApyStatsData {
 export interface PoolLock {
   lockedX: BN;
   lockedY: BN;
+}
+export interface DailyApyData {
+  apy: number;
+  totalVolumeX: number;
+  totalXAmount: BN;
+  volumeX: number;
+  volumeY: number;
 }
 
 export const printBN = (amount: BN, decimals: number): string => {
@@ -311,12 +321,8 @@ export const jsonArrayToTicks = (address: string, data: any[]) => {
   return snaps;
 };
 
-export interface PoolApyArchiveSnapshot {
+export interface PoolApyArchiveSnapshot extends DailyApyData {
   timestamp: number;
-  apy: number;
-  range: Range;
-  tokenXAmount?: string;
-  volumeX?: number;
   weeklyFactor?: number[];
   tokenX?: {
     address: string;
@@ -378,6 +384,77 @@ export const getPoolsFromAdresses = async (
         : null
     )
     .filter((pool) => pool !== null) as PoolWithAddress[];
+};
+
+export const getParsedTokenAccountsFromAddresses = async (
+  connection: Connection,
+  addresses: PublicKey[]
+): Promise<Record<string, ParsedAccountData>> => {
+  const batches = addresses.length / MAX_ATAS_IN_BATCH;
+  const promises: any[] = [];
+  for (let i = 0; i < batches; i++) {
+    const start = i * MAX_ATAS_IN_BATCH;
+    const end = Math.min((i + 1) * MAX_ATAS_IN_BATCH, addresses.length);
+    const batch = addresses.slice(start, end);
+    promises.push(
+      connection.getMultipleParsedAccounts(batch, {
+        commitment: "confirmed",
+      })
+    );
+  }
+  const reservesAccounts = (await Promise.all(promises))
+    .flat()
+    .map((res) => res.value)
+    .flat();
+
+  const reserves: Record<string, ParsedAccountData> = reservesAccounts.reduce(
+    (acc, ata, index) => {
+      const address = addresses[index].toString();
+      if (ata) {
+        acc[address] = ata;
+      }
+      return acc;
+    },
+    {}
+  );
+  return reserves;
+};
+
+export const readReservesFromCache = (
+  cacheFileName: string
+): Record<string, ParsedAccountData> => {
+  const rawData = readFileSync(cacheFileName, "utf-8");
+  return JSON.parse(rawData);
+};
+
+export const readPoolsFromCache = (cacheFileName: string): PoolStructure[] => {
+  const rawData = readFileSync(cacheFileName, "utf-8");
+  const parsedData = JSON.parse(rawData);
+  const pools: PoolStructure[] = parsedData.map((pool: any) => {
+    return {
+      ...pool,
+      tokenX: new PublicKey(pool.tokenX),
+      tokenY: new PublicKey(pool.tokenY),
+      tokenXReserve: new PublicKey(pool.tokenXReserve),
+      tokenYReserve: new PublicKey(pool.tokenYReserve),
+      positionIterator: new BN(pool.positionIterator, "hex"),
+      fee: new BN(pool.fee, "hex"),
+      protocolFee: new BN(pool.protocolFee, "hex"),
+      liquidity: new BN(pool.liquidity, "hex"),
+      sqrtPrice: new BN(pool.sqrtPrice, "hex"),
+      tickmap: new PublicKey(pool.tickmap),
+      feeGrowthGlobalX: new BN(pool.feeGrowthGlobalX, "hex"),
+      feeGrowthGlobalY: new BN(pool.feeGrowthGlobalY, "hex"),
+      feeProtocolTokenX: new BN(pool.feeProtocolTokenX, "hex"),
+      feeProtocolTokenY: new BN(pool.feeProtocolTokenY, "hex"),
+      secondsPerLiquidityGlobal: new BN(pool.secondsPerLiquidityGlobal, "hex"),
+      startTimestamp: new BN(pool.startTimestamp, "hex"),
+      lastTimestamp: new BN(pool.lastTimestamp, "hex"),
+      feeReceiver: new PublicKey(pool.feeReceiver),
+      oracleAddress: new PublicKey(pool.oracleAddress),
+    };
+  });
+  return pools;
 };
 
 export interface TokenPriceData {
