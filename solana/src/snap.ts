@@ -7,7 +7,6 @@ import {
   DENOMINATOR,
 } from "@invariant-labs/sdk";
 import { PoolStructure } from "@invariant-labs/sdk/lib/market";
-import { BN, Provider } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import DEVNET_DATA from "../../data/devnet.json";
@@ -15,15 +14,18 @@ import MAINNET_DATA from "../../data/mainnet.json";
 import {
   devnetTokensData,
   getJupPricesData,
+  getParsedTokenAccountsFromAddresses,
   getTokensData,
   getTokensPrices,
   getUsdValue24,
   PoolSnapshot,
   PoolStatsData,
+  savePoolsToCache,
   TokenData,
   tokensPriceViaCoingecko,
 } from "./utils";
-
+import BN from "bn.js";
+import { Provider } from "@project-serum/anchor";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
 
@@ -32,6 +34,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let fileName: string;
   let snaps: Record<string, PoolStatsData>;
   let tokensData: Record<string, TokenData>;
+  let poolsCacheFileName: string;
+  let reservesCacheFileName: string;
+  const args = process.argv.slice(2);
+  const useCache = Boolean(args[0]);
 
   switch (network) {
     case Network.MAIN:
@@ -43,6 +49,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       fileName = "../data/mainnet.json";
       snaps = MAINNET_DATA as Record<string, PoolStatsData>;
       tokensData = await getTokensData();
+      poolsCacheFileName = "../data/cache/mainnet_pools_cache.json";
+      reservesCacheFileName = "../data/cache/mainnet_reserves_cache.json";
       break;
     case Network.DEV:
     default:
@@ -50,6 +58,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       fileName = "../data/devnet.json";
       snaps = DEVNET_DATA as Record<string, PoolStatsData>;
       tokensData = devnetTokensData;
+      poolsCacheFileName = "../data/cache/devnet_pools_cache.json";
+      reservesCacheFileName = "../data/cache/devnet_reserves_cache.json";
   }
 
   const jupPrices = await getJupPricesData(Object.keys(tokensData));
@@ -84,12 +94,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   let poolsData: any[] = [];
 
+  const reserveAddresses = allPools
+    .map((pool) => [pool.tokenXReserve, pool.tokenYReserve])
+    .flat();
+
+  const reserves = await getParsedTokenAccountsFromAddresses(
+    connection,
+    reserveAddresses
+  );
+
   for (let pool of allPools) {
     const pair = new Pair(pool.tokenX, pool.tokenY, {
       fee: pool.fee.v,
       tickSpacing: pool.tickSpacing,
     });
     const address = await pair.getAddress(market.program.programId);
+
+    const dataX = reserves[pool.tokenXReserve.toString()];
+    const dataY = reserves[pool.tokenYReserve.toString()];
 
     poolsDict[address.toString()] = pool;
 
@@ -168,14 +190,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
 
     try {
-      const dataX = await connection.getParsedAccountInfo(pool.tokenXReserve);
-      const dataY = await connection.getParsedAccountInfo(pool.tokenYReserve);
-      liquidityX = new BN(
-        (dataX?.value?.data as any).parsed.info.tokenAmount.amount
-      );
-      liquidityY = new BN(
-        (dataY?.value?.data as any).parsed.info.tokenAmount.amount
-      );
+      liquidityX = new BN(dataX);
+      liquidityY = new BN(dataY);
     } catch {
       liquidityX = new BN("0");
       liquidityY = new BN("0");
@@ -286,6 +302,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
       throw err;
     }
   });
+
+  if (useCache) {
+    savePoolsToCache(allPools, poolsCacheFileName);
+    fs.writeFile(reservesCacheFileName, JSON.stringify(reserves), (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+  }
 };
 
 createSnapshotForNetwork(Network.MAIN).then(
