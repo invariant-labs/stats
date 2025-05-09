@@ -186,7 +186,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const APY = (Math.pow(dailyFactor + 1, 365) - 1) * 100;
 
       dailyData[address.toString()] = {
-        apy: isNaN(+JSON.stringify(APY)) ? 0 : APY,
+        apy: APY === Infinity ? 1001 : isNaN(+JSON.stringify(APY)) ? 0 : APY,
         totalXAmount: currentXamount,
         volumeX: volumeX.toNumber(),
         volumeY: volumeY.toNumber(),
