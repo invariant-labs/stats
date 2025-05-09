@@ -107,7 +107,7 @@ export const getJupPricesData = async (
   const requests = chunkedIds.map(
     async (idsChunk) =>
       await axios.get<JupApiPriceData>(
-        `https://api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
+        `https://lite-api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
       )
   );
 
@@ -453,7 +453,7 @@ export const getJupPricesData2 = async (
   const requests = chunkedIds.map(
     async (idsChunk) =>
       await axios.get<RawJupApiResponse>(
-        `https://api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
+        `https://lite-api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
       )
   );
 
