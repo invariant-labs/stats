@@ -17,6 +17,8 @@ import SOON_MAINNET_DATA from "../../../data/soon/full_mainnet.json";
 import SONIC_TESTNET_DATA from "../../../data/sonic/full_testnet.json";
 //@ts-ignore
 import SONIC_MAINNET_DATA from "../../../data/sonic/full_mainnet.json";
+//@ts-ignore
+import FOGO_TESTNET_DATA from "../../../data/fogo/full_testnet.json";
 
 import {
   PoolStatsDataWithString,
@@ -79,6 +81,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
     data = SONIC_MAINNET_DATA as unknown as FullSnap;
   } else if (net === "sonic-testnet") {
     data = SONIC_TESTNET_DATA as unknown as FullSnap;
+  } else if (net === "fogo-testnet") {
+    data = FOGO_TESTNET_DATA as unknown as FullSnap;
   } else {
     return res.status(400).send("INVALID NETWORK");
   }
