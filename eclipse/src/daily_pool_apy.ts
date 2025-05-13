@@ -153,18 +153,30 @@ export const createSnapshotForNetwork = async (network: Network) => {
     } = prevSnap;
 
     try {
-      const volumeY = new BN(currentVolumeY).sub(new BN(prevVolumeY));
       const currentSqrtPrice = pool.sqrtPrice;
       const price = currentSqrtPrice
         .mul(currentSqrtPrice)
         .div(PRICE_DENOMINATOR);
 
+      const prevVolumeYBN = new BN(prevVolumeY);
+      const prevVolumeXBN = new BN(prevVolumeX);
+      const currentVolumeXBN = new BN(currentVolumeX);
+      const currentVolumeYBN = new BN(currentVolumeY);
+
+      const volumeY = currentVolumeYBN.gt(prevVolumeYBN)
+        ? currentVolumeYBN.sub(prevVolumeYBN)
+        : currentVolumeYBN;
+
       const denominatedVolumeY = new BN(volumeY)
         .mul(PRICE_DENOMINATOR)
         .div(price);
 
-      const volumeX = new BN(currentVolumeX).sub(new BN(prevVolumeX));
+      const volumeX = currentVolumeXBN.gt(prevVolumeXBN)
+        ? currentVolumeXBN.sub(prevVolumeXBN)
+        : currentVolumeXBN;
+
       const volume = Math.abs(volumeX.add(denominatedVolumeY).toNumber());
+
       // @ts-expect-error
       const lpX = reserveX?.data.parsed.info.tokenAmount.amount;
       // @ts-expect-error
