@@ -118,6 +118,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
     const pool = await market.getPoolByAddress(new PublicKey(poolKey));
 
+    if (TIERS_TO_OMIT.includes(+printBN(pool.fee, DECIMAL - 2))) {
+      continue;
+    }
+
     const pair = new Pair(pool.tokenX, pool.tokenY, {
       fee: pool.fee,
       tickSpacing: pool.tickSpacing,

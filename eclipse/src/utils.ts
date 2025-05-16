@@ -711,3 +711,18 @@ export const calculateChangeFromValues = (
   const currentChange = (currentValue * previousChange) / previousValue;
   return currentChange;
 };
+
+export const mapStringToInterval = (str: string) => {
+  switch (str) {
+    case "daily":
+      return Intervals.Daily;
+    case "weekly":
+      return Intervals.Weekly;
+    case "monthly":
+      return Intervals.Monthly;
+    case "yearly":
+      return Intervals.Yearly;
+    default:
+      throw new Error("Invalid interval");
+  }
+};
