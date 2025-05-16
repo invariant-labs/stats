@@ -11,6 +11,7 @@ import { DECIMAL, Range } from "@invariant-labs/sdk-eclipse/lib/utils";
 import BN from "bn.js";
 import { Connection, ParsedAccountData, PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
+//@ts-ignore
 import MAINNET_TOKENS from "../../data/mainnet_tokens.json";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Network as EclipseNetwork } from "@invariant-labs/sdk-eclipse";
@@ -35,15 +36,15 @@ export interface IntervalStats {
 export interface TotalIntervalStats {
   volume: {
     value: number;
-    change: number; // nie ma
+    change: number;
   };
   tvl: {
     value: number;
-    change: number; // nie ma
+    change: number;
   };
   fees: {
     value: number;
-    change: number; // nie ma
+    change: number;
   };
   volumePlot: TimeData[];
   liquidityPlot: TimeData[];
@@ -51,13 +52,6 @@ export interface TotalIntervalStats {
     volume: number;
   })[];
   poolsData: (Omit<PoolStatsDataWithString, "volume24"> & { volume: number })[];
-  // poolsData: {
-  //   poolAddress: string;
-  //   fee: number;
-  //   volume: number;
-  //   tvl: number;
-  //   apy: number;
-  // }[];
 }
 
 export interface PoolIntervalPlots {

@@ -98,9 +98,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
     await market.getPoolByAddress(
       new PublicKey("HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce")
     ),
-    await market.getPoolByAddress(
-      new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC")
-    ),
+    // await market.getPoolByAddress(
+    //   new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC")
+    // ),
   ];
 
   const poolsDict: Record<string, PoolStructure> = {};
