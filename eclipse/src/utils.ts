@@ -17,6 +17,61 @@ import { Network as EclipseNetwork } from "@invariant-labs/sdk-eclipse";
 import { readFileSync } from "fs";
 
 export const MAX_ATAS_IN_BATCH = 100;
+export const ONE_DAY = 24 * 60 * 60; // seconds
+export const TIERS_TO_OMIT = [0.001, 0.003];
+export enum Intervals {
+  Daily = "daily",
+  Weekly = "weekly",
+  Monthly = "monthly",
+  Yearly = "yearly",
+}
+
+export interface IntervalStats {
+  daily: TotalIntervalStats;
+  weekly: TotalIntervalStats;
+  monthly: TotalIntervalStats;
+  yearly: TotalIntervalStats;
+}
+export interface TotalIntervalStats {
+  volume: {
+    value: number;
+    change: number; // nie ma
+  };
+  tvl: {
+    value: number;
+    change: number; // nie ma
+  };
+  fees: {
+    value: number;
+    change: number; // nie ma
+  };
+  volumePlot: TimeData[];
+  liquidityPlot: TimeData[];
+  tokensData: (Omit<TokenStatsDataWithString, "volume24"> & {
+    volume: number;
+  })[];
+  poolsData: (Omit<PoolStatsDataWithString, "volume24"> & { volume: number })[];
+  // poolsData: {
+  //   poolAddress: string;
+  //   fee: number;
+  //   volume: number;
+  //   tvl: number;
+  //   apy: number;
+  // }[];
+}
+
+export interface PoolIntervalPlots {
+  daily: IntervalPlot;
+  weekly: IntervalPlot;
+  monthly: IntervalPlot;
+  yearly: IntervalPlot;
+}
+
+export interface IntervalPlot {
+  volumePlot: TimeData[];
+  liquidityPlot: TimeData[];
+  feesPlot: TimeData[];
+}
 export interface SnapshotValueData {
   tokenBNFromBeginning: string;
   usdValue24: number;
@@ -569,4 +624,96 @@ export const supportedTokens = {
   trbts2EsWyMdnCjsHUFBKLtgudmBD7Rfbz8zCg1s4EK: {
     decimals: 9,
   },
+};
+
+export function isSameWeek(
+  timestamp: number,
+  referenceTimestamp: number
+): boolean {
+  const date = new Date(timestamp);
+  const referenceDate = new Date(referenceTimestamp);
+
+  const startOfWeek = new Date(date);
+  startOfWeek.setDate(date.getDate() - date.getDay());
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const startOfReferenceWeek = new Date(referenceDate);
+  startOfReferenceWeek.setDate(
+    referenceDate.getDate() - referenceDate.getDay()
+  );
+  startOfReferenceWeek.setHours(0, 0, 0, 0);
+
+  return startOfWeek.getTime() === startOfReferenceWeek.getTime();
+}
+
+export function isSameMonth(
+  timestamp: number,
+  referenceTimestamp: number
+): boolean {
+  const date = new Date(timestamp);
+  const referenceDate = new Date(referenceTimestamp);
+
+  return (
+    date.getFullYear() === referenceDate.getFullYear() &&
+    date.getMonth() === referenceDate.getMonth()
+  );
+}
+
+export function isSameYear(
+  timestamp: number,
+  referenceTimestamp: number
+): boolean {
+  const date = new Date(timestamp);
+  const referenceDate = new Date(referenceTimestamp);
+  return date.getFullYear() === referenceDate.getFullYear();
+}
+
+export function calculateWeightFromTimestamps(
+  timestamp: number,
+  referenceTimestamp: number
+): number {
+  const delta = timestamp - referenceTimestamp;
+  const weight = Math.ceil(delta / ONE_DAY);
+  return weight;
+}
+
+export const weightedArithmeticAvg = (
+  ...args: Array<{ val: number; weight: number }>
+): number => {
+  if (args.length === 0) {
+    throw new Error("requires at least one argument");
+  }
+
+  const sumOfWeights = args.reduce((acc, { weight }) => acc + weight, 0);
+  const sum = args.reduce((acc, { val, weight }) => acc + val * weight, 0);
+
+  return Number((sum / sumOfWeights).toFixed(2));
+};
+
+export const generateEmptyTotalIntevalStats = (): TotalIntervalStats => ({
+  volume: {
+    value: 0,
+    change: 0,
+  },
+  tvl: {
+    value: 0,
+    change: 0,
+  },
+  fees: {
+    value: 0,
+    change: 0,
+  },
+  volumePlot: [],
+  liquidityPlot: [],
+  poolsData: [],
+  tokensData: [],
+});
+
+export const calculateChangeFromValues = (
+  previousValue: number,
+  currentValue: number,
+  previousChange: number
+): number => {
+  const currentChange = (currentValue * previousChange) / previousValue;
+  return currentChange;
 };

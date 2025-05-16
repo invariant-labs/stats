@@ -1,0 +1,228 @@
+{
+  "daily": {
+    "volume": { "value": 2051.386864565, "change": -62.82439218590932 },
+    "tvl": { "value": 991507.51, "change": 9.915969406720764 },
+    "fees": { "value": 1.846246423, "change": -62.82439839897066 },
+    "volumePlot": [
+      { "timestamp": 1747310400000, "value": 5518.099057919 },
+      { "timestamp": 1747310400000, "value": 2051.386864565 }
+    ],
+    "liquidityPlot": [
+      { "timestamp": 1747310400000, "value": 902059.56 },
+      { "timestamp": 1747310400000, "value": 991507.51 }
+    ],
+    "poolsData": [
+      {
+        "poolAddress": "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce",
+        "tokenX": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "tokenY": "So11111111111111111111111111111111111111112",
+        "liquidityX": 294158.544286,
+        "liquidityY": 607680.052706825,
+        "lockedX": 0.000493,
+        "lockedY": 0.000486495,
+        "volume": 75.575509,
+        "tvl": 901838.6,
+        "fee": 0.09,
+        "apy": 115.24124043648145
+      },
+      {
+        "poolAddress": "E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC",
+        "tokenX": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "tokenY": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
+        "liquidityX": 47998.179288,
+        "liquidityY": 41670.734100288,
+        "lockedX": 0,
+        "lockedY": 0,
+        "volume": 1975.811355565,
+        "tvl": 89668.91,
+        "fee": 0.09,
+        "apy": 964.1692354818556
+      }
+    ],
+    "tokensData": [
+      {
+        "address": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "volume": 1838.025229,
+        "tvl": 342156.723574,
+        "price": 1.000012
+      },
+      {
+        "address": "So11111111111111111111111111111111111111112",
+        "volume": 0,
+        "tvl": 607680.052706825,
+        "price": 2482.12
+      },
+      {
+        "address": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
+        "volume": 213.361635565,
+        "tvl": 41670.734100288,
+        "price": 170.5688815
+      }
+    ]
+  },
+  "weekly": {
+    "volume": { "value": 7569.485922484, "change": 0 },
+    "tvl": { "value": 991507.51, "change": 0 },
+    "fees": { "value": 6.812531684, "change": 0 },
+    "volumePlot": [{ "timestamp": 1747310400000, "value": 7569.485922484 }],
+    "liquidityPlot": [{ "timestamp": 1747310400000, "value": 991507.51 }],
+    "poolsData": [
+      {
+        "poolAddress": "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce",
+        "tokenX": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "tokenY": "So11111111111111111111111111111111111111112",
+        "liquidityX": 294158.544286,
+        "liquidityY": 607680.052706825,
+        "lockedX": 0.000493,
+        "lockedY": 0.000486495,
+        "volume": 5593.674566919,
+        "tvl": 901838.6,
+        "fee": 0.09,
+        "apy": 115.24124043648145
+      },
+      {
+        "poolAddress": "E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC",
+        "tokenX": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "tokenY": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
+        "liquidityX": 47998.179288,
+        "liquidityY": 41670.734100288,
+        "lockedX": 0,
+        "lockedY": 0,
+        "volume": 1975.811355565,
+        "tvl": 89668.91,
+        "fee": 0.09,
+        "apy": 964.1692354818556
+      }
+    ],
+    "tokensData": [
+      {
+        "volume": 6737.020523,
+        "tvl": 342156.72,
+        "address": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "price": 1.000012
+      },
+      {
+        "volume": 619.103763919,
+        "tvl": 607680.05,
+        "address": "So11111111111111111111111111111111111111112",
+        "price": 2482.12
+      },
+      {
+        "address": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
+        "volume": 213.361635565,
+        "tvl": 41670.734100288,
+        "price": 170.5688815
+      }
+    ]
+  },
+  "monthly": {
+    "volume": { "value": 7569.485922484, "change": 0 },
+    "tvl": { "value": 991507.51, "change": 0 },
+    "fees": { "value": 6.812531684, "change": 0 },
+    "volumePlot": [{ "timestamp": 1747310400000, "value": 7569.485922484 }],
+    "liquidityPlot": [{ "timestamp": 1747310400000, "value": 991507.51 }],
+    "poolsData": [
+      {
+        "poolAddress": "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce",
+        "tokenX": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "tokenY": "So11111111111111111111111111111111111111112",
+        "liquidityX": 294158.544286,
+        "liquidityY": 607680.052706825,
+        "lockedX": 0.000493,
+        "lockedY": 0.000486495,
+        "volume": 5593.674566919,
+        "tvl": 901838.6,
+        "fee": 0.09,
+        "apy": 115.24124043648145
+      },
+      {
+        "poolAddress": "E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC",
+        "tokenX": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "tokenY": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
+        "liquidityX": 47998.179288,
+        "liquidityY": 41670.734100288,
+        "lockedX": 0,
+        "lockedY": 0,
+        "volume": 1975.811355565,
+        "tvl": 89668.91,
+        "fee": 0.09,
+        "apy": 964.1692354818556
+      }
+    ],
+    "tokensData": [
+      {
+        "volume": 6737.020523,
+        "tvl": 342156.72,
+        "address": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "price": 1.000012
+      },
+      {
+        "volume": 619.103763919,
+        "tvl": 607680.05,
+        "address": "So11111111111111111111111111111111111111112",
+        "price": 2482.12
+      },
+      {
+        "address": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
+        "volume": 213.361635565,
+        "tvl": 41670.734100288,
+        "price": 170.5688815
+      }
+    ]
+  },
+  "yearly": {
+    "volume": { "value": 7569.485922484, "change": 0 },
+    "tvl": { "value": 991507.51, "change": 0 },
+    "fees": { "value": 6.812531684, "change": 0 },
+    "volumePlot": [{ "timestamp": 1747310400000, "value": 7569.485922484 }],
+    "liquidityPlot": [{ "timestamp": 1747310400000, "value": 991507.51 }],
+    "poolsData": [
+      {
+        "poolAddress": "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce",
+        "tokenX": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "tokenY": "So11111111111111111111111111111111111111112",
+        "liquidityX": 294158.544286,
+        "liquidityY": 607680.052706825,
+        "lockedX": 0.000493,
+        "lockedY": 0.000486495,
+        "volume": 5593.674566919,
+        "tvl": 901838.6,
+        "fee": 0.09,
+        "apy": 115.24124043648145
+      },
+      {
+        "poolAddress": "E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC",
+        "tokenX": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "tokenY": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
+        "liquidityX": 47998.179288,
+        "liquidityY": 41670.734100288,
+        "lockedX": 0,
+        "lockedY": 0,
+        "volume": 1975.811355565,
+        "tvl": 89668.91,
+        "fee": 0.09,
+        "apy": 964.1692354818556
+      }
+    ],
+    "tokensData": [
+      {
+        "volume": 6737.020523,
+        "tvl": 342156.72,
+        "address": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+        "price": 1.000012
+      },
+      {
+        "volume": 619.103763919,
+        "tvl": 607680.05,
+        "address": "So11111111111111111111111111111111111111112",
+        "price": 2482.12
+      },
+      {
+        "address": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
+        "volume": 213.361635565,
+        "tvl": 41670.734100288,
+        "price": 170.5688815
+      }
+    ]
+  }
+}
