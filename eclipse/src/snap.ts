@@ -93,15 +93,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     new PublicKey(getMarketAddress(network))
   );
 
-  // const allPools = await market.getAllPools();
-  const allPools = [
-    await market.getPoolByAddress(
-      new PublicKey("HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce")
-    ),
-    // await market.getPoolByAddress(
-    //   new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC")
-    // ),
-  ];
+  const allPools = await market.getAllPools();
 
   const poolsDict: Record<string, PoolStructure> = {};
   const poolLocks: Record<string, PoolLock> = {};

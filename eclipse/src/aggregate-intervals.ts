@@ -354,6 +354,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[key];
       const poolLiquidityPlot = data.liquidityPlot;
       const plotEntry = poolLiquidityPlot[0];
+      const previousEntry = poolLiquidityPlot[1];
 
       const anchor = getAnchorDate(plotEntry.timestamp);
       const entryIndex = totalStats[key].liquidityPlot.findIndex(
@@ -361,15 +362,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
       );
 
       if (entryIndex !== -1) {
-        console.log("Updating existing entry in liquidity plot", key);
         totalStats[key].liquidityPlot[entryIndex].value += plotEntry.value;
+        if (key !== Intervals.Daily) {
+          totalStats[key].liquidityPlot[entryIndex].value -=
+            previousEntry?.value ?? 0;
+        }
       } else {
-        console.log(
-          "Adding new entry to liquidity plot",
-          key,
-          "at index",
-          entryIndex
-        );
         totalStats[key].liquidityPlot.splice(0, 0, {
           timestamp: plotEntry.timestamp,
           value: plotEntry.value,
@@ -404,8 +402,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const recentEntry = feesPlot[0];
       const previousEntry = feesPlot[1];
-      const currentFees = recentEntry.value ?? 0;
-      const previousFees = previousEntry.value ?? 0;
+      const currentFees = recentEntry?.value ?? 0;
+      const previousFees = previousEntry?.value ?? 0;
       feesHelper[key].current += currentFees;
       feesHelper[key].previous += previousFees;
     }
