@@ -29,9 +29,16 @@ import {
   isSameYear,
   Intervals,
   getTokensPrices,
+  TimeData,
+  calculateAPYForInterval,
+  isSameDay,
+  getWeekNumber,
+  getMonthNumber,
+  getYear,
 } from "./utils";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
+import path from "path";
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
@@ -92,20 +99,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
     ? readPoolsFromCache(poolsCacheFileName)
     : await market.getAllPools();
 
-  const totalIntervals: IntervalStats = JSON.parse(
+  const totalStats: IntervalStats = JSON.parse(
     fs.readFileSync(fileName, "utf-8")
   );
 
   let plotTimestamp = 0;
-
-  const tokensStats = {};
-
-  const totalStats = {
-    daily: generateEmptyTotalIntevalStats(),
-    weekly: generateEmptyTotalIntevalStats(),
-    monthly: generateEmptyTotalIntevalStats(),
-    yearly: generateEmptyTotalIntevalStats(),
-  };
 
   for (let pool of allPools) {
     if (TIERS_TO_OMIT.includes(+printBN(pool.fee, DECIMAL - 2))) {
@@ -171,215 +169,297 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
     const processPoolStats = (
       key: Intervals,
-      shouldCompound: (a: number, b: number) => boolean
+      shouldCompound: (a: number, b: number) => boolean,
+      getAnchorDate: (a: number) => number
     ) => {
-      const lastEntryIndex = intervals[key].volumePlot.length - 1;
+      const anchor = getAnchorDate(plotTimestamp);
 
-      const lastWeeklyEntryTimestamp =
-        intervals[key].volumePlot[lastEntryIndex]?.timestamp ?? 0;
+      const findIndexForEntry = (arr: TimeData[]) => {
+        let index = 0;
+        for (let i = 0; i < arr.length; i++) {
+          if (getAnchorDate(arr[i].timestamp) === anchor) {
+            index = i;
+            break;
+          }
+        }
+        return index;
+      };
+
+      const entryIndex = findIndexForEntry(intervals[key].volumePlot);
+
+      const relatedEntryTimestamp =
+        intervals[key].volumePlot[entryIndex]?.timestamp ?? 0;
+
       const weight =
-        lastWeeklyEntryTimestamp === 0
+        relatedEntryTimestamp === 0
           ? 1
-          : calculateWeightFromTimestamps(
-              lastWeeklyEntryTimestamp,
-              plotTimestamp
-            );
+          : calculateWeightFromTimestamps(relatedEntryTimestamp, plotTimestamp);
 
       const compoundEntry = shouldCompound(
-        lastWeeklyEntryTimestamp,
+        relatedEntryTimestamp,
         plotTimestamp
       );
 
       if (compoundEntry) {
-        intervals[key].volumePlot[lastEntryIndex].value += volume;
-        intervals[key].feesPlot[lastEntryIndex].value += fees;
+        intervals[key].volumePlot[entryIndex].value += volume;
+        intervals[key].feesPlot[entryIndex].value += fees;
 
-        intervals[key].liquidityPlot[lastEntryIndex].value =
+        const avgTVL = Math.abs(
           weightedArithmeticAvg(
             {
-              val: intervals[key].liquidityPlot[lastEntryIndex].value,
+              val: intervals[key].liquidityPlot[entryIndex].value,
               weight,
             },
             { val: tvl, weight: 1 }
-          );
+          )
+        );
+
+        intervals[key].liquidityPlot[entryIndex].value = avgTVL;
       } else {
-        intervals[key].volumePlot.push({
+        intervals[key].volumePlot.splice(entryIndex, 0, {
           timestamp: plotTimestamp,
           value: volume,
         });
-        intervals[key].liquidityPlot.push({
+        intervals[key].liquidityPlot.splice(entryIndex, 0, {
           timestamp: plotTimestamp,
-          value: tvl,
+          value: Math.abs(tvl),
         });
-        intervals[key].feesPlot.push({
+        intervals[key].feesPlot.splice(entryIndex, 0, {
           timestamp: plotTimestamp,
           value: fees,
         });
       }
 
-      const index = compoundEntry ? lastEntryIndex : lastEntryIndex + 1;
-      totalStats[key].volume.value += intervals[key].volumePlot[index].value;
-      // weeklyStats.tvl.value += intervals[key].liquidityPlot[index].value;
-      const weightedTVL = weightedArithmeticAvg(
-        { val: intervals[key].liquidityPlot[index].value, weight },
-        { val: tvl, weight: 1 }
-      );
-      totalStats[key].tvl.value += weightedTVL;
-      totalStats[key].fees.value += intervals[key].feesPlot[index].value;
+      // Add Pool to global stats
+      {
+        const existingAnchors = totalStats[key].volumePlot.map((entry) =>
+          getAnchorDate(entry.timestamp)
+        );
 
-      totalStats[key].poolsData.push({
-        poolAddress: address.toString(),
-        tokenX: pool.tokenX.toString(),
-        tokenY: pool.tokenY.toString(),
-        liquidityX: latestSnap.liquidityX.usdValue24,
-        liquidityY: latestSnap.liquidityY.usdValue24,
-        lockedX: latestSnap.lockedX?.usdValue24 ?? 0,
-        lockedY: latestSnap.lockedY?.usdValue24 ?? 0,
-        volume: intervals[key].volumePlot[index].value,
-        // tvl: intervals[key].liquidityPlot[index].value,
-        tvl: weightedTVL,
-        fee: +printBN(pool.fee, DECIMAL - 2),
-        apy: APY,
-      });
+        const anchorExists = existingAnchors.some((entry) => entry === anchor);
+        const entryIndex = findIndexForEntry(totalStats[key].volumePlot);
 
-      if (key === Intervals.Daily) {
-        const tokenX = pool.tokenX.toString();
-        const tokenY = pool.tokenY.toString();
-        if (tokensStats[tokenX]) {
-          tokensStats[tokenX].volume += latestSnap.volumeX.usdValue24;
-          tokensStats[tokenX].tvl += latestSnap.liquidityX.usdValue24;
+        if (anchorExists) {
+          totalStats[key].volumePlot[entryIndex].value += volume;
         } else {
-          tokensStats[tokenX] = {
-            address: tokenX,
-            volume: latestSnap.volumeX.usdValue24,
-            tvl: latestSnap.liquidityX.usdValue24,
-            price: 0,
-          };
+          totalStats[key].volumePlot.splice(entryIndex, 0, {
+            timestamp: plotTimestamp,
+            value: volume,
+          });
         }
-        if (tokensStats[tokenY]) {
-          tokensStats[tokenY].volume += latestSnap.volumeY.usdValue24;
-          tokensStats[tokenY].tvl += latestSnap.liquidityY.usdValue24;
+
+        const poolExists = totalStats[key].poolsData.some(
+          (pool) => pool.poolAddress === address.toString()
+        );
+        if (poolExists) {
+          const poolIndex = totalStats[key].poolsData.findIndex(
+            (pool) => pool.poolAddress === address.toString()
+          );
+          totalStats[key].poolsData[poolIndex].volume += volume;
+          totalStats[key].poolsData[poolIndex].tvl = Math.abs(tvl);
+          totalStats[key].poolsData[poolIndex].liquidityX =
+            latestSnap.liquidityX.usdValue24;
+          totalStats[key].poolsData[poolIndex].liquidityY =
+            latestSnap.liquidityY.usdValue24;
+          totalStats[key].poolsData[poolIndex].lockedX =
+            latestSnap.lockedX?.usdValue24 ?? 0;
+          totalStats[key].poolsData[poolIndex].lockedY =
+            latestSnap.lockedY?.usdValue24 ?? 0;
+          totalStats[key].poolsData[poolIndex].apy =
+            key === Intervals.Daily
+              ? APY
+              : calculateAPYForInterval(
+                  key,
+                  totalStats[key].poolsData[poolIndex].volume,
+                  totalStats[key].poolsData[poolIndex].tvl,
+                  totalStats[key].poolsData[poolIndex].fee
+                );
         } else {
-          tokensStats[tokenY] = {
-            address: tokenY,
-            volume: latestSnap.volumeY.usdValue24,
-            tvl: latestSnap.liquidityY.usdValue24,
-            price: 0,
-          };
+          totalStats[key].poolsData.push({
+            poolAddress: address.toString(),
+            volume,
+            tvl: Math.abs(tvl),
+            liquidityX: latestSnap.liquidityX.usdValue24,
+            liquidityY: latestSnap.liquidityY.usdValue24,
+            lockedX: latestSnap.lockedX?.usdValue24 ?? 0,
+            lockedY: latestSnap.lockedY?.usdValue24 ?? 0,
+            apy:
+              key === Intervals.Daily
+                ? APY
+                : calculateAPYForInterval(
+                    key,
+                    volume,
+                    tvl,
+                    +printBN(pool.fee, DECIMAL - 2)
+                  ),
+            fee: +printBN(pool.fee, DECIMAL - 2),
+            tokenX: pool.tokenX.toString(),
+            tokenY: pool.tokenY.toString(),
+          });
         }
+        const updateTokenData = (x: boolean) => {
+          const address = x ? pool.tokenX.toString() : pool.tokenY.toString();
+          const volume = x
+            ? latestSnap.volumeX.usdValue24
+            : latestSnap.volumeY.usdValue24;
+          const liquidity = x
+            ? latestSnap.liquidityX.usdValue24
+            : latestSnap.liquidityY.usdValue24;
+          const tokenExists = totalStats[key].tokensData.some(
+            (token) => token.address === address
+          );
+          if (tokenExists) {
+            const tokenIndex = totalStats[key].tokensData.findIndex(
+              (token) => token.address === address
+            );
+            totalStats[key].tokensData[tokenIndex].volume += volume;
+            totalStats[key].tokensData[tokenIndex].tvl = Math.abs(liquidity);
+          } else {
+            totalStats[key].tokensData.push({
+              address,
+              price: 0,
+              volume,
+              tvl: Math.abs(liquidity),
+            });
+          }
+          updateTokenData(true);
+          updateTokenData(false);
+        };
       }
     };
 
-    processPoolStats(Intervals.Daily, (_a: number, _b: number) => false);
-    processPoolStats(Intervals.Weekly, isSameWeek);
-    processPoolStats(Intervals.Monthly, isSameMonth);
-    processPoolStats(Intervals.Yearly, isSameYear);
+    processPoolStats(Intervals.Daily, isSameDay, (a) => a);
+    processPoolStats(Intervals.Weekly, isSameWeek, getWeekNumber);
+    processPoolStats(Intervals.Monthly, isSameMonth, getMonthNumber);
+    processPoolStats(Intervals.Yearly, isSameYear, getYear);
 
     fs.writeFileSync(intervalsFileName, JSON.stringify(intervals), "utf-8");
   }
 
-  const tokenPrices = await getTokensPrices(network);
-
-  Object.entries(tokenPrices).forEach(([addr, { price }]) => {
-    if (tokensStats[addr]) {
-      tokensStats[addr].price = price;
-    }
-  });
-
-  const processGlobalStats = (
+  const buildLiquidityPlot = (
     key: Intervals,
-    shouldCompound: (a: number, b: number) => boolean
+    getAnchorDate: (a: number) => number
   ) => {
-    const stats = totalStats[key];
-    const compound = shouldCompound(
-      totalIntervals[key].volumePlot[totalIntervals[key].volumePlot.length - 1]
-        ?.timestamp,
-      plotTimestamp
-    );
-    if (compound) {
-      totalIntervals[key].volumePlot[
-        totalIntervals[key].volumePlot.length - 1
-      ].value = stats.volume.value;
-      totalIntervals[key].liquidityPlot[
-        totalIntervals[key].liquidityPlot.length - 1
-      ].value = stats.tvl.value;
-      totalIntervals[key].volume.change = calculateChangeFromValues(
-        totalIntervals[key].volume.value,
-        stats.volume.value,
-        totalIntervals[key].volume.change
-      );
-      totalIntervals[key].tvl.change = calculateChangeFromValues(
-        totalIntervals[key].tvl.value,
-        stats.tvl.value,
-        totalIntervals[key].tvl.change
-      );
-      totalIntervals[key].fees.change = calculateChangeFromValues(
-        totalIntervals[key].fees.value,
-        stats.fees.value,
-        totalIntervals[key].fees.change
-      );
-      totalIntervals[key].volume.value = stats.volume.value;
-      totalIntervals[key].tvl.value = stats.tvl.value;
-      totalIntervals[key].fees.value = stats.fees.value;
-      totalIntervals[key].poolsData = stats.poolsData;
-      const weight = calculateWeightFromTimestamps(
-        totalIntervals[key].volumePlot[
-          totalIntervals[key].volumePlot.length - 1
-        ].timestamp,
-        plotTimestamp
-      );
-      totalIntervals[key].tokensData = Object.values(tokensStats).map(
-        (tokenStats: any) => {
-          const prevValue = totalIntervals[key].tokensData.find(
-            (token) => token.address === tokenStats.address
-          );
-          if (prevValue) {
-            return {
-              volume: prevValue.volume + tokenStats.volume,
-              tvl: weightedArithmeticAvg(
-                { val: prevValue.tvl, weight },
-                { val: tokenStats.tvl, weight: 1 }
-              ),
-              address: tokenStats.address,
-              price: tokenStats.price,
-            };
-          } else {
-            return tokenStats;
-          }
-        }
-      );
-    } else {
-      const prevVolume = totalIntervals[key].volume.value;
-      const prevTvl = totalIntervals[key].tvl.value;
-      const prevFees = totalIntervals[key].fees.value;
-      totalIntervals[key].volumePlot.push({
-        timestamp: plotTimestamp,
-        value: stats.volume.value,
+    for (const pool of allPools) {
+      // if (!whitelistedPools.includes(poolKey)) {
+      //   continue;
+      // }
+      const pair = new Pair(pool.tokenX, pool.tokenY, {
+        fee: pool.fee,
+        tickSpacing: pool.tickSpacing,
       });
-      totalIntervals[key].liquidityPlot.push({
-        timestamp: plotTimestamp,
-        value: stats.tvl.value,
-      });
-      totalIntervals[key].volume.value = stats.volume.value;
-      totalIntervals[key].tvl.value = stats.tvl.value;
-      totalIntervals[key].fees.value = stats.fees.value;
-      totalIntervals[key].poolsData = stats.poolsData;
-      totalIntervals[key].volume.change =
-        ((stats.volume.value - prevVolume) / prevVolume) * 100;
-      totalIntervals[key].tvl.change =
-        ((stats.tvl.value - prevTvl) / prevTvl) * 100;
-      totalIntervals[key].fees.change =
-        ((stats.fees.value - prevFees) / prevFees) * 100;
-      totalIntervals[key].tokensData = Object.values(tokensStats);
+      const address = pair.getAddress(market.program.programId);
+
+      const intervalsFileName = `${intervalsPath}${address.toString()}.json`;
+      const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[key];
+      const poolLiquidityPlot = data.liquidityPlot;
+      const plotEntry = poolLiquidityPlot[0];
+
+      const anchor = getAnchorDate(plotEntry.timestamp);
+      const entryIndex = totalStats[key].liquidityPlot.findIndex(
+        (entry) => getAnchorDate(entry.timestamp) === anchor
+      );
+
+      if (entryIndex !== -1) {
+        console.log("Updating existing entry in liquidity plot", key);
+        totalStats[key].liquidityPlot[entryIndex].value += plotEntry.value;
+      } else {
+        console.log(
+          "Adding new entry to liquidity plot",
+          key,
+          "at index",
+          entryIndex
+        );
+        totalStats[key].liquidityPlot.splice(0, 0, {
+          timestamp: plotEntry.timestamp,
+          value: plotEntry.value,
+        });
+      }
     }
   };
 
-  processGlobalStats(Intervals.Daily, (_a: number, _b: number) => false);
-  processGlobalStats(Intervals.Weekly, isSameWeek);
-  processGlobalStats(Intervals.Monthly, isSameMonth);
-  processGlobalStats(Intervals.Yearly, isSameYear);
+  buildLiquidityPlot(Intervals.Daily, (a) => a);
+  buildLiquidityPlot(Intervals.Weekly, getWeekNumber);
+  buildLiquidityPlot(Intervals.Monthly, getMonthNumber);
+  buildLiquidityPlot(Intervals.Yearly, getYear);
 
-  fs.writeFileSync(fileName, JSON.stringify(totalIntervals), "utf-8");
+  const feesHelper = {
+    daily: { current: 0, previous: 0 },
+    weekly: { current: 0, previous: 0 },
+    monthly: { current: 0, previous: 0 },
+    yearly: { current: 0, previous: 0 },
+  };
+  const buildFeesHelper = (key: Intervals) => {
+    for (const pool of allPools) {
+      const pair = new Pair(pool.tokenX, pool.tokenY, {
+        fee: pool.fee,
+        tickSpacing: pool.tickSpacing,
+      });
+      const address = pair.getAddress(market.program.programId);
+
+      const intervalsFileName = `${intervalsPath}${address.toString()}.json`;
+
+      const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[key];
+      const feesPlot = data.feesPlot;
+
+      const recentEntry = feesPlot[0];
+      const previousEntry = feesPlot[1];
+      const currentFees = recentEntry.value ?? 0;
+      const previousFees = previousEntry.value ?? 0;
+      feesHelper[key].current += currentFees;
+      feesHelper[key].previous += previousFees;
+    }
+  };
+
+  buildFeesHelper(Intervals.Daily);
+  buildFeesHelper(Intervals.Weekly);
+  buildFeesHelper(Intervals.Monthly);
+  buildFeesHelper(Intervals.Yearly);
+
+  const calculateTotalValues = (key: Intervals) => {
+    const totalVolume = totalStats[key].volumePlot[0]?.value ?? 0;
+    const totalFees = feesHelper[key].current;
+    const totalLiquidity = totalStats[key].liquidityPlot[0]?.value ?? 0;
+
+    const previousVolume = totalStats[key].volumePlot[1]?.value ?? 0;
+    const previousFees = feesHelper[key].previous;
+    const previousLiquidity = totalStats[key].liquidityPlot[1]?.value ?? 0;
+
+    const volumeChange =
+      ((totalVolume - previousVolume) / previousVolume) * 100;
+    const feesChange = ((totalFees - previousFees) / previousFees) * 100;
+    const liquidityChange =
+      ((totalLiquidity - previousLiquidity) / previousLiquidity) * 100;
+    totalStats[key].volume = { value: totalVolume, change: volumeChange };
+    totalStats[key].fees = { value: totalFees, change: feesChange };
+    totalStats[key].tvl = {
+      value: totalLiquidity,
+      change: liquidityChange,
+    };
+  };
+
+  calculateTotalValues(Intervals.Daily);
+  calculateTotalValues(Intervals.Weekly);
+  calculateTotalValues(Intervals.Monthly);
+  calculateTotalValues(Intervals.Yearly);
+
+  const tokenPrices = await getTokensPrices(network);
+
+  const assignPrice = (key: Intervals) => {
+    totalStats[key].tokensData.forEach((token) => {
+      const tokenPrice = tokenPrices[token.address];
+      if (tokenPrice) {
+        token.price = tokenPrice.price;
+      }
+    });
+  };
+
+  assignPrice(Intervals.Daily);
+  assignPrice(Intervals.Weekly);
+  assignPrice(Intervals.Monthly);
+  assignPrice(Intervals.Yearly);
+
+  fs.writeFileSync(fileName, JSON.stringify(totalStats), "utf-8");
 };
 
 // createSnapshotForNetwork(Network.DEV).then(
