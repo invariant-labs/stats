@@ -340,6 +340,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
     key: Intervals,
     getAnchorDate: (a: number) => number
   ) => {
+    // TODO: Optimize this
+    totalStats[key].liquidityPlot = [];
     for (const pool of allPools) {
       // if (!whitelistedPools.includes(poolKey)) {
       //   continue;
@@ -353,25 +355,21 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const intervalsFileName = `${intervalsPath}${address.toString()}.json`;
       const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[key];
       const poolLiquidityPlot = data.liquidityPlot;
-      const plotEntry = poolLiquidityPlot[0];
-      const previousEntry = poolLiquidityPlot[1];
 
-      const anchor = getAnchorDate(plotEntry.timestamp);
-      const entryIndex = totalStats[key].liquidityPlot.findIndex(
-        (entry) => getAnchorDate(entry.timestamp) === anchor
-      );
+      for (const plotEntry of poolLiquidityPlot) {
+        const anchor = getAnchorDate(plotEntry.timestamp);
+        const entryIndex = totalStats[key].liquidityPlot.findIndex(
+          (entry) => getAnchorDate(entry.timestamp) === anchor
+        );
 
-      if (entryIndex !== -1) {
-        totalStats[key].liquidityPlot[entryIndex].value += plotEntry.value;
-        if (key !== Intervals.Daily) {
-          totalStats[key].liquidityPlot[entryIndex].value -=
-            previousEntry?.value ?? 0;
+        if (entryIndex !== -1) {
+          totalStats[key].liquidityPlot[entryIndex].value += plotEntry.value;
+        } else {
+          totalStats[key].liquidityPlot.push({
+            timestamp: plotEntry.timestamp,
+            value: plotEntry.value,
+          });
         }
-      } else {
-        totalStats[key].liquidityPlot.splice(0, 0, {
-          timestamp: plotEntry.timestamp,
-          value: plotEntry.value,
-        });
       }
     }
   };
