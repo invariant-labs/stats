@@ -96,16 +96,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
     yearly: generateEmptyTotalIntevalStats(),
   };
 
-  const whitelistedPools = [
-    "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce",
-    "E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC",
-  ];
+  // const whitelistedPools = [
+  //   "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce",
+  //   "E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC",
+  // ];
 
   const poolKeys = Object.keys(snaps);
   for (let poolKey of poolKeys) {
-    if (!whitelistedPools.includes(poolKey)) {
-      continue;
-    }
+    // if (!whitelistedPools.includes(poolKey)) {
+    //   continue;
+    // }
 
     const pool = await market.getPoolByAddress(new PublicKey(poolKey));
 
@@ -387,9 +387,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
     getAnchorDate: (a: number) => number
   ) => {
     for (const poolKey of poolKeys) {
-      if (!whitelistedPools.includes(poolKey)) {
-        continue;
-      }
+      // if (!whitelistedPools.includes(poolKey)) {
+      //   continue;
+      // }
 
       const intervalsFileName = path.join(
         __dirname,
@@ -429,9 +429,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
   };
   const buildFeesHelper = (key: Intervals) => {
     for (const poolKey of poolKeys) {
-      if (!whitelistedPools.includes(poolKey)) {
-        continue;
-      }
+      // if (!whitelistedPools.includes(poolKey)) {
+      //   continue;
+      // }
 
       const intervalsFileName = path.join(
         __dirname,
@@ -442,8 +442,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const recentEntry = feesPlot[0];
       const previousEntry = feesPlot[1];
-      const currentFees = recentEntry.value ?? 0;
-      const previousFees = previousEntry.value ?? 0;
+      const currentFees = recentEntry?.value ?? 0;
+      const previousFees = previousEntry?.value ?? 0;
       feesHelper[key].current += currentFees;
       feesHelper[key].previous += previousFees;
     }

@@ -34,5 +34,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const interval = mapStringToInterval(rawInterval as string);
 
   const intervalData = data[interval];
+  intervalData.volumePlot = intervalData.volumePlot.slice(0, 30);
+  intervalData.liquidityPlot = intervalData.liquidityPlot.slice(0, 30);
+
   res.json(intervalData);
 }
