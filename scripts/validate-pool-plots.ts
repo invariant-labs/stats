@@ -2,8 +2,19 @@
 // import ECLIPSE_MAINNET_DATA from "../data/eclipse/full_mainnet.json";
 //@ts-ignore
 import ECLIPSE_MAINNET_DATA from "../data/eclipse/intervals/mainnet/HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce.json";
-
+//@ts-ignore
+import GLOBAL_STATS from "../data/eclipse/mainnet_intervals.json";
 function main() {
+  const sortedPlot = GLOBAL_STATS.daily.volumePlot.sort(
+    (a, b) => a.timestamp - b.timestamp
+  );
+
+  const isSorted = sortedPlot.every(
+    (val, index) =>
+      GLOBAL_STATS.daily.volumePlot[index].timestamp === val.timestamp
+  );
+  console.log("Is sorted: ", isSorted);
+
   const dailyTotalVolume = ECLIPSE_MAINNET_DATA.daily.volumePlot.reduce(
     (acc: number, val) => acc + val.value,
     0

@@ -7,7 +7,11 @@ import {
   Tick,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import { Market as EclipseMarket } from "@invariant-labs/sdk-eclipse/lib/market";
-import { DECIMAL, Range } from "@invariant-labs/sdk-eclipse/lib/utils";
+import {
+  dailyFactorPool,
+  DECIMAL,
+  Range,
+} from "@invariant-labs/sdk-eclipse/lib/utils";
 import BN from "bn.js";
 import { Connection, ParsedAccountData, PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
@@ -620,6 +624,20 @@ export const supportedTokens = {
   },
 };
 
+export function isSameDay(
+  timestamp: number,
+  referenceTimestamp: number
+): boolean {
+  const date = new Date(timestamp);
+  const referenceDate = new Date(referenceTimestamp);
+
+  return (
+    date.getFullYear() === referenceDate.getFullYear() &&
+    date.getMonth() === referenceDate.getMonth() &&
+    date.getDate() === referenceDate.getDate()
+  );
+}
+
 export function isSameWeek(
   timestamp: number,
   referenceTimestamp: number
@@ -660,6 +678,39 @@ export function isSameYear(
   const date = new Date(timestamp);
   const referenceDate = new Date(referenceTimestamp);
   return date.getFullYear() === referenceDate.getFullYear();
+}
+
+export function getWeekNumber(timestamp: number): number {
+  const date = new Date(timestamp);
+
+  const targetDate = new Date(date.getTime());
+  const dayNr = (date.getDay() + 6) % 7;
+  targetDate.setDate(targetDate.getDate() - dayNr + 3);
+  const firstThursday = targetDate.valueOf();
+  targetDate.setMonth(0, 1);
+  if (targetDate.getDay() !== 4) {
+    targetDate.setMonth(0, 1 + ((4 - targetDate.getDay() + 7) % 7));
+  }
+  const weekNumber =
+    1 + Math.ceil((firstThursday - targetDate.valueOf()) / 604800000);
+
+  const weekYear = new Date(firstThursday).getFullYear();
+
+  return weekYear * 100 + weekNumber;
+}
+
+export function getMonthNumber(timestamp: number): number {
+  const date = new Date(timestamp);
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+
+  return year * 100 + month;
+}
+
+export function getYear(timestamp: number): number {
+  const date = new Date(timestamp);
+  return date.getFullYear();
 }
 
 export function calculateWeightFromTimestamps(
@@ -722,6 +773,33 @@ export const mapStringToInterval = (str: string) => {
       return Intervals.Monthly;
     case "yearly":
       return Intervals.Yearly;
+    default:
+      throw new Error("Invalid interval");
+  }
+};
+
+export const calculateAPYForInterval = (
+  interval: Intervals,
+  volume: number,
+  tvl: number,
+  fee: number
+) => {
+  const factor = (volume * fee) / 100 / tvl;
+  const exponent = Math.floor(365 / intervalToDays(interval));
+  const APY = (Math.pow(factor + 1, exponent) - 1) * 100;
+  return APY === Infinity ? 1001 : isNaN(+JSON.stringify(APY)) ? 0 : APY;
+};
+
+export const intervalToDays = (interval: Intervals): number => {
+  switch (interval) {
+    case Intervals.Daily:
+      return 1;
+    case Intervals.Weekly:
+      return 7;
+    case Intervals.Monthly:
+      return 30;
+    case Intervals.Yearly:
+      return 365;
     default:
       throw new Error("Invalid interval");
   }
