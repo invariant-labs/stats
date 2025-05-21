@@ -119,6 +119,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "FSBb5Atma2HpUhembdBT1edYw1kmVPHVqvtR1Q11jBGL", // SOL/ETH 0.02%
     "86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM", // SOL/ETH 0.09%
     "7owDutq5guBRS94XCbVy1Q1tW6nXNhHeeQPeDTQ1xTYb", // SOL/ETH 0.05%
+    "HG7iQMk29cgs74ZhSwrnye3C6SLQwKnfsbXqJVRi1x8H", // BITZ/ETH 1%
   ];
 
   // Tokens which price should be evaluated last, the lower the value the less likely the token is to be the base_currency
