@@ -735,6 +735,16 @@ export const weightedArithmeticAvg = (
   return Number((sum / sumOfWeights).toFixed(2));
 };
 
+export const arithmeticAvg = (...args: Array<number>): number => {
+  if (args.length === 0) {
+    throw new Error("requires at least one argument");
+  }
+
+  const sum = args.reduce((acc, val) => acc + val, 0);
+
+  return Number((sum / args.length).toFixed(2));
+};
+
 export const generateEmptyTotalIntevalStats = (): TotalIntervalStats => ({
   volume: {
     value: 0,
@@ -779,28 +789,11 @@ export const mapStringToInterval = (str: string) => {
 };
 
 export const calculateAPYForInterval = (
-  interval: Intervals,
   volume: number,
   tvl: number,
-  fee: number
+  fee: number // 0.09 stands for  0.09%
 ) => {
   const factor = (volume * fee) / 100 / tvl;
-  const exponent = Math.floor(365 / intervalToDays(interval));
-  const APY = (Math.pow(factor + 1, exponent) - 1) * 100;
+  const APY = (Math.pow(factor + 1, 365) - 1) * 100;
   return APY === Infinity ? 1001 : isNaN(+JSON.stringify(APY)) ? 0 : APY;
-};
-
-export const intervalToDays = (interval: Intervals): number => {
-  switch (interval) {
-    case Intervals.Daily:
-      return 1;
-    case Intervals.Weekly:
-      return 7;
-    case Intervals.Monthly:
-      return 30;
-    case Intervals.Yearly:
-      return 365;
-    default:
-      throw new Error("Invalid interval");
-  }
 };

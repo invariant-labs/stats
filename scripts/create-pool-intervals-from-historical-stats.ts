@@ -14,11 +14,8 @@ import TESTNET_DATA from "../data/eclipse/testnet.json";
 //@ts-ignore
 import MAINNET_DATA from "../data/eclipse/mainnet.json";
 import {
-  calculateWeightFromTimestamps,
   isSameWeek,
   PoolStatsData,
-  readPoolsFromCache,
-  weightedArithmeticAvg,
   isSameMonth,
   PoolIntervalPlots,
   IntervalStats,
@@ -34,14 +31,11 @@ import {
   getMonthNumber,
   getYear,
   calculateAPYForInterval,
+  arithmeticAvg,
 } from "../eclipse/src/utils";
-import { AnchorProvider, BN } from "@coral-xyz/anchor";
-import {
-  dailyFactorPool,
-  DECIMAL,
-} from "@invariant-labs/sdk-eclipse/lib/utils";
+import { AnchorProvider } from "@coral-xyz/anchor";
+import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
 import path from "path";
-const LATEST_ENTRY_TIMESTAMP = 1747310400000;
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
@@ -102,11 +96,29 @@ export const createSnapshotForNetwork = async (network: Network) => {
   // ];
 
   const poolKeys = Object.keys(snaps);
-  for (let poolKey of poolKeys) {
-    // if (!whitelistedPools.includes(poolKey)) {
-    //   continue;
-    // }
 
+  const poolStatsHelper = {
+    daily: {},
+    weekly: {},
+    monthly: {},
+    yearly: {},
+  };
+
+  const tokenStatsHelper = {
+    daily: {},
+    weekly: {},
+    monthly: {},
+    yearly: {},
+  };
+
+  const poolTvlHelper = {
+    daily: {},
+    weekly: {},
+    monthly: {},
+    yearly: {},
+  };
+
+  for (let poolKey of poolKeys) {
     const pool = await market.getPoolByAddress(new PublicKey(poolKey));
 
     if (TIERS_TO_OMIT.includes(+printBN(pool.fee, DECIMAL - 2))) {
@@ -177,7 +189,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
     const monthlyLatestAnchor = Math.max(...monthlyAnchors);
     const yearlyLatestAnchor = Math.max(...yearlyAnchors);
 
-    let previouslyAddedLiquidity = 0;
     for (const snap of associatedSnaps) {
       plotTimestamp = +snap.timestamp;
 
@@ -215,14 +226,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
         const relatedEntryTimestamp =
           intervals[key].volumePlot[entryIndex]?.timestamp ?? 0;
 
-        const weight =
-          relatedEntryTimestamp === 0
-            ? 1
-            : calculateWeightFromTimestamps(
-                relatedEntryTimestamp,
-                plotTimestamp
-              );
-
         const compoundEntry = shouldCompound(
           relatedEntryTimestamp,
           plotTimestamp
@@ -231,15 +234,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
         if (compoundEntry) {
           intervals[key].volumePlot[entryIndex].value += volume;
           intervals[key].feesPlot[entryIndex].value += fees;
+          poolTvlHelper[key][address.toString()].push(Math.abs(tvl));
 
           const avgTVL = Math.abs(
-            weightedArithmeticAvg(
-              {
-                val: intervals[key].liquidityPlot[entryIndex].value,
-                weight,
-              },
-              { val: tvl, weight: 1 }
-            )
+            arithmeticAvg(...poolTvlHelper[key][address.toString()])
           );
 
           intervals[key].liquidityPlot[entryIndex].value = avgTVL;
@@ -256,6 +254,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             timestamp: plotTimestamp,
             value: fees,
           });
+          poolTvlHelper[key][address.toString()] = [Math.abs(tvl)];
         }
 
         // Add Pool to global stats
@@ -282,10 +281,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
             const poolExists = totalStats[key].poolsData.some(
               (pool) => pool.poolAddress === address.toString()
             );
+
             if (poolExists) {
               const poolIndex = totalStats[key].poolsData.findIndex(
                 (pool) => pool.poolAddress === address.toString()
               );
+              poolStatsHelper[key][address.toString()].push(Math.abs(tvl));
+
               totalStats[key].poolsData[poolIndex].volume += volume;
               totalStats[key].poolsData[poolIndex].tvl = Math.abs(tvl);
               totalStats[key].poolsData[poolIndex].liquidityX =
@@ -298,11 +300,17 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 snap.lockedY?.usdValue24 ?? 0;
               totalStats[key].poolsData[poolIndex].apy =
                 calculateAPYForInterval(
-                  key,
                   totalStats[key].poolsData[poolIndex].volume,
-                  totalStats[key].poolsData[poolIndex].tvl,
+                  poolStatsHelper[key][address.toString()].reduce(
+                    (a, b) => a + b,
+                    0
+                  ),
                   totalStats[key].poolsData[poolIndex].fee
                 );
+
+              totalStats[key].poolsData[poolIndex].tvl = arithmeticAvg(
+                ...poolStatsHelper[key][address.toString()]
+              );
             } else {
               totalStats[key].poolsData.push({
                 poolAddress: address.toString(),
@@ -313,7 +321,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 lockedX: snap.lockedX?.usdValue24 ?? 0,
                 lockedY: snap.lockedY?.usdValue24 ?? 0,
                 apy: calculateAPYForInterval(
-                  key,
                   volume,
                   tvl,
                   +printBN(pool.fee, DECIMAL - 2)
@@ -322,7 +329,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 tokenX: pool.tokenX.toString(),
                 tokenY: pool.tokenY.toString(),
               });
+              poolStatsHelper[key][address.toString()] = [Math.abs(tvl)];
             }
+
             const updateTokenData = (x: boolean) => {
               const address = x
                 ? pool.tokenX.toString()
@@ -341,8 +350,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   (token) => token.address === address
                 );
                 totalStats[key].tokensData[tokenIndex].volume += volume;
-                totalStats[key].tokensData[tokenIndex].tvl =
-                  Math.abs(liquidity);
+                tokenStatsHelper[key][address].push(Math.abs(liquidity));
+                totalStats[key].tokensData[tokenIndex].tvl = arithmeticAvg(
+                  ...tokenStatsHelper[key][address]
+                );
               } else {
                 totalStats[key].tokensData.push({
                   address,
@@ -350,6 +361,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                   volume,
                   tvl: Math.abs(liquidity),
                 });
+                tokenStatsHelper[key][address] = [Math.abs(liquidity)];
               }
             };
             updateTokenData(true);
