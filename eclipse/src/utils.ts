@@ -646,13 +646,13 @@ export function isSameWeek(
   const referenceDate = new Date(referenceTimestamp);
 
   const startOfWeek = new Date(date);
-  startOfWeek.setDate(date.getDate() - date.getDay());
+  const dayOffset = (date.getDay() + 6) % 7;
+  startOfWeek.setDate(date.getDate() - dayOffset);
   startOfWeek.setHours(0, 0, 0, 0);
 
   const startOfReferenceWeek = new Date(referenceDate);
-  startOfReferenceWeek.setDate(
-    referenceDate.getDate() - referenceDate.getDay()
-  );
+  const refDayOffset = (referenceDate.getDay() + 6) % 7;
+  startOfReferenceWeek.setDate(referenceDate.getDate() - refDayOffset);
   startOfReferenceWeek.setHours(0, 0, 0, 0);
 
   return startOfWeek.getTime() === startOfReferenceWeek.getTime();
