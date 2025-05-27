@@ -36,7 +36,7 @@ import {
 } from "./utils";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
-import path from "path";
+import { BN } from "bn.js";
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
@@ -127,7 +127,19 @@ export const createSnapshotForNetwork = async (network: Network) => {
   };
 
   for (let poolKey of poolKeys) {
-    const pool = allPools[poolKey];
+    let pool = allPools.find(
+      (pool) =>
+        new Pair(pool.tokenX, pool.tokenY, {
+          fee: new BN(pool.fee, "hex"),
+          tickSpacing: pool.tickSpacing,
+        })
+          .getAddress(market.program.programId)
+          .toString() === poolKey
+    );
+
+    if (!pool) {
+      pool = await market.getPoolByAddress(new PublicKey(poolKey));
+    }
 
     if (TIERS_TO_OMIT.includes(+printBN(pool.fee, DECIMAL - 2))) {
       continue;
@@ -139,10 +151,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
     });
     const address = pair.getAddress(market.program.programId);
 
-    const intervalsFileName = path.join(
-      __dirname,
-      `${intervalsPath}${address.toString()}.json`
-    );
+    const intervalsFileName = `${intervalsPath}${address.toString()}.json`;
+
     const intervals: PoolIntervalPlots = {
       daily: {
         volumePlot: [],
@@ -409,10 +419,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       //   continue;
       // }
 
-      const intervalsFileName = path.join(
-        __dirname,
-        `${intervalsPath}${poolKey.toString()}.json`
-      );
+      const intervalsFileName = `${intervalsPath}${poolKey.toString()}.json`;
+
       const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[key];
       const poolLiquidityPlot = data.liquidityPlot;
 
@@ -451,10 +459,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       //   continue;
       // }
 
-      const intervalsFileName = path.join(
-        __dirname,
-        `${intervalsPath}${poolKey.toString()}.json`
-      );
+      const intervalsFileName = `${intervalsPath}${poolKey.toString()}.json`;
+
       const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[key];
       const feesPlot = data.feesPlot;
 
@@ -527,14 +533,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
 //   }
 // )
 
-// createSnapshotForNetwork(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Testnet pool apy snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+createSnapshotForNetwork(Network.TEST).then(
+  () => {
+    console.log("Eclipse: Testnet intervals aggregated!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {
