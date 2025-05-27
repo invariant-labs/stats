@@ -34,7 +34,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const interval = mapStringToInterval(rawInterval as string);
   const dailyData = data.daily;
   const volume24 = dailyData.volume;
-  const liquidity24 = dailyData.liquidity;
+  const tvl24 = dailyData.tvl;
   const fees24 = dailyData.fees;
   const intervalData = data[interval];
   intervalData.volumePlot = intervalData.volumePlot.slice(0, 30);
@@ -42,7 +42,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const response = {
     volume24,
-    liquidity24,
+    tvl24,
     fees24,
     ...intervalData,
   };
