@@ -14,18 +14,15 @@ import DEVNET_APY_ARCHIVE from "../../data/eclipse/daily_pool_apy_devnet.json";
 import TESTNET_APY_ARCHIVE from "../../data/eclipse/daily_pool_apy_testnet.json";
 import MAINNET_APY_ARCHIVE from "../../data/eclipse/daily_pool_apy_mainnet.json";
 import {
-  calculateWeightFromTimestamps,
   isSameWeek,
   PoolStatsData,
   readPoolsFromCache,
-  weightedArithmeticAvg,
   isSameMonth,
   PoolIntervalPlots,
   IntervalStats,
   generateEmptyTotalIntevalStats,
   printBN,
   TIERS_TO_OMIT,
-  calculateChangeFromValues,
   isSameYear,
   Intervals,
   getTokensPrices,
@@ -35,6 +32,7 @@ import {
   getWeekNumber,
   getMonthNumber,
   getYear,
+  arithmeticAvg,
 } from "./utils";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
@@ -99,13 +97,38 @@ export const createSnapshotForNetwork = async (network: Network) => {
     ? readPoolsFromCache(poolsCacheFileName)
     : await market.getAllPools();
 
-  const totalStats: IntervalStats = JSON.parse(
-    fs.readFileSync(fileName, "utf-8")
-  );
+  const totalStats: IntervalStats = {
+    daily: generateEmptyTotalIntevalStats(),
+    weekly: generateEmptyTotalIntevalStats(),
+    monthly: generateEmptyTotalIntevalStats(),
+    yearly: generateEmptyTotalIntevalStats(),
+  };
+  const poolKeys = Object.keys(snaps);
 
-  let plotTimestamp = 0;
+  const poolStatsHelper = {
+    daily: {},
+    weekly: {},
+    monthly: {},
+    yearly: {},
+  };
 
-  for (let pool of allPools) {
+  const tokenStatsHelper = {
+    daily: {},
+    weekly: {},
+    monthly: {},
+    yearly: {},
+  };
+
+  const poolTvlHelper = {
+    daily: {},
+    weekly: {},
+    monthly: {},
+    yearly: {},
+  };
+
+  for (let poolKey of poolKeys) {
+    const pool = allPools[poolKey];
+
     if (TIERS_TO_OMIT.includes(+printBN(pool.fee, DECIMAL - 2))) {
       continue;
     }
@@ -116,35 +139,32 @@ export const createSnapshotForNetwork = async (network: Network) => {
     });
     const address = pair.getAddress(market.program.programId);
 
-    const intervalsFileName = `${intervalsPath}${address.toString()}.json`;
-    const intervals: PoolIntervalPlots = fs.existsSync(intervalsFileName)
-      ? JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))
-      : {
-          daily: {
-            volumePlot: [],
-            liquidityPlot: [],
-            feesPlot: [],
-            apyPlot: [],
-          },
-          weekly: {
-            volumePlot: [],
-            liquidityPlot: [],
-            feesPlot: [],
-            apyPlot: [],
-          },
-          monthly: {
-            volumePlot: [],
-            liquidityPlot: [],
-            feesPlot: [],
-            apyPlot: [],
-          },
-          yearly: {
-            volumePlot: [],
-            liquidityPlot: [],
-            feesPlot: [],
-            apyPlot: [],
-          },
-        };
+    const intervalsFileName = path.join(
+      __dirname,
+      `${intervalsPath}${address.toString()}.json`
+    );
+    const intervals: PoolIntervalPlots = {
+      daily: {
+        volumePlot: [],
+        liquidityPlot: [],
+        feesPlot: [],
+      },
+      weekly: {
+        volumePlot: [],
+        liquidityPlot: [],
+        feesPlot: [],
+      },
+      monthly: {
+        volumePlot: [],
+        liquidityPlot: [],
+        feesPlot: [],
+      },
+      yearly: {
+        volumePlot: [],
+        liquidityPlot: [],
+        feesPlot: [],
+      },
+    };
 
     const associatedSnaps = snaps[address.toString()]?.snapshots ?? [
       {
@@ -157,202 +177,242 @@ export const createSnapshotForNetwork = async (network: Network) => {
         feeY: { usdValue24: 0 },
       },
     ];
-    const latestSnap = associatedSnaps[associatedSnaps.length - 1];
 
-    plotTimestamp = +latestSnap.timestamp;
-    const APY = apy[address.toString()] ?? 0;
-    const volume =
-      latestSnap.volumeX.usdValue24 + latestSnap.volumeY.usdValue24;
-    const tvl =
-      latestSnap.liquidityX.usdValue24 + latestSnap.liquidityY.usdValue24;
-    const fees = latestSnap.feeX.usdValue24 + latestSnap.feeY.usdValue24;
+    const dailyAnchors: number[] = [];
+    const weeklyAnchors: number[] = [];
+    const monthlyAnchors: number[] = [];
+    const yearlyAnchors: number[] = [];
 
-    const processPoolStats = (
-      key: Intervals,
-      shouldCompound: (a: number, b: number) => boolean,
-      getAnchorDate: (a: number) => number
-    ) => {
-      const anchor = getAnchorDate(plotTimestamp);
+    associatedSnaps.map((snap) => {
+      dailyAnchors.push(snap.timestamp);
+      weeklyAnchors.push(getWeekNumber(snap.timestamp));
+      monthlyAnchors.push(getMonthNumber(snap.timestamp));
+      yearlyAnchors.push(getYear(snap.timestamp));
+    });
 
-      const findIndexForEntry = (arr: TimeData[]) => {
-        let index = 0;
-        for (let i = 0; i < arr.length; i++) {
-          if (getAnchorDate(arr[i].timestamp) === anchor) {
-            index = i;
-            break;
-          }
-        }
-        return index;
-      };
+    const dailyLatestAnchor = Math.max(...dailyAnchors);
+    const weeklyLatestAnchor = Math.max(...weeklyAnchors);
+    const monthlyLatestAnchor = Math.max(...monthlyAnchors);
+    const yearlyLatestAnchor = Math.max(...yearlyAnchors);
 
-      const entryIndex = findIndexForEntry(intervals[key].volumePlot);
+    for (const snap of associatedSnaps) {
+      const plotTimestamp = +snap.timestamp;
 
-      const relatedEntryTimestamp =
-        intervals[key].volumePlot[entryIndex]?.timestamp ?? 0;
-
-      const weight =
-        relatedEntryTimestamp === 0
-          ? 1
-          : calculateWeightFromTimestamps(relatedEntryTimestamp, plotTimestamp);
-
-      const compoundEntry = shouldCompound(
-        relatedEntryTimestamp,
-        plotTimestamp
+      const volume = Math.abs(
+        snap.volumeX.usdValue24 + snap.volumeY.usdValue24
       );
+      const tvl = Math.abs(
+        snap.liquidityX.usdValue24 + snap.liquidityY.usdValue24
+      );
+      const fees = Math.abs(snap.feeX.usdValue24 + snap.feeY.usdValue24);
 
-      if (compoundEntry) {
-        intervals[key].volumePlot[entryIndex].value += volume;
-        intervals[key].feesPlot[entryIndex].value += fees;
+      const processPoolStats = (
+        key: Intervals,
+        latestAnchor: number,
+        shouldCompound: (a: number, b: number) => boolean,
+        getAnchorDate: (a: number) => number
+      ) => {
+        const anchor = getAnchorDate(plotTimestamp);
 
-        const avgTVL = Math.abs(
-          weightedArithmeticAvg(
-            {
-              val: intervals[key].liquidityPlot[entryIndex].value,
-              weight,
-            },
-            { val: tvl, weight: 1 }
-          )
+        const isLatest = latestAnchor === anchor;
+
+        const findIndexForEntry = (arr: TimeData[]) => {
+          let index = 0;
+          for (let i = 0; i < arr.length; i++) {
+            if (getAnchorDate(arr[i].timestamp) === anchor) {
+              index = i;
+              break;
+            }
+          }
+          return index;
+        };
+
+        const entryIndex = findIndexForEntry(intervals[key].volumePlot);
+
+        const relatedEntryTimestamp =
+          intervals[key].volumePlot[entryIndex]?.timestamp ?? 0;
+
+        const compoundEntry = shouldCompound(
+          relatedEntryTimestamp,
+          plotTimestamp
         );
 
-        intervals[key].liquidityPlot[entryIndex].value = avgTVL;
-      } else {
-        intervals[key].volumePlot.splice(entryIndex, 0, {
-          timestamp: plotTimestamp,
-          value: volume,
-        });
-        intervals[key].liquidityPlot.splice(entryIndex, 0, {
-          timestamp: plotTimestamp,
-          value: Math.abs(tvl),
-        });
-        intervals[key].feesPlot.splice(entryIndex, 0, {
-          timestamp: plotTimestamp,
-          value: fees,
-        });
-      }
+        if (compoundEntry) {
+          intervals[key].volumePlot[entryIndex].value += volume;
+          intervals[key].feesPlot[entryIndex].value += fees;
+          poolTvlHelper[key][address.toString()].push(Math.abs(tvl));
 
-      // Add Pool to global stats
-      {
-        const existingAnchors = totalStats[key].volumePlot.map((entry) =>
-          getAnchorDate(entry.timestamp)
-        );
+          const avgTVL = Math.abs(
+            arithmeticAvg(...poolTvlHelper[key][address.toString()])
+          );
 
-        const anchorExists = existingAnchors.some((entry) => entry === anchor);
-        const entryIndex = findIndexForEntry(totalStats[key].volumePlot);
-
-        if (anchorExists) {
-          totalStats[key].volumePlot[entryIndex].value += volume;
+          intervals[key].liquidityPlot[entryIndex].value = avgTVL;
         } else {
-          totalStats[key].volumePlot.splice(entryIndex, 0, {
+          intervals[key].volumePlot.splice(entryIndex, 0, {
             timestamp: plotTimestamp,
             value: volume,
           });
+          intervals[key].liquidityPlot.splice(entryIndex, 0, {
+            timestamp: plotTimestamp,
+            value: Math.abs(tvl),
+          });
+          intervals[key].feesPlot.splice(entryIndex, 0, {
+            timestamp: plotTimestamp,
+            value: fees,
+          });
+          poolTvlHelper[key][address.toString()] = [Math.abs(tvl)];
         }
 
-        const poolExists = totalStats[key].poolsData.some(
-          (pool) => pool.poolAddress === address.toString()
-        );
-        if (poolExists) {
-          const poolIndex = totalStats[key].poolsData.findIndex(
-            (pool) => pool.poolAddress === address.toString()
+        // Add Pool to global stats
+        {
+          const existingAnchors = totalStats[key].volumePlot.map((entry) =>
+            getAnchorDate(entry.timestamp)
           );
-          totalStats[key].poolsData[poolIndex].volume += volume;
-          totalStats[key].poolsData[poolIndex].tvl = Math.abs(tvl);
-          totalStats[key].poolsData[poolIndex].liquidityX =
-            latestSnap.liquidityX.usdValue24;
-          totalStats[key].poolsData[poolIndex].liquidityY =
-            latestSnap.liquidityY.usdValue24;
-          totalStats[key].poolsData[poolIndex].lockedX =
-            latestSnap.lockedX?.usdValue24 ?? 0;
-          totalStats[key].poolsData[poolIndex].lockedY =
-            latestSnap.lockedY?.usdValue24 ?? 0;
-          totalStats[key].poolsData[poolIndex].apy =
-            key === Intervals.Daily
-              ? APY
-              : calculateAPYForInterval(
-                  key,
-                  totalStats[key].poolsData[poolIndex].volume,
-                  totalStats[key].poolsData[poolIndex].tvl,
-                  totalStats[key].poolsData[poolIndex].fee
-                );
-        } else {
-          totalStats[key].poolsData.push({
-            poolAddress: address.toString(),
-            volume,
-            tvl: Math.abs(tvl),
-            liquidityX: latestSnap.liquidityX.usdValue24,
-            liquidityY: latestSnap.liquidityY.usdValue24,
-            lockedX: latestSnap.lockedX?.usdValue24 ?? 0,
-            lockedY: latestSnap.lockedY?.usdValue24 ?? 0,
-            apy:
-              key === Intervals.Daily
-                ? APY
-                : calculateAPYForInterval(
-                    key,
-                    volume,
-                    tvl,
-                    +printBN(pool.fee, DECIMAL - 2)
-                  ),
-            fee: +printBN(pool.fee, DECIMAL - 2),
-            tokenX: pool.tokenX.toString(),
-            tokenY: pool.tokenY.toString(),
-          });
-        }
-        const updateTokenData = (x: boolean) => {
-          const address = x ? pool.tokenX.toString() : pool.tokenY.toString();
-          const volume = x
-            ? latestSnap.volumeX.usdValue24
-            : latestSnap.volumeY.usdValue24;
-          const liquidity = x
-            ? latestSnap.liquidityX.usdValue24
-            : latestSnap.liquidityY.usdValue24;
-          const tokenExists = totalStats[key].tokensData.some(
-            (token) => token.address === address
+
+          const anchorExists = existingAnchors.some(
+            (entry) => entry === anchor
           );
-          if (tokenExists) {
-            const tokenIndex = totalStats[key].tokensData.findIndex(
-              (token) => token.address === address
-            );
-            totalStats[key].tokensData[tokenIndex].volume += volume;
-            totalStats[key].tokensData[tokenIndex].tvl = Math.abs(liquidity);
+          const entryIndex = findIndexForEntry(totalStats[key].volumePlot);
+
+          if (anchorExists) {
+            totalStats[key].volumePlot[entryIndex].value += volume;
           } else {
-            totalStats[key].tokensData.push({
-              address,
-              price: 0,
-              volume,
-              tvl: Math.abs(liquidity),
+            totalStats[key].volumePlot.splice(entryIndex, 0, {
+              timestamp: plotTimestamp,
+              value: volume,
             });
           }
-          updateTokenData(true);
-          updateTokenData(false);
-        };
-      }
-    };
 
-    processPoolStats(Intervals.Daily, isSameDay, (a) => a);
-    processPoolStats(Intervals.Weekly, isSameWeek, getWeekNumber);
-    processPoolStats(Intervals.Monthly, isSameMonth, getMonthNumber);
-    processPoolStats(Intervals.Yearly, isSameYear, getYear);
+          if (isLatest) {
+            const poolExists = totalStats[key].poolsData.some(
+              (pool) => pool.poolAddress === address.toString()
+            );
 
-    fs.writeFileSync(intervalsFileName, JSON.stringify(intervals), "utf-8");
+            if (poolExists) {
+              const poolIndex = totalStats[key].poolsData.findIndex(
+                (pool) => pool.poolAddress === address.toString()
+              );
+              poolStatsHelper[key][address.toString()].push(Math.abs(tvl));
+
+              totalStats[key].poolsData[poolIndex].volume += volume;
+              totalStats[key].poolsData[poolIndex].tvl = Math.abs(tvl);
+              totalStats[key].poolsData[poolIndex].liquidityX =
+                snap.liquidityX.usdValue24;
+              totalStats[key].poolsData[poolIndex].liquidityY =
+                snap.liquidityY.usdValue24;
+              totalStats[key].poolsData[poolIndex].lockedX =
+                snap.lockedX?.usdValue24 ?? 0;
+              totalStats[key].poolsData[poolIndex].lockedY =
+                snap.lockedY?.usdValue24 ?? 0;
+              totalStats[key].poolsData[poolIndex].apy =
+                calculateAPYForInterval(
+                  totalStats[key].poolsData[poolIndex].volume,
+                  poolStatsHelper[key][address.toString()].reduce(
+                    (a, b) => a + b,
+                    0
+                  ),
+                  totalStats[key].poolsData[poolIndex].fee
+                );
+
+              totalStats[key].poolsData[poolIndex].tvl = arithmeticAvg(
+                ...poolStatsHelper[key][address.toString()]
+              );
+            } else {
+              totalStats[key].poolsData.push({
+                poolAddress: address.toString(),
+                volume,
+                tvl: Math.abs(tvl),
+                liquidityX: snap.liquidityX.usdValue24,
+                liquidityY: snap.liquidityY.usdValue24,
+                lockedX: snap.lockedX?.usdValue24 ?? 0,
+                lockedY: snap.lockedY?.usdValue24 ?? 0,
+                apy: calculateAPYForInterval(
+                  volume,
+                  tvl,
+                  +printBN(pool.fee, DECIMAL - 2)
+                ),
+                fee: +printBN(pool.fee, DECIMAL - 2),
+                tokenX: pool.tokenX.toString(),
+                tokenY: pool.tokenY.toString(),
+              });
+              poolStatsHelper[key][address.toString()] = [Math.abs(tvl)];
+            }
+
+            const updateTokenData = (x: boolean) => {
+              const address = x
+                ? pool.tokenX.toString()
+                : pool.tokenY.toString();
+              const volume = x
+                ? snap.volumeX.usdValue24
+                : snap.volumeY.usdValue24;
+              const liquidity = x
+                ? snap.liquidityX.usdValue24
+                : snap.liquidityY.usdValue24;
+              const tokenExists = totalStats[key].tokensData.some(
+                (token) => token.address === address
+              );
+              if (tokenExists) {
+                const tokenIndex = totalStats[key].tokensData.findIndex(
+                  (token) => token.address === address
+                );
+                totalStats[key].tokensData[tokenIndex].volume += volume;
+                tokenStatsHelper[key][address].push(Math.abs(liquidity));
+                totalStats[key].tokensData[tokenIndex].tvl = arithmeticAvg(
+                  ...tokenStatsHelper[key][address]
+                );
+              } else {
+                totalStats[key].tokensData.push({
+                  address,
+                  price: 0,
+                  volume,
+                  tvl: Math.abs(liquidity),
+                });
+                tokenStatsHelper[key][address] = [Math.abs(liquidity)];
+              }
+            };
+            updateTokenData(true);
+            updateTokenData(false);
+          }
+        }
+      };
+
+      processPoolStats(Intervals.Daily, dailyLatestAnchor, isSameDay, (a) => a);
+      processPoolStats(
+        Intervals.Weekly,
+        weeklyLatestAnchor,
+        isSameWeek,
+        getWeekNumber
+      );
+      processPoolStats(
+        Intervals.Monthly,
+        monthlyLatestAnchor,
+        isSameMonth,
+        getMonthNumber
+      );
+      processPoolStats(
+        Intervals.Yearly,
+        yearlyLatestAnchor,
+        isSameYear,
+        getYear
+      );
+
+      fs.writeFileSync(intervalsFileName, JSON.stringify(intervals), "utf-8");
+    }
   }
 
   const buildLiquidityPlot = (
     key: Intervals,
     getAnchorDate: (a: number) => number
   ) => {
-    // TODO: Optimize this
-    totalStats[key].liquidityPlot = [];
-    for (const pool of allPools) {
+    for (const poolKey of poolKeys) {
       // if (!whitelistedPools.includes(poolKey)) {
       //   continue;
       // }
-      const pair = new Pair(pool.tokenX, pool.tokenY, {
-        fee: pool.fee,
-        tickSpacing: pool.tickSpacing,
-      });
-      const address = pair.getAddress(market.program.programId);
 
-      const intervalsFileName = `${intervalsPath}${address.toString()}.json`;
+      const intervalsFileName = path.join(
+        __dirname,
+        `${intervalsPath}${poolKey.toString()}.json`
+      );
       const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[key];
       const poolLiquidityPlot = data.liquidityPlot;
 
@@ -386,15 +446,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
     yearly: { current: 0, previous: 0 },
   };
   const buildFeesHelper = (key: Intervals) => {
-    for (const pool of allPools) {
-      const pair = new Pair(pool.tokenX, pool.tokenY, {
-        fee: pool.fee,
-        tickSpacing: pool.tickSpacing,
-      });
-      const address = pair.getAddress(market.program.programId);
+    for (const poolKey of poolKeys) {
+      // if (!whitelistedPools.includes(poolKey)) {
+      //   continue;
+      // }
 
-      const intervalsFileName = `${intervalsPath}${address.toString()}.json`;
-
+      const intervalsFileName = path.join(
+        __dirname,
+        `${intervalsPath}${poolKey.toString()}.json`
+      );
       const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[key];
       const feesPlot = data.feesPlot;
 
