@@ -188,8 +188,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
     const weeklyLatestAnchor = Math.max(...weeklyAnchors);
     const monthlyLatestAnchor = Math.max(...monthlyAnchors);
     const yearlyLatestAnchor = Math.max(...yearlyAnchors);
+    const totalSnaps = associatedSnaps.length;
 
-    for (const snap of associatedSnaps) {
+    for (const [index, snap] of associatedSnaps.entries()) {
       plotTimestamp = +snap.timestamp;
 
       const volume = Math.abs(
@@ -277,7 +278,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
             });
           }
 
-          if (isLatest) {
+          const snapsToInclude =
+            key === Intervals.Daily
+              ? 1
+              : key === Intervals.Weekly
+              ? 7
+              : key === Intervals.Monthly
+              ? 30
+              : 365;
+
+          if (index >= totalSnaps - snapsToInclude) {
             const poolExists = totalStats[key].poolsData.some(
               (pool) => pool.poolAddress === address.toString()
             );
