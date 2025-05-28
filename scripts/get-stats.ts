@@ -1,6 +1,9 @@
+// //@ts-ignore
+// import ECLIPSE_MAINNET_DATA from "../data/eclipse/full_mainnet.json";
 //@ts-ignore
-import ECLIPSE_MAINNET_DATA from "../data/eclipse/full_mainnet.json";
-
+import ECLIPSE_MAINNET_DATA from "../data/eclipse/mainnet.json";
+//@ts-ignore
+import APY_ARCHIVE from "../data/eclipse/pool_apy_archive_mainnet.json";
 import {
   PoolStatsDataWithString,
   TimeData,
@@ -35,8 +38,11 @@ function main() {
   data = ECLIPSE_MAINNET_DATA as unknown as FullSnap;
 
   console.log("ECLIPSE_MAINNET_DATA");
-  const pool = data.poolsData.find((p) => p.poolAddress === POOL_ADDRESS);
-  console.log(pool);
+  const poolData = data[POOL_ADDRESS];
+  console.log(Object.keys(poolData));
+  const latestSnap = poolData.snapshots;
+  console.log("latestSnap", latestSnap);
+  // console.log(APY_ARCHIVE[POOL_ADDRESS]);
 }
 
 main();

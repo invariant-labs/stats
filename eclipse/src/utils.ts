@@ -7,16 +7,69 @@ import {
   Tick,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import { Market as EclipseMarket } from "@invariant-labs/sdk-eclipse/lib/market";
-import { DECIMAL, Range } from "@invariant-labs/sdk-eclipse/lib/utils";
+import {
+  dailyFactorPool,
+  DECIMAL,
+  Range,
+} from "@invariant-labs/sdk-eclipse/lib/utils";
 import BN from "bn.js";
 import { Connection, ParsedAccountData, PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
+//@ts-ignore
 import MAINNET_TOKENS from "../../data/mainnet_tokens.json";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Network as EclipseNetwork } from "@invariant-labs/sdk-eclipse";
 import { readFileSync } from "fs";
 
 export const MAX_ATAS_IN_BATCH = 100;
+export const ONE_DAY = 24 * 60 * 60; // seconds
+export const TIERS_TO_OMIT = [0.001, 0.003];
+export enum Intervals {
+  Daily = "daily",
+  Weekly = "weekly",
+  Monthly = "monthly",
+  Yearly = "yearly",
+}
+
+export interface IntervalStats {
+  daily: TotalIntervalStats;
+  weekly: TotalIntervalStats;
+  monthly: TotalIntervalStats;
+  yearly: TotalIntervalStats;
+}
+export interface TotalIntervalStats {
+  volume: {
+    value: number;
+    change: number;
+  };
+  tvl: {
+    value: number;
+    change: number;
+  };
+  fees: {
+    value: number;
+    change: number;
+  };
+  volumePlot: TimeData[];
+  liquidityPlot: TimeData[];
+  tokensData: (Omit<TokenStatsDataWithString, "volume24"> & {
+    volume: number;
+  })[];
+  poolsData: (Omit<PoolStatsDataWithString, "volume24"> & { volume: number })[];
+}
+
+export interface PoolIntervalPlots {
+  daily: IntervalPlot;
+  weekly: IntervalPlot;
+  monthly: IntervalPlot;
+  yearly: IntervalPlot;
+}
+
+export interface IntervalPlot {
+  volumePlot: TimeData[];
+  liquidityPlot: TimeData[];
+  feesPlot: TimeData[];
+}
 export interface SnapshotValueData {
   tokenBNFromBeginning: string;
   usdValue24: number;
@@ -569,4 +622,178 @@ export const supportedTokens = {
   trbts2EsWyMdnCjsHUFBKLtgudmBD7Rfbz8zCg1s4EK: {
     decimals: 9,
   },
+};
+
+export function isSameDay(
+  timestamp: number,
+  referenceTimestamp: number
+): boolean {
+  const date = new Date(timestamp);
+  const referenceDate = new Date(referenceTimestamp);
+
+  return (
+    date.getFullYear() === referenceDate.getFullYear() &&
+    date.getMonth() === referenceDate.getMonth() &&
+    date.getDate() === referenceDate.getDate()
+  );
+}
+
+export function isSameWeek(
+  timestamp: number,
+  referenceTimestamp: number
+): boolean {
+  const date = new Date(timestamp);
+  const referenceDate = new Date(referenceTimestamp);
+
+  const startOfWeek = new Date(date);
+  const dayOffset = (date.getDay() + 6) % 7;
+  startOfWeek.setDate(date.getDate() - dayOffset);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const startOfReferenceWeek = new Date(referenceDate);
+  const refDayOffset = (referenceDate.getDay() + 6) % 7;
+  startOfReferenceWeek.setDate(referenceDate.getDate() - refDayOffset);
+  startOfReferenceWeek.setHours(0, 0, 0, 0);
+
+  return startOfWeek.getTime() === startOfReferenceWeek.getTime();
+}
+
+export function isSameMonth(
+  timestamp: number,
+  referenceTimestamp: number
+): boolean {
+  const date = new Date(timestamp);
+  const referenceDate = new Date(referenceTimestamp);
+
+  return (
+    date.getFullYear() === referenceDate.getFullYear() &&
+    date.getMonth() === referenceDate.getMonth()
+  );
+}
+
+export function isSameYear(
+  timestamp: number,
+  referenceTimestamp: number
+): boolean {
+  const date = new Date(timestamp);
+  const referenceDate = new Date(referenceTimestamp);
+  return date.getFullYear() === referenceDate.getFullYear();
+}
+
+export function getWeekNumber(timestamp: number): number {
+  const date = new Date(timestamp);
+
+  const targetDate = new Date(date.getTime());
+  const dayNr = (date.getDay() + 6) % 7;
+  targetDate.setDate(targetDate.getDate() - dayNr + 3);
+  const firstThursday = targetDate.valueOf();
+  targetDate.setMonth(0, 1);
+  if (targetDate.getDay() !== 4) {
+    targetDate.setMonth(0, 1 + ((4 - targetDate.getDay() + 7) % 7));
+  }
+  const weekNumber =
+    1 + Math.ceil((firstThursday - targetDate.valueOf()) / 604800000);
+
+  const weekYear = new Date(firstThursday).getFullYear();
+
+  return weekYear * 100 + weekNumber;
+}
+
+export function getMonthNumber(timestamp: number): number {
+  const date = new Date(timestamp);
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+
+  return year * 100 + month;
+}
+
+export function getYear(timestamp: number): number {
+  const date = new Date(timestamp);
+  return date.getFullYear();
+}
+
+export function calculateWeightFromTimestamps(
+  timestamp: number,
+  referenceTimestamp: number
+): number {
+  const delta = timestamp - referenceTimestamp;
+  const weight = Math.ceil(delta / ONE_DAY);
+  return weight;
+}
+
+export const weightedArithmeticAvg = (
+  ...args: Array<{ val: number; weight: number }>
+): number => {
+  if (args.length === 0) {
+    throw new Error("requires at least one argument");
+  }
+
+  const sumOfWeights = args.reduce((acc, { weight }) => acc + weight, 0);
+  const sum = args.reduce((acc, { val, weight }) => acc + val * weight, 0);
+
+  return Number((sum / sumOfWeights).toFixed(2));
+};
+
+export const arithmeticAvg = (...args: Array<number>): number => {
+  if (args.length === 0) {
+    throw new Error("requires at least one argument");
+  }
+
+  const sum = args.reduce((acc, val) => acc + val, 0);
+
+  return Number((sum / args.length).toFixed(2));
+};
+
+export const generateEmptyTotalIntevalStats = (): TotalIntervalStats => ({
+  volume: {
+    value: 0,
+    change: 0,
+  },
+  tvl: {
+    value: 0,
+    change: 0,
+  },
+  fees: {
+    value: 0,
+    change: 0,
+  },
+  volumePlot: [],
+  liquidityPlot: [],
+  poolsData: [],
+  tokensData: [],
+});
+
+export const calculateChangeFromValues = (
+  previousValue: number,
+  currentValue: number,
+  previousChange: number
+): number => {
+  const currentChange = (currentValue * previousChange) / previousValue;
+  return currentChange;
+};
+
+export const mapStringToInterval = (str: string) => {
+  switch (str) {
+    case "daily":
+      return Intervals.Daily;
+    case "weekly":
+      return Intervals.Weekly;
+    case "monthly":
+      return Intervals.Monthly;
+    case "yearly":
+      return Intervals.Yearly;
+    default:
+      throw new Error("Invalid interval");
+  }
+};
+
+export const calculateAPYForInterval = (
+  volume: number,
+  tvl: number,
+  fee: number // 0.09 stands for  0.09%
+) => {
+  const factor = (volume * fee) / 100 / tvl;
+  const APY = (Math.pow(factor + 1, 365) - 1) * 100;
+  return APY === Infinity ? 1001 : isNaN(+JSON.stringify(APY)) ? 0 : APY;
 };
