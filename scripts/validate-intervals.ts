@@ -1,34 +1,8 @@
-// //@ts-ignore
-// import ECLIPSE_MAINNET_DATA from "../data/eclipse/full_mainnet.json";
 //@ts-ignore
 import ECLIPSE_MAINNET_DATA from "../data/eclipse/mainnet_intervals.json";
 
-import {
-  PoolStatsDataWithString,
-  TimeData,
-  TokenStatsDataWithString,
-} from "../solana/src/utils";
+import { PoolStatsDataWithString } from "../solana/src/utils";
 
-interface FullSnap {
-  volume24: {
-    value: number;
-    change: number;
-  };
-  tvl24: {
-    value: number;
-    change: number;
-  };
-  fees24: {
-    value: number;
-    change: number;
-  };
-  tokensData: TokenStatsDataWithString[];
-  poolsData: PoolStatsDataWithString[];
-  volumePlot: TimeData[];
-  liquidityPlot: TimeData[];
-}
-
-// preview api response
 function main() {
   const data = ECLIPSE_MAINNET_DATA as any;
 
