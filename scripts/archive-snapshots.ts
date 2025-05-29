@@ -29,7 +29,7 @@ const main = async () => {
   }
 
   fs.writeFileSync(
-    "data/archieve/solana_mainnet.json",
+    "data/archive/solana_mainnet.json",
     JSON.stringify(archieveSnaps)
   );
   fs.writeFileSync("data/mainnet.json", JSON.stringify(lightWeightSnaps));
