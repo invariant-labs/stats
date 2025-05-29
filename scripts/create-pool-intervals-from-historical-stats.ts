@@ -111,6 +111,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
     yearly: {},
   };
 
+  const tokenTVLHelper = {
+    daily: {},
+    weekly: {},
+    monthly: {},
+    yearly: {},
+  };
+
   const poolTvlHelper = {
     daily: {},
     weekly: {},
@@ -135,30 +142,28 @@ export const createSnapshotForNetwork = async (network: Network) => {
       __dirname,
       `${intervalsPath}${address.toString()}.json`
     );
-    const intervals: PoolIntervalPlots = fs.existsSync(intervalsFileName)
-      ? JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))
-      : {
-          daily: {
-            volumePlot: [],
-            liquidityPlot: [],
-            feesPlot: [],
-          },
-          weekly: {
-            volumePlot: [],
-            liquidityPlot: [],
-            feesPlot: [],
-          },
-          monthly: {
-            volumePlot: [],
-            liquidityPlot: [],
-            feesPlot: [],
-          },
-          yearly: {
-            volumePlot: [],
-            liquidityPlot: [],
-            feesPlot: [],
-          },
-        };
+    const intervals: PoolIntervalPlots = {
+      daily: {
+        volumePlot: [],
+        liquidityPlot: [],
+        feesPlot: [],
+      },
+      weekly: {
+        volumePlot: [],
+        liquidityPlot: [],
+        feesPlot: [],
+      },
+      monthly: {
+        volumePlot: [],
+        liquidityPlot: [],
+        feesPlot: [],
+      },
+      yearly: {
+        volumePlot: [],
+        liquidityPlot: [],
+        feesPlot: [],
+      },
+    };
 
     const associatedSnaps = snaps[address.toString()]?.snapshots ?? [
       {
@@ -333,7 +338,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             }
 
             const updateTokenData = (x: boolean) => {
-              const address = x
+              const tokenAddress = x
                 ? pool.tokenX.toString()
                 : pool.tokenY.toString();
               const volume = x
@@ -343,25 +348,38 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 ? snap.liquidityX.usdValue24
                 : snap.liquidityY.usdValue24;
               const tokenExists = totalStats[key].tokensData.some(
-                (token) => token.address === address
+                (token) => token.address === tokenAddress
               );
               if (tokenExists) {
                 const tokenIndex = totalStats[key].tokensData.findIndex(
-                  (token) => token.address === address
+                  (token) => token.address === tokenAddress
                 );
                 totalStats[key].tokensData[tokenIndex].volume += volume;
-                tokenStatsHelper[key][address].push(Math.abs(liquidity));
-                totalStats[key].tokensData[tokenIndex].tvl = arithmeticAvg(
-                  ...tokenStatsHelper[key][address]
-                );
+                tokenStatsHelper[key][tokenAddress].push(Math.abs(liquidity));
+                if (tokenTVLHelper[key][tokenAddress]) {
+                  if (!tokenTVLHelper[key][tokenAddress].has(plotTimestamp)) {
+                    tokenTVLHelper[key][tokenAddress].add(plotTimestamp);
+                  }
+                } else {
+                  tokenTVLHelper[key][tokenAddress] = new Set();
+                  tokenTVLHelper[key][tokenAddress].add(plotTimestamp);
+                }
+
+                totalStats[key].tokensData[tokenIndex].tvl =
+                  tokenStatsHelper[key][tokenAddress].reduce(
+                    (sum, val) => sum + val,
+                    0
+                  ) / tokenTVLHelper[key][tokenAddress].size;
               } else {
                 totalStats[key].tokensData.push({
-                  address,
+                  address: tokenAddress,
                   price: 0,
                   volume,
                   tvl: Math.abs(liquidity),
                 });
-                tokenStatsHelper[key][address] = [Math.abs(liquidity)];
+                tokenStatsHelper[key][tokenAddress] = [Math.abs(liquidity)];
+                tokenTVLHelper[key][tokenAddress] = new Set();
+                tokenTVLHelper[key][tokenAddress].add(plotTimestamp);
               }
             };
             updateTokenData(true);
