@@ -27,7 +27,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   let data;
   if (net === "sonic-mainnet") {
     data = SONIC_MAINNET_DATA as TotalIntervalStats;
-  } else if (net === "eclipse-testnet") {
+  } else if (net === "sonic-testnet") {
     data = SONIC_TESTNET_DATA as TotalIntervalStats;
   } else {
     data = SONIC_TESTNET_DATA as TotalIntervalStats;
