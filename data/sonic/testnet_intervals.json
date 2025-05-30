@@ -1,0 +1,38 @@
+{
+  "daily": {
+    "volume": { "value": 0, "change": 0 },
+    "tvl": { "value": 0, "change": 0 },
+    "fees": { "value": 0, "change": 0 },
+    "volumePlot": [],
+    "liquidityPlot": [],
+    "poolsData": [],
+    "tokensData": []
+  },
+  "weekly": {
+    "volume": { "value": 0, "change": 0 },
+    "tvl": { "value": 0, "change": 0 },
+    "fees": { "value": 0, "change": 0 },
+    "volumePlot": [],
+    "liquidityPlot": [],
+    "poolsData": [],
+    "tokensData": []
+  },
+  "monthly": {
+    "volume": { "value": 0, "change": 0 },
+    "tvl": { "value": 0, "change": 0 },
+    "fees": { "value": 0, "change": 0 },
+    "volumePlot": [],
+    "liquidityPlot": [],
+    "poolsData": [],
+    "tokensData": []
+  },
+  "yearly": {
+    "volume": { "value": 0, "change": 0 },
+    "tvl": { "value": 0, "change": 0 },
+    "fees": { "value": 0, "change": 0 },
+    "volumePlot": [],
+    "liquidityPlot": [],
+    "poolsData": [],
+    "tokensData": []
+  }
+}
