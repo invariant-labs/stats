@@ -2,14 +2,12 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 //@ts-ignore
 import SONIC_TESTNET_DATA from "../../../data/sonic/testnet_intervals.json";
 //@ts-ignore
-import ECLIPSE_MAINNET_DATA from "../../../data/eclipse/mainnet_intervals.json";
-//@ts-ignore
 import SONIC_MAINNET_DATA from "../../../data/sonic/mainnet_intervals.json";
 
 import {
   mapStringToInterval,
   TotalIntervalStats,
-} from "../../../eclipse/src/utils";
+} from "../../../sonic/src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
