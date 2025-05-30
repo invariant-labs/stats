@@ -7,7 +7,7 @@ import SONIC_MAINNET_DATA from "../../../data/sonic/mainnet_intervals.json";
 import {
   mapStringToInterval,
   TotalIntervalStats,
-} from "../../../eclipse/src/utils";
+} from "../../../sonic/src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
