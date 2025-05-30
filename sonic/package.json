@@ -1,32 +1,30 @@
 {
   "name": "sonic",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "",
   "scripts": {
     "snap": "sh ./snap.sh",
     "snap-locks": "sh ./snap-locks.sh"
   },
   "author": "",
   "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "@types/node": "^22.10.7",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
-  },
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
-    "@invariant-labs/locker-sonic-sdk": "^0.0.4",
-    "@invariant-labs/sdk-sonic": "^0.0.18",
+    "@invariant-labs/locker-eclipse-sdk": "0.0.4",
+    "@invariant-labs/sdk-sonic": "0.0.19",
     "@solana/spl-token": "^0.4.9",
-    "@solana/spl-token-registry": "^0.2.4574",
-    "@solana/web3.js": "^1.98.0",
-    "@types/chai": "^5.0.1",
-    "@types/mocha": "^10.0.10",
-    "@vercel/node": "^5.0.2",
-    "axios": "^1.7.9",
-    "dotenv": "^16.4.7",
-    "ts-mocha": "^10.0.0"
+    "@solana/spl-token-registry": "^0.2.4484",
+    "@solana/web3.js": "^1.95.4",
+    "@types/chai": "^4.2.15",
+    "@types/mocha": "^8.2.1",
+    "@vercel/node": "^1.13.0",
+    "axios": "^0.26.1",
+    "bn.js": "^5.2.1",
+    "dotenv": "^16.0.0",
+    "ts-mocha": "^8.0.0",
+    "ts-node": "^10.5.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.3"
   },
   "type": "commonjs"
 }
