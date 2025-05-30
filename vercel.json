@@ -10,7 +10,7 @@
   },
   "rewrites": [
     {
-      "source": "/((?!vara)(?!alph)(?!a0)(?!svm)(?!solana)(?!eclipse).*)",
+      "source": "/((?!vara)(?!alph)(?!a0)(?!svm)(?!solana)(?!eclipse)(?!sonic).*)",
       "destination": "/api/svm/$1"
     },
     {
@@ -36,6 +36,10 @@
     {
       "source": "/eclipse/(.*)",
       "destination": "/api/eclipse/$1"
+    },
+    {
+      "source": "/sonic/(.*)",
+      "destination": "/api/sonic/$1"
     }
   ]
 }
