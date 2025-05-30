@@ -1,10 +1,13 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 //@ts-ignore
-import SONIC_TESTNET_DATA from "../../../data/sonic/testnet_intervals.json";
+import ECLIPSE_TESTNET_DATA from "../../../data/eclipse/testnet_intervals.json";
 //@ts-ignore
-import SONIC_MAINNET_DATA from "../../../data/sonic/mainnet_intervals.json";
+import ECLIPSE_MAINNET_DATA from "../../../data/eclipse/mainnet_intervals.json";
 
-import { IntervalStats, mapStringToInterval } from "../../../sonic/src/utils";
+import {
+  mapStringToInterval,
+  TotalIntervalStats,
+} from "../../../eclipse/src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -22,11 +25,11 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const { net, interval: rawInterval } = req.query;
   let data;
-  if (net === "sonic-mainnet") {
-    data = SONIC_MAINNET_DATA as IntervalStats;
-  } else if (net === "sonic-testnet") {
+  if (net === "eclipse-mainnet") {
+    data = ECLIPSE_MAINNET_DATA as TotalIntervalStats;
+  } else if (net === "eclipse-testnet") {
   } else {
-    data = SONIC_TESTNET_DATA as IntervalStats;
+    data = ECLIPSE_TESTNET_DATA as TotalIntervalStats;
   }
   const interval = mapStringToInterval(rawInterval as string);
   const dailyData = data.daily;
