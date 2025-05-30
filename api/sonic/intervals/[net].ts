@@ -4,10 +4,7 @@ import SONIC_TESTNET_DATA from "../../../data/sonic/testnet_intervals.json";
 //@ts-ignore
 import SONIC_MAINNET_DATA from "../../../data/sonic/mainnet_intervals.json";
 
-import {
-  mapStringToInterval,
-  TotalIntervalStats,
-} from "../../../sonic/src/utils";
+import { IntervalStats, mapStringToInterval } from "../../../sonic/src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -26,10 +23,10 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const { net, interval: rawInterval } = req.query;
   let data;
   if (net === "sonic-mainnet") {
-    data = SONIC_MAINNET_DATA as TotalIntervalStats;
+    data = SONIC_MAINNET_DATA as IntervalStats;
   } else if (net === "sonic-testnet") {
   } else {
-    data = SONIC_TESTNET_DATA as TotalIntervalStats;
+    data = SONIC_TESTNET_DATA as IntervalStats;
   }
   const interval = mapStringToInterval(rawInterval as string);
   const dailyData = data.daily;
