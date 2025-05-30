@@ -27,13 +27,13 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const { net, interval: rawInterval } = req.query;
   let data;
-  if (net === "eclipse-mainnet") {
-    data = ECLIPSE_MAINNET_DATA as TotalIntervalStats;
-  } else if (net === "eclipse-testnet") {
+  if (net === "sonic-mainnet") {
+    data = SONIC_MAINNET_DATA as TotalIntervalStats;
+  } else if (net === "sonic-testnet") {
     data = SONIC_TESTNET_DATA as TotalIntervalStats;
   } else {
-    data = SONIC_MAINNET_DATA as TotalIntervalStats;
   }
+
   const interval = mapStringToInterval(rawInterval as string);
   const dailyData = data.daily;
   const volume24 = dailyData.volume;
