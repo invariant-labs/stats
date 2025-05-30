@@ -530,14 +530,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
   fs.writeFileSync(fileName, JSON.stringify(totalStats), "utf-8");
 };
 
-createSnapshotForNetwork(Network.TEST).then(
-  () => {
-    console.log("Sonic: Testnet intervals aggregated!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+// createSnapshotForNetwork(Network.TEST).then(
+//   () => {
+//     console.log("Sonic: Testnet intervals aggregated!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {
