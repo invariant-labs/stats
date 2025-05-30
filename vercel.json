@@ -3,6 +3,11 @@
   "github": {
     "enabled": false
   },
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=8192"
+    }
+  },
   "rewrites": [
     {
       "source": "/((?!vara)(?!alph)(?!a0)(?!svm)(?!solana)(?!eclipse).*)",
