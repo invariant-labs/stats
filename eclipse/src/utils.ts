@@ -185,7 +185,7 @@ export const getTokensPrices = async (
     [Network.MAIN]: "eclipse-mainnet",
   };
   const { data } = await axios.get<IPriceData>(
-    `https://price.invariant.app/${
+    `https://api.invariant.app/price/${
       supportedNetworks[network] ?? "eclipse-testnet"
     }`
   );
@@ -342,6 +342,9 @@ export const eclipseMainnetTokensData = {
   },
   HgD4Dc6qYCj3UanMDiuC4qANheeTsAvk6DY91B3F8gnL: {
     decimals: 5,
+  },
+  "27Kkn8PWJbKJsRZrxbsYDdedpUQKnJ5vNfserCxNEJ3R": {
+    decimals: 6,
   },
 };
 
