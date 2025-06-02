@@ -33,6 +33,7 @@ import {
   getMonthNumber,
   getYear,
   arithmeticAvg,
+  getIntervalRange,
 } from "./utils";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
@@ -102,6 +103,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     weekly: generateEmptyTotalIntevalStats(),
     monthly: generateEmptyTotalIntevalStats(),
     yearly: generateEmptyTotalIntevalStats(),
+    all: generateEmptyTotalIntevalStats(),
   };
   const poolKeys = Object.keys(snaps);
 
@@ -110,6 +112,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     weekly: {},
     monthly: {},
     yearly: {},
+    all: {},
   };
 
   const tokenStatsHelper = {
@@ -117,6 +120,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     weekly: {},
     monthly: {},
     yearly: {},
+    all: {},
   };
 
   const tokenTVLHelper = {
@@ -124,6 +128,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     weekly: {},
     monthly: {},
     yearly: {},
+    all: {},
   };
 
   const poolTvlHelper = {
@@ -131,6 +136,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     weekly: {},
     monthly: {},
     yearly: {},
+    all: {},
   };
 
   for (let poolKey of poolKeys) {
@@ -181,6 +187,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
         liquidityPlot: [],
         feesPlot: [],
       },
+      all: {
+        volumePlot: [],
+        liquidityPlot: [],
+        feesPlot: [],
+      },
     };
 
     const associatedSnaps = snaps[address.toString()]?.snapshots ?? [
@@ -195,24 +206,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
       },
     ];
 
-    const dailyAnchors: number[] = [];
-    const weeklyAnchors: number[] = [];
-    const monthlyAnchors: number[] = [];
-    const yearlyAnchors: number[] = [];
+    const totalSnaps = associatedSnaps.length;
 
-    associatedSnaps.map((snap) => {
-      dailyAnchors.push(snap.timestamp);
-      weeklyAnchors.push(getWeekNumber(snap.timestamp));
-      monthlyAnchors.push(getMonthNumber(snap.timestamp));
-      yearlyAnchors.push(getYear(snap.timestamp));
-    });
-
-    const dailyLatestAnchor = Math.max(...dailyAnchors);
-    const weeklyLatestAnchor = Math.max(...weeklyAnchors);
-    const monthlyLatestAnchor = Math.max(...monthlyAnchors);
-    const yearlyLatestAnchor = Math.max(...yearlyAnchors);
-
-    for (const snap of associatedSnaps) {
+    for (const [index, snap] of associatedSnaps.entries()) {
       const plotTimestamp = +snap.timestamp;
 
       const volume = Math.abs(
@@ -225,13 +221,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const processPoolStats = (
         key: Intervals,
-        latestAnchor: number,
         shouldCompound: (a: number, b: number) => boolean,
         getAnchorDate: (a: number) => number
       ) => {
         const anchor = getAnchorDate(plotTimestamp);
-
-        const isLatest = latestAnchor === anchor;
 
         const findIndexForEntry = (arr: TimeData[]) => {
           let index = 0;
@@ -254,7 +247,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
           plotTimestamp
         );
 
-        if (compoundEntry) {
+        if (compoundEntry && intervals[key].volumePlot[entryIndex]) {
           intervals[key].volumePlot[entryIndex].value += volume;
           intervals[key].feesPlot[entryIndex].value += fees;
           poolTvlHelper[key][address.toString()].push(Math.abs(tvl));
@@ -300,7 +293,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
             });
           }
 
-          if (isLatest) {
+          const snapsToInclude = getIntervalRange(key);
+
+          if (index >= totalSnaps - snapsToInclude) {
             const poolExists = totalStats[key].poolsData.some(
               (pool) => pool.poolAddress === address.toString()
             );
@@ -406,24 +401,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
         }
       };
 
-      processPoolStats(Intervals.Daily, dailyLatestAnchor, isSameDay, (a) => a);
+      processPoolStats(Intervals.Daily, isSameDay, (a) => a);
+      processPoolStats(Intervals.Weekly, isSameWeek, getWeekNumber);
+      processPoolStats(Intervals.Monthly, isSameMonth, getMonthNumber);
+      processPoolStats(Intervals.Yearly, isSameYear, getYear);
       processPoolStats(
-        Intervals.Weekly,
-        weeklyLatestAnchor,
-        isSameWeek,
-        getWeekNumber
-      );
-      processPoolStats(
-        Intervals.Monthly,
-        monthlyLatestAnchor,
-        isSameMonth,
-        getMonthNumber
-      );
-      processPoolStats(
-        Intervals.Yearly,
-        yearlyLatestAnchor,
-        isSameYear,
-        getYear
+        Intervals.All,
+        () => true,
+        (a) => 1
       );
 
       fs.writeFileSync(intervalsFileName, JSON.stringify(intervals), "utf-8");
@@ -472,6 +457,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     weekly: { current: 0, previous: 0 },
     monthly: { current: 0, previous: 0 },
     yearly: { current: 0, previous: 0 },
+    all: { current: 0, previous: 0 },
   };
   const buildFeesHelper = (key: Intervals) => {
     for (const poolKey of poolKeys) {
@@ -497,6 +483,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   buildFeesHelper(Intervals.Weekly);
   buildFeesHelper(Intervals.Monthly);
   buildFeesHelper(Intervals.Yearly);
+  buildFeesHelper(Intervals.All);
 
   const calculateTotalValues = (key: Intervals) => {
     const totalVolume = totalStats[key].volumePlot[0]?.value ?? 0;
@@ -524,6 +511,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   calculateTotalValues(Intervals.Weekly);
   calculateTotalValues(Intervals.Monthly);
   calculateTotalValues(Intervals.Yearly);
+  calculateTotalValues(Intervals.All);
 
   const tokenPrices = await getTokensPrices(network);
 
@@ -540,6 +528,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   assignPrice(Intervals.Weekly);
   assignPrice(Intervals.Monthly);
   assignPrice(Intervals.Yearly);
+  assignPrice(Intervals.All);
 
   fs.writeFileSync(fileName, JSON.stringify(totalStats), "utf-8");
 };

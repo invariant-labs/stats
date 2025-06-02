@@ -29,6 +29,7 @@ export enum Intervals {
   Weekly = "weekly",
   Monthly = "monthly",
   Yearly = "yearly",
+  All = "all",
 }
 
 export interface IntervalStats {
@@ -36,6 +37,7 @@ export interface IntervalStats {
   weekly: TotalIntervalStats;
   monthly: TotalIntervalStats;
   yearly: TotalIntervalStats;
+  all: TotalIntervalStats;
 }
 export interface TotalIntervalStats {
   volume: {
@@ -63,6 +65,7 @@ export interface PoolIntervalPlots {
   weekly: IntervalPlot;
   monthly: IntervalPlot;
   yearly: IntervalPlot;
+  all: IntervalPlot;
 }
 
 export interface IntervalPlot {
@@ -799,4 +802,19 @@ export const calculateAPYForInterval = (
   const factor = (volume * fee) / 100 / tvl;
   const APY = (Math.pow(factor + 1, 365) - 1) * 100;
   return APY === Infinity ? 1001 : isNaN(+JSON.stringify(APY)) ? 0 : APY;
+};
+
+export const getIntervalRange = (key: Intervals): number => {
+  switch (key) {
+    case Intervals.Daily:
+      return 1; // snapshots for 1 day
+    case Intervals.Weekly:
+      return 7;
+    case Intervals.Monthly:
+      return 30;
+    case Intervals.Yearly:
+      return 365;
+    default:
+      return 36500; // 100years
+  }
 };
