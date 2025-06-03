@@ -4,7 +4,7 @@ import ECLIPSE_TESTNET_DATA from "../../../data/eclipse/testnet_intervals.json";
 //@ts-ignore
 import ECLIPSE_MAINNET_DATA from "../../../data/eclipse/mainnet_intervals.json";
 //@ts-ignore
-import TIMESTAMPS from "../../../data/eclipse/timestamp.json";
+import TIMESTAMP from "../../../data/eclipse/timestamp.json";
 
 import {
   mapStringToInterval,
@@ -28,15 +28,12 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const { net, interval: rawInterval } = req.query;
   let data;
-  let timestamp = 0;
+
   if (net === "eclipse-mainnet") {
     data = ECLIPSE_MAINNET_DATA as TotalIntervalStats;
-    timestamp = TIMESTAMPS[Network.MAIN];
   } else if (net === "eclipse-testnet") {
-    timestamp = TIMESTAMPS[Network.TEST];
   } else {
     data = ECLIPSE_TESTNET_DATA as TotalIntervalStats;
-    timestamp = TIMESTAMPS[Network.TEST];
   }
   const interval = mapStringToInterval(rawInterval as string);
   const dailyData = data.daily;
@@ -48,7 +45,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   intervalData.liquidityPlot = intervalData.liquidityPlot.slice(0, 30);
 
   const response = {
-    timestamp,
+    timestamp: TIMESTAMP.v,
     volume24,
     tvl24,
     fees24,
