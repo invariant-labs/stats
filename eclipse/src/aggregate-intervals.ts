@@ -460,6 +460,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     all: { current: 0, previous: 0 },
   };
   const buildFeesHelper = (key: Intervals) => {
+    const range = getIntervalRange(key);
     for (const poolKey of poolKeys) {
       // if (!whitelistedPools.includes(poolKey)) {
       //   continue;
@@ -467,13 +468,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const intervalsFileName = `${intervalsPath}${poolKey.toString()}.json`;
 
-      const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[key];
-      const feesPlot = data.feesPlot;
+      const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"));
 
-      const recentEntry = feesPlot[0];
-      const previousEntry = feesPlot[1];
-      const currentFees = recentEntry?.value ?? 0;
-      const previousFees = previousEntry?.value ?? 0;
+      const currentFees = data.feesPlot
+        .slice(0, range)
+        .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
+      const previousFees = data.feesPlot
+        .slice(range, range * 2)
+        .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
+
       feesHelper[key].current += currentFees;
       feesHelper[key].previous += previousFees;
     }
@@ -486,13 +489,27 @@ export const createSnapshotForNetwork = async (network: Network) => {
   buildFeesHelper(Intervals.All);
 
   const calculateTotalValues = (key: Intervals) => {
-    const totalVolume = totalStats[key].volumePlot[0]?.value ?? 0;
+    const range = getIntervalRange(key);
     const totalFees = feesHelper[key].current;
-    const totalLiquidity = totalStats[key].liquidityPlot[0]?.value ?? 0;
 
-    const previousVolume = totalStats[key].volumePlot[1]?.value ?? 0;
+    const totalVolume = totalStats.daily.volumePlot
+      .slice(0, range)
+      .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
+
+    const totalLiquidity =
+      totalStats.daily.liquidityPlot
+        .slice(0, range)
+        .reduce((acc: number, cur: TimeData) => acc + cur.value, 0) / range;
+
     const previousFees = feesHelper[key].previous;
-    const previousLiquidity = totalStats[key].liquidityPlot[1]?.value ?? 0;
+    const previousVolume = totalStats.daily.volumePlot
+      .slice(range, range * 2)
+      .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
+
+    const previousLiquidity =
+      totalStats.daily.liquidityPlot
+        .slice(range, range * 2)
+        .reduce((acc: number, cur: TimeData) => acc + cur.value, 0) / range;
 
     const volumeChange =
       ((totalVolume - previousVolume) / previousVolume) * 100;
