@@ -76,6 +76,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
       throw new Error("Unknown network");
   }
 
+  const timestampFileName: Record<Network, number> = JSON.parse(
+    fs.readFileSync("../data/eclipse/timestamp.json", "utf-8")
+  );
+
   const tokenPrices = Object.entries(await getTokensPrices(network)).reduce(
     (acc, [key, { price }]) => {
       acc[key] = price;
@@ -360,6 +364,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const timestamp =
     Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
     1000 * 60 * 60 * 12;
+  timestampFileName[network] = timestamp;
 
   poolsData.forEach(({ address, stats }) => {
     const xAddress = poolsDict[address].tokenX.toString();
@@ -412,6 +417,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
       }
     });
   }
+
+  fs.writeFile(
+    "../data/eclipse/timestamp.json",
+    JSON.stringify(timestampFileName),
+    (err) => {
+      if (err) {
+        throw err;
+      }
+    }
+  );
 };
 
 // createSnapshotForNetwork(Network.DEV).then(
