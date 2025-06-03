@@ -470,10 +470,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"));
 
-      const currentFees = data.feesPlot
+      const currentFees = data.daily.feesPlot
         .slice(0, range)
         .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
-      const previousFees = data.feesPlot
+      const previousFees = data.daily.feesPlot
         .slice(range, range * 2)
         .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
 
