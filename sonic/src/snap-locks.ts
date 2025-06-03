@@ -89,6 +89,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   }
 
   const poolLocks: Record<string, PoolLock> = {};
+  // @ts-expect-error
   const allLocks = await locker.getAllLockedPositions(market);
 
   allLocks.forEach((lock) => {

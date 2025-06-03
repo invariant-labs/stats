@@ -90,6 +90,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       connection
     );
 
+    // @ts-expect-error
     const allLocks = await locker.getAllLockedPositions(market);
 
     allLocks.forEach((lock) => {
