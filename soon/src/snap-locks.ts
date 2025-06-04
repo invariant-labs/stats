@@ -56,8 +56,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
   });
 
-  const coingeckoPrices = await getTokensPrices(idsList);
-
+  const tokenPrices = Object.entries(await getTokensPrices(network)).reduce(
+    (acc, [key, { price }]) => {
+      acc[key] = price;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
   const connection = provider.connection;
 
   const locker = Locker.build(network, provider.wallet as IWallet, connection);
@@ -79,7 +84,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const result = await market.getCurrentTokenStats(
         supportedToken,
         "So11111111111111111111111111111111111111112",
-        coingeckoPrices["ethereum"]
+        tokenPrices["So11111111111111111111111111111111111111112"]
       );
 
       if (!("error" in result)) {
@@ -124,12 +129,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
     let tokenYData = tokensData?.[poolStatsData.tokenY.address] ?? {
       decimals: 0,
     };
-    let tokenXPrice = tokenXData.coingeckoId
-      ? coingeckoPrices[tokenXData.coingeckoId] ?? 0
-      : 0;
-    let tokenYPrice = tokenYData.coingeckoId
-      ? coingeckoPrices[tokenYData.coingeckoId] ?? 0
-      : 0;
+    let tokenXPrice = tokenPrices[poolStatsData.tokenX.address.toString()] ?? 0;
+    let tokenYPrice = tokenPrices[poolStatsData.tokenY.address.toString()] ?? 0;
 
     if (Object.keys(supportedTokens).includes(poolStatsData.tokenX.address)) {
       tokenXPrice = supportedTokensWithPrices[poolStatsData.tokenX.address];

@@ -226,7 +226,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
     });
   });
 
-  const allTokens = getsonicTokensData(network);
   const tokenPrices = await getTokensPrices(network);
 
   Object.entries(tokenPrices).forEach(([addr, { price }]) => {
