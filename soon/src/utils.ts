@@ -11,7 +11,7 @@ import { Connection, ParsedAccountData, PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
 import MAINNET_TOKENS from "../../data/mainnet_tokens.json";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { Network as SoonNetwork } from "@invariant-labs/sdk-soon";
+import { Network, Network as SoonNetwork } from "@invariant-labs/sdk-soon";
 import { readFileSync } from "fs";
 
 export const MAX_ATAS_IN_BATCH = 100;
@@ -183,20 +183,6 @@ export const getTokensData = async (): Promise<Record<string, TokenData>> => {
   });
 
   return tokensObj;
-};
-
-export const getTokensPrices = async (
-  idsList: string[]
-): Promise<Record<string, number>> => {
-  const prices = await getCoingeckoPricesData(idsList);
-
-  const snaps = {};
-
-  prices.forEach(({ id, current_price }) => {
-    snaps[id] = current_price ?? 0;
-  });
-
-  return snaps;
 };
 
 export const getUsdValue24 = (
@@ -381,6 +367,7 @@ export interface PoolApyArchiveSnapshot extends DailyApyData {
     decimals: number;
   };
 }
+
 export interface PoolWithAddress extends PoolStructure {
   address: PublicKey;
 }
@@ -506,68 +493,6 @@ export interface TokenPriceData {
   price: number;
 }
 
-interface RawJupApiResponse {
-  data: Record<
-    string,
-    {
-      id: string;
-      price: string;
-    }
-  >;
-  timeTaken: number;
-}
-
-export const getJupPricesData2 = async (
-  ids: string[]
-): Promise<Record<string, TokenPriceData>> => {
-  const maxTokensPerRequest = 100;
-
-  const chunkedIds: string[][] = [];
-  for (let i = 0; i < ids.length; i += maxTokensPerRequest) {
-    chunkedIds.push(ids.slice(i, i + maxTokensPerRequest));
-  }
-
-  const requests = chunkedIds.map(
-    async (idsChunk) =>
-      await axios.get<RawJupApiResponse>(
-        `https://lite-api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
-      )
-  );
-
-  const responses = await Promise.all(requests);
-  const concatRes = responses.flatMap((response) =>
-    Object.values(response.data.data).map((tokenData) => ({
-      id: tokenData?.id ? tokenData.id : "",
-      price: tokenData?.price ? tokenData.price : "0",
-    }))
-  );
-
-  return concatRes.reduce<Record<string, TokenPriceData>>((acc, tokenData) => {
-    if (tokenData?.id) {
-      acc[tokenData.id] = { price: Number(tokenData.price ?? 0) };
-    }
-    return acc;
-  }, {});
-};
-
-export type CoinGeckoAPIData = CoinGeckoAPIPriceData[];
-
-export type CoinGeckoAPIPriceData = {
-  id: string;
-  current_price: number;
-  price_change_percentage_24h: number;
-};
-
-export const DEFAULT_TOKENS = ["bitcoin", "ethereum", "usd-coin", "aleph-zero"];
-
-export const getCoingeckoPricesData2 = async (): Promise<CoinGeckoAPIData> => {
-  const { data } = await axios.get<CoinGeckoAPIData>(
-    `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${DEFAULT_TOKENS}`
-  );
-
-  return data;
-};
-
 export const getSoonTokensData = (
   network: SoonNetwork
 ): Record<string, TokenData> => {
@@ -582,3 +507,24 @@ export const getSoonTokensData = (
 };
 
 export const supportedTokens = {};
+
+export interface IPriceData {
+  data: Record<string, { price: number }>;
+  lastUpdateTimestamp: number;
+}
+
+export const getTokensPrices = async (
+  network: Network
+): Promise<Record<string, { price: number }>> => {
+  const supportedNetworks = {
+    [Network.TEST]: "soon-testnet",
+    [Network.MAIN]: "soon-mainnet",
+  };
+  const { data } = await axios.get<IPriceData>(
+    `https://api.invariant.app/price/${
+      supportedNetworks[network] ?? "soon-testnet"
+    }`
+  );
+
+  return data.data;
+};
