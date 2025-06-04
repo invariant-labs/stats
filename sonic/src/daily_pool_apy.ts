@@ -182,8 +182,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       dailyData[address.toString()] = {
         apy: APY === Infinity ? 1001 : isNaN(+JSON.stringify(APY)) ? 0 : APY,
         totalXAmount: currentXamount,
-        volumeX: volumeX.toNumber(),
-        volumeY: volumeY.toNumber(),
+        volumeX: currentVolumeXBN.toNumber(),
+        volumeY: currentVolumeYBN.toNumber(),
         totalVolumeX: volume,
       };
     } catch (_error) {
