@@ -3,6 +3,8 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import SONIC_TESTNET_DATA from "../../../data/sonic/testnet_intervals.json";
 //@ts-ignore
 import SONIC_MAINNET_DATA from "../../../data/sonic/mainnet_intervals.json";
+//@ts-ignore
+import TIMESTAMP from "../../../data/sonic/timestamp.json";
 
 // import {
 //   mapStringToInterval,
@@ -25,6 +27,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const { net, interval } = req.query;
   let data;
+
   if (net === "sonic-mainnet") {
     data = SONIC_MAINNET_DATA as any;
   } else if (net === "sonic-testnet") {
@@ -43,6 +46,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   intervalData.liquidityPlot = intervalData.liquidityPlot.slice(0, 30);
 
   const response = {
+    timestamp: TIMESTAMP.v,
     volume24,
     tvl24,
     fees24,
