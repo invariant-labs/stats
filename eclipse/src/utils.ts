@@ -346,6 +346,9 @@ export const eclipseMainnetTokensData = {
   "27Kkn8PWJbKJsRZrxbsYDdedpUQKnJ5vNfserCxNEJ3R": {
     decimals: 6,
   },
+  "6G61dR9rbcGW4btoLFFFDtebUV8J8LmAobnvvzhdf4Vf": {
+    decimals: 6,
+  },
 };
 
 export interface QuotientSnapshot {
