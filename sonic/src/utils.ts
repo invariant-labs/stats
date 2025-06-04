@@ -695,3 +695,18 @@ export const calculateAPYForInterval = (
   const APY = (Math.pow(factor + 1, 365) - 1) * 100;
   return APY === Infinity ? 1001 : isNaN(+JSON.stringify(APY)) ? 0 : APY;
 };
+
+export const getIntervalRange = (key: Intervals): number => {
+  switch (key) {
+    case Intervals.Daily:
+      return 1; // snapshots for 1 day
+    case Intervals.Weekly:
+      return 7;
+    case Intervals.Monthly:
+      return 30;
+    case Intervals.Yearly:
+      return 365;
+    default:
+      return 36500; // 100years
+  }
+};

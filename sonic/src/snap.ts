@@ -399,6 +399,17 @@ export const createSnapshotForNetwork = async (network: Network) => {
       }
     });
   }
+  if (network === Network.MAIN) {
+    fs.writeFile(
+      "../data/sonic/timestamp.json",
+      JSON.stringify({ v: timestamp }),
+      (err) => {
+        if (err) {
+          throw err;
+        }
+      }
+    );
+  }
 };
 
 createSnapshotForNetwork(Network.TEST).then(
