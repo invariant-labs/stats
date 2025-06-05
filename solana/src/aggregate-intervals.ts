@@ -38,6 +38,16 @@ import { DECIMAL } from "@invariant-labs/sdk/lib/utils";
 import { Provider } from "@project-serum/anchor";
 import { PoolStructure } from "@invariant-labs/sdk/lib/market";
 
+const WEEKLY_VOLUME_PLOT_ENTRY_TO_ADD = {
+  timestamp: 1744027200000,
+  value: 1711443.5,
+};
+
+const WEEKLY_LIQUIDITY_PLOT_ENTRY_TO_ADD = {
+  timestamp: 1744027200000,
+  value: 218009.90999999977,
+};
+
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: Provider;
   let intervalsPath: string;
@@ -587,6 +597,35 @@ export const createSnapshotForNetwork = async (network: Network) => {
   assignPrice(Intervals.Monthly);
   assignPrice(Intervals.Yearly);
   assignPrice(Intervals.All);
+
+  const addStaticPlotEntires = () => {
+    const findIndexForEntry = (arr: TimeData[]) => {
+      let index = 0;
+      for (let i = 0; i < arr.length; i++) {
+        if (
+          getWeekNumber(arr[i].timestamp) <
+          getWeekNumber(WEEKLY_VOLUME_PLOT_ENTRY_TO_ADD.timestamp)
+        ) {
+          index = i;
+          break;
+        }
+      }
+      return index;
+    };
+    const index = findIndexForEntry(totalStats[Intervals.Weekly].volumePlot);
+    totalStats.weekly.volumePlot.splice(
+      index,
+      0,
+      WEEKLY_VOLUME_PLOT_ENTRY_TO_ADD
+    );
+    totalStats.weekly.liquidityPlot.splice(
+      index,
+      0,
+      WEEKLY_LIQUIDITY_PLOT_ENTRY_TO_ADD
+    );
+  };
+
+  addStaticPlotEntires();
 
   fs.writeFileSync(fileName, JSON.stringify(totalStats), "utf-8");
 };
