@@ -1,5 +1,5 @@
 //@ts-ignore
-import ECLIPSE_MAINNET_DATA from "../data/eclipse/mainnet_intervals.json";
+import ECLIPSE_MAINNET_DATA from "../data/mainnet_intervals.json";
 
 function main() {
   const data = ECLIPSE_MAINNET_DATA as any;
