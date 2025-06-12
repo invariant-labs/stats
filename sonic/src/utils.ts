@@ -21,6 +21,7 @@ export enum Intervals {
   Weekly = "weekly",
   Monthly = "monthly",
   Yearly = "yearly",
+  All = "all",
 }
 
 export interface IntervalStats {
@@ -28,6 +29,7 @@ export interface IntervalStats {
   weekly: TotalIntervalStats;
   monthly: TotalIntervalStats;
   yearly: TotalIntervalStats;
+  all: TotalIntervalStats;
 }
 export interface TotalIntervalStats {
   volume: {
@@ -55,6 +57,7 @@ export interface PoolIntervalPlots {
   weekly: IntervalPlot;
   monthly: IntervalPlot;
   yearly: IntervalPlot;
+  all: IntervalPlot;
 }
 
 export interface IntervalPlot {
