@@ -2,6 +2,7 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 //@ts-ignore
 import TIMESTAMP from "../../../data/eclipse/timestamp.json";
 import fs from "fs";
+import path from "path";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -19,26 +20,38 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const { net, interval, address } = req.query;
 
-  const network = (net as string).split("-")[1] as "mainnet" | "testnet";
+  try {
+    const network = (net as string).split("-")[1] as "mainnet" | "testnet";
 
-  const path = `../../../data/eclipse/intervals/${network}/${address}.json`;
-  const data = fs.existsSync(path)
-    ? JSON.parse(fs.readFileSync(path, "utf-8"))
-    : null;
+    const filePath = path.join(
+      process.cwd(),
+      "data",
+      "eclipse",
+      "intervals",
+      network,
+      `${address}.json`
+    );
 
-  if (!data) {
-    throw new Error(`Data not found for address: ${address}`);
+    const data = fs.existsSync(filePath)
+      ? JSON.parse(fs.readFileSync(filePath, "utf-8"))
+      : null;
+
+    if (!data) {
+      throw new Error(`Data not found for address: ${address}`);
+    }
+
+    const intervalData = data[interval as string];
+    intervalData.volumePlot = intervalData.volumePlot.slice(0, 30);
+    intervalData.liquidityPlot = intervalData.liquidityPlot.slice(0, 30);
+    intervalData.feesPlot = intervalData.feesPlot.slice(0, 30);
+
+    const response = {
+      timestamp: TIMESTAMP.v,
+      ...intervalData,
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.send(JSON.stringify({ error }));
   }
-
-  const intervalData = data[interval as string];
-  intervalData.volumePlot = intervalData.volumePlot.slice(0, 30);
-  intervalData.liquidityPlot = intervalData.liquidityPlot.slice(0, 30);
-  intervalData.feesPlot = intervalData.feesPlot.slice(0, 30);
-
-  const response = {
-    timestamp: TIMESTAMP.v,
-    ...intervalData,
-  };
-
-  res.json(response);
 }
