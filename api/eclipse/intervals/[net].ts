@@ -37,10 +37,13 @@ export default function (req: VercelRequest, res: VercelResponse) {
   }
   const interval = mapStringToInterval(rawInterval as string);
   const dailyData = data.daily;
+  const cumulativeVolume = data.all.volume;
+  const cumulativeFees = data.all.fees;
   const volume24 = dailyData.volume;
   const tvl24 = dailyData.tvl;
   const fees24 = dailyData.fees;
   const intervalData = data[interval];
+
   intervalData.volumePlot = intervalData.volumePlot.slice(0, 30);
   intervalData.liquidityPlot = intervalData.liquidityPlot.slice(0, 30);
 
@@ -49,6 +52,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
     volume24,
     tvl24,
     fees24,
+    cumulativeVolume,
+    cumulativeFees,
     ...intervalData,
   };
 

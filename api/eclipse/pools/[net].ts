@@ -1,10 +1,8 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 //@ts-ignore
-import SOLANA_DEVNET_DATA from "../../../data/devnet_intervals.json";
-//@ts-ignore
-import SOLANA_MAINNET_DATA from "../../../data/mainnet_intervals.json";
-//@ts-ignore
-import TIMESTAMP from "../../../data/timestamp.json";
+import TIMESTAMP from "../../../data/eclipse/timestamp.json";
+import fs from "fs";
+import path from "path";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -20,34 +18,34 @@ export default function (req: VercelRequest, res: VercelResponse) {
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
 
-  const { net, interval } = req.query;
-  let data;
+  const { net, interval, address } = req.query;
 
-  if (net === "solana-mainnet") {
-    data = SOLANA_MAINNET_DATA as any;
-  } else if (net === "solana-devnet") {
-    data = SOLANA_DEVNET_DATA as any;
-  } else {
-    throw new Error("Invalid network specified");
+  const network = (net as string).split("-")[1] as "mainnet" | "testnet";
+
+  const filePath = path.join(
+    process.cwd(),
+    "data",
+    "eclipse",
+    "intervals",
+    network,
+    `${address}.json`
+  );
+
+  const data = fs.existsSync(filePath)
+    ? JSON.parse(fs.readFileSync(filePath, "utf-8"))
+    : null;
+
+  if (!data) {
+    throw new Error(`Data not found for address: ${address}`);
   }
 
-  const cumulativeVolume = data.all.volume;
-  const cumulativeFees = data.all.fees;
-  const dailyData = data.daily;
-  const volume24 = dailyData.volume;
-  const tvl24 = dailyData.tvl;
-  const fees24 = dailyData.fees;
   const intervalData = data[interval as string];
   intervalData.volumePlot = intervalData.volumePlot.slice(0, 30);
   intervalData.liquidityPlot = intervalData.liquidityPlot.slice(0, 30);
+  intervalData.feesPlot = intervalData.feesPlot.slice(0, 30);
 
   const response = {
     timestamp: TIMESTAMP.v,
-    volume24,
-    tvl24,
-    fees24,
-    cumulativeVolume,
-    cumulativeFees,
     ...intervalData,
   };
 
