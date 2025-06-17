@@ -821,3 +821,17 @@ export const getIntervalRange = (key: Intervals): number => {
       return 36500; // 100years
   }
 };
+
+export interface ISbitzData {
+  data: ISbitzDataEntry[];
+}
+
+export interface ISbitzDataEntry {
+  timestamp: number;
+  bitzSupply: string;
+  bitzStaked: string;
+  totalBitzStaked: string;
+  bitzHolders: number;
+  sbitzSupply: string;
+  sbitzHolders: number;
+}

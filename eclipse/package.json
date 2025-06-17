@@ -13,6 +13,7 @@
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
     "@invariant-labs/locker-eclipse-sdk": "^0.0.12",
+    "@invariant-labs/sbitz": "^0.0.2",
     "@invariant-labs/sdk-eclipse": "^0.0.49",
     "@solana/spl-token": "^0.4.9",
     "@solana/spl-token-registry": "^0.2.4484",
