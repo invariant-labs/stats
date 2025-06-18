@@ -828,11 +828,13 @@ export interface ISbitzData {
 
 export interface ISbitzDataEntry {
   timestamp: number;
-  bitzSupply: string;
-  bitzStaked: string;
-  totalBitzStaked: string;
+  bitzSupply: number;
+  bitzStaked: number;
+  totalBitzStaked: number;
   bitzHolders: number;
-  sbitzSupply: string;
+  sbitzSupply: number;
   sbitzHolders: number;
-  rewards24h: string;
+  rewards24h: number;
 }
+
+export const BITZ_SBITZ_DECIMAL = 11;

@@ -9,7 +9,7 @@ import {
   getSbitzHoldersAmount,
   deserializeStake,
 } from "@invariant-labs/sbitz/lib/utils";
-import { ISbitzData } from "./utils";
+import { BITZ_SBITZ_DECIMAL, ISbitzData, printBN } from "./utils";
 import {
   getAssociatedTokenAddressSync,
   unpackAccount,
@@ -46,7 +46,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   );
 
   const lastRewards =
-    data.data.length > 0
+    data.data && data.data.length > 0
       ? new BN(
           data.data.reduce((latest, entry) =>
             entry.timestamp > latest.timestamp ? entry : latest
@@ -59,7 +59,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
     1000 * 60 * 60 * 12;
 
-  const [boost] = staking.getBoostAddressAndBump(SBITZ_MINT);
+  const [boost] = staking.getBoostAddressAndBump(BITZ_MINT);
   const [stakeAuthority] = staking.getAuthorityAddressAndBump();
   const [stake] = staking.getStakeAddressAndBump(boost, stakeAuthority);
   const [treasury] = staking.getTreasuryAddressAndBump();
@@ -114,13 +114,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   data.data.push({
     timestamp,
-    bitzStaked: bitzStaked.toString(),
-    bitzSupply: bitzSupply.toString(),
-    totalBitzStaked: totalBitzStaked.toString(),
+    bitzStaked: +printBN(bitzStaked, BITZ_SBITZ_DECIMAL),
+    bitzSupply: +printBN(bitzSupply, BITZ_SBITZ_DECIMAL),
+    totalBitzStaked: +printBN(totalBitzStaked, BITZ_SBITZ_DECIMAL),
     sbitzHolders,
-    sbitzSupply: sbitzSupply.toString(),
+    sbitzSupply: +printBN(sbitzSupply, BITZ_SBITZ_DECIMAL),
     bitzHolders,
-    rewards24h: rewards24h.toString(),
+    rewards24h: +printBN(rewards24h, BITZ_SBITZ_DECIMAL),
   });
 
   fs.writeFile(fileName, JSON.stringify(data), (err) => {
@@ -130,14 +130,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
   });
 };
 
-createSnapshotForNetwork(Network.TEST).then(
-  () => {
-    console.log("Eclipse: Bitz testnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+// createSnapshotForNetwork(Network.TEST).then(
+//   () => {
+//     console.log("Eclipse: Bitz testnet snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {
