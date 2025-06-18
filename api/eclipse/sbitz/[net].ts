@@ -29,6 +29,12 @@ export default function (req: VercelRequest, res: VercelResponse) {
   } else {
     data = ECLIPSE_TESTNET_DATA as ISbitzData;
   }
+  const lastEntry =
+    data.data.length > 0
+      ? data.data.reduce((latest, entry) =>
+          entry.timestamp > latest.timestamp ? entry : latest
+        )
+      : {};
 
-  res.json(data);
+  res.json(lastEntry);
 }

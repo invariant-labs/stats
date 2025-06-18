@@ -87,7 +87,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   ]);
 
   const bitzStaked = stakeAccount
-    ? deserializeStake(stakeAccount.data)
+    ? deserializeStake(stakeAccount.data).balance
     : new BN(0);
 
   const totalBitzStaked = treasuryTokensAccount
@@ -114,13 +114,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   data.data.push({
     timestamp,
-    bitzStaked,
-    bitzSupply,
-    totalBitzStaked,
+    bitzStaked: bitzStaked.toString(),
+    bitzSupply: bitzSupply.toString(),
+    totalBitzStaked: totalBitzStaked.toString(),
     sbitzHolders,
-    sbitzSupply,
+    sbitzSupply: sbitzSupply.toString(),
     bitzHolders,
-    rewards24h,
+    rewards24h: rewards24h.toString(),
   });
 
   fs.writeFile(fileName, JSON.stringify(data), (err) => {
