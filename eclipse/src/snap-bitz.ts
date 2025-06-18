@@ -9,7 +9,7 @@ import {
   getSbitzHoldersAmount,
   deserializeStake,
 } from "@invariant-labs/sbitz/lib/utils";
-import { BITZ_SBITZ_DECIMAL, ISbitzData, printBN } from "./utils";
+import { ISbitzData } from "./utils";
 import {
   getAssociatedTokenAddressSync,
   unpackAccount,
@@ -47,11 +47,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const lastRewards =
     data.data && data.data.length > 0
-      ? new BN(
-          data.data.reduce((latest, entry) =>
-            entry.timestamp > latest.timestamp ? entry : latest
-          ).rewards24h
-        )
+      ? new BN(data.data[data.data.length - 1].rewards24h)
       : new BN(0);
 
   const now = Date.now();
@@ -114,13 +110,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   data.data.push({
     timestamp,
-    bitzStaked: +printBN(bitzStaked, BITZ_SBITZ_DECIMAL),
-    bitzSupply: +printBN(bitzSupply, BITZ_SBITZ_DECIMAL),
-    totalBitzStaked: +printBN(totalBitzStaked, BITZ_SBITZ_DECIMAL),
+    bitzStaked: bitzStaked.toString(),
+    bitzSupply: bitzSupply.toString(),
+    totalBitzStaked: totalBitzStaked.toString(),
     sbitzHolders,
-    sbitzSupply: +printBN(sbitzSupply, BITZ_SBITZ_DECIMAL),
+    sbitzSupply: sbitzSupply.toString(),
     bitzHolders,
-    rewards24h: +printBN(rewards24h, BITZ_SBITZ_DECIMAL),
+    rewards24h: rewards24h.toString(),
   });
 
   fs.writeFile(fileName, JSON.stringify(data), (err) => {
