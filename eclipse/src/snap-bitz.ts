@@ -1,15 +1,20 @@
-import { AnchorProvider } from "@coral-xyz/anchor";
+import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import fs from "fs";
 import { LiquidityStaking } from "@invariant-labs/sbitz";
 import { IWallet } from "@invariant-labs/sbitz/lib/types";
+import { BITZ_MINT, SBITZ_MINT } from "@invariant-labs/sbitz/lib/consts";
 import { Network } from "@invariant-labs/sbitz/lib/network";
 import {
-  getBitzSupply,
-  getSbitzSupply,
   getBitzHoldersAmount,
   getSbitzHoldersAmount,
+  deserializeStake,
 } from "@invariant-labs/sbitz/lib/utils";
 import { ISbitzData } from "./utils";
+import {
+  getAssociatedTokenAddressSync,
+  unpackAccount,
+  unpackMint,
+} from "spl-token-eclipse";
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
@@ -39,25 +44,73 @@ export const createSnapshotForNetwork = async (network: Network) => {
     provider.wallet as IWallet,
     connection
   );
+
+  const lastRewards =
+    data.data.length > 0
+      ? new BN(
+          data.data.reduce((latest, entry) =>
+            entry.timestamp > latest.timestamp ? entry : latest
+          ).rewards24h
+        )
+      : new BN(0);
+
   const now = Date.now();
   const timestamp =
     Math.floor(now / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24) +
     1000 * 60 * 60 * 12;
+
+  const [boost] = staking.getBoostAddressAndBump(SBITZ_MINT);
+  const [stakeAuthority] = staking.getAuthorityAddressAndBump();
+  const [stake] = staking.getStakeAddressAndBump(boost, stakeAuthority);
+  const [treasury] = staking.getTreasuryAddressAndBump();
+  const treasuryTokens = getAssociatedTokenAddressSync(
+    BITZ_MINT,
+    treasury,
+    true
+  );
+
   const [
-    bitzStaked,
-    totalBitzStaked,
-    bitzSupply,
-    sbitzSupply,
+    [stakeAccount, treasuryTokensAccount, bitzInfo, sbitzInfo],
     bitzHolders,
     sbitzHolders,
+    mintInfo,
   ] = await Promise.all([
-    staking.getStakedAmount(),
-    staking.getAllStakedAmount(),
-    getBitzSupply(connection),
-    getSbitzSupply(connection),
+    connection.getMultipleAccountsInfo([
+      stake,
+      treasuryTokens,
+      BITZ_MINT,
+      SBITZ_MINT,
+    ]),
     getBitzHoldersAmount(),
     getSbitzHoldersAmount(),
+    staking.getMintInfo(),
   ]);
+
+  const bitzStaked = stakeAccount
+    ? deserializeStake(stakeAccount.data)
+    : new BN(0);
+
+  const totalBitzStaked = treasuryTokensAccount
+    ? new BN(
+        unpackAccount(
+          treasuryTokens,
+          treasuryTokensAccount,
+          treasuryTokensAccount.owner
+        ).amount.toString()
+      )
+    : new BN(0);
+
+  const bitzSupply = bitzInfo
+    ? new BN(unpackMint(BITZ_MINT, bitzInfo, bitzInfo.owner).supply.toString())
+    : new BN(0);
+  const sbitzSupply = sbitzInfo
+    ? new BN(
+        unpackMint(SBITZ_MINT, sbitzInfo, sbitzInfo.owner).supply.toString()
+      )
+    : new BN(0);
+
+  const claimedYield = mintInfo.claimedYield;
+  const rewards24h = claimedYield.sub(lastRewards);
 
   data.data.push({
     timestamp,
@@ -67,6 +120,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     sbitzHolders,
     sbitzSupply,
     bitzHolders,
+    rewards24h,
   });
 
   fs.writeFile(fileName, JSON.stringify(data), (err) => {

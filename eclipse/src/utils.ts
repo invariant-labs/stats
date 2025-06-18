@@ -834,4 +834,5 @@ export interface ISbitzDataEntry {
   bitzHolders: number;
   sbitzSupply: string;
   sbitzHolders: number;
+  rewards24h: string;
 }
