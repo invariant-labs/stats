@@ -11,7 +11,7 @@ import {
   deserializeStake,
 } from "@invariant-labs/sbitz/lib/utils";
 import { ISbitzData } from "./utils";
-import { PublicKey } from "web3-eclipse";
+import { PublicKey } from "@solana/web3.js";
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;

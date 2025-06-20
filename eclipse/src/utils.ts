@@ -305,6 +305,9 @@ export const eclipseMainnetTokensData = {
   "64mggk2nXg6vHC1qCdsZdEFzd5QGN4id54Vbho4PswCF": {
     decimals: 11,
   },
+  sBTZcSwRZhRq3JcjFh1xwxgCxmsN7MreyU3Zx8dA8uF: {
+    decimals: 11,
+  },
   // 2022 tokens
   AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE: {
     decimals: 6,
