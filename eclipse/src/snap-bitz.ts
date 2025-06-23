@@ -10,7 +10,12 @@ import {
   getSbitzHoldersAmount,
   deserializeStake,
 } from "@invariant-labs/sbitz/lib/utils";
-import { ISbitzData } from "./utils";
+import {
+  BITZ_SBITZ_DECIMAL,
+  getTokensPrices,
+  ISbitzData,
+  printBN,
+} from "./utils";
 import { PublicKey } from "@solana/web3.js";
 
 export const createSnapshotForNetwork = async (network: Network) => {
@@ -26,6 +31,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       throw new Error("Unknown network");
   }
 
+  const tokenPrices = await getTokensPrices(network);
   const data: ISbitzData = JSON.parse(fs.readFileSync(fileName, "utf-8"));
 
   const connection = provider.connection;
@@ -81,6 +87,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
   data.push({
     timestamp,
     bitzStaked: bitzStaked.toString(),
+    sBitzTVL:
+      +printBN(bitzStaked, BITZ_SBITZ_DECIMAL) *
+      (tokenPrices[BITZ_MINT.toBase58()].price ?? 0),
     bitzSupply: bitzSupply.value.amount,
     totalBitzStaked: totalBitzStaked.value.amount,
     sbitzHolders,

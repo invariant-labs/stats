@@ -830,6 +830,7 @@ export type ISbitzData = ISbitzDataEntry[];
 export interface ISbitzDataEntry {
   timestamp: number;
   bitzSupply: string;
+  sBitzTVL: number;
   bitzStaked: string;
   totalBitzStaked: string;
   bitzHolders: number;
