@@ -1,7 +1,12 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 //@ts-ignore
 import ECLIPSE_MAINNET_DATA from "../../../data/eclipse/sbitz.json";
-import { ISbitzData } from "../../../eclipse/src/utils";
+import {
+  BITZ_SBITZ_DECIMAL,
+  ISbitzData,
+  TimeData,
+} from "../../../eclipse/src/utils";
+import { printBN } from "../../utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -26,5 +31,25 @@ export default function (req: VercelRequest, res: VercelResponse) {
         )
       : {};
 
-  res.json(lastEntry);
+  const last30Entires = data.splice(-30);
+
+  const sbitzSupplyPlot: TimeData[] = [];
+  const bitzSupplyPlot: TimeData[] = [];
+  const sbitzTVLPlot: TimeData[] = [];
+  for (const entry of last30Entires) {
+    sbitzSupplyPlot.push({
+      timestamp: entry.timestamp,
+      value: +printBN(entry.sbitzSupply, BITZ_SBITZ_DECIMAL),
+    });
+    bitzSupplyPlot.push({
+      timestamp: entry.timestamp,
+      value: +printBN(entry.bitzSupply, BITZ_SBITZ_DECIMAL),
+    });
+    sbitzTVLPlot.push({
+      timestamp: entry.timestamp,
+      value: entry.sBitzTVL,
+    });
+  }
+
+  res.json({ ...lastEntry, sbitzSupplyPlot, bitzSupplyPlot, sbitzTVLPlot });
 }
