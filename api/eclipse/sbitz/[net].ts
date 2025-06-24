@@ -24,24 +24,19 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   let data: ISbitzData = ECLIPSE_MAINNET_DATA;
 
-  const lastEntry =
-    data.length > 0
-      ? data.reduce((latest, entry) =>
-          entry.timestamp > latest.timestamp ? entry : latest
-        )
-      : {};
+  const lastEntry = data[data.length - 1];
 
   const last30Entires = data.splice(-30);
 
   const sbitzSupplyPlot: TimeData[] = [];
-  const bitzSupplyPlot: TimeData[] = [];
+  const bitzStakedPlot: TimeData[] = [];
   const sbitzTVLPlot: TimeData[] = [];
   for (const entry of last30Entires) {
     sbitzSupplyPlot.push({
       timestamp: entry.timestamp,
       value: +printBN(entry.sbitzSupply, BITZ_SBITZ_DECIMAL),
     });
-    bitzSupplyPlot.push({
+    bitzStakedPlot.push({
       timestamp: entry.timestamp,
       value: +printBN(entry.bitzSupply, BITZ_SBITZ_DECIMAL),
     });
@@ -51,5 +46,5 @@ export default function (req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  res.json({ ...lastEntry, sbitzSupplyPlot, bitzSupplyPlot, sbitzTVLPlot });
+  res.json({ ...lastEntry, sbitzSupplyPlot, bitzStakedPlot, sbitzTVLPlot });
 }
