@@ -26,19 +26,19 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const lastEntry = data[data.length - 1];
 
-  const last30Entires = data.splice(-30);
+  const last30Entries = data.slice(-30);
 
   const sbitzSupplyPlot: TimeData[] = [];
   const bitzStakedPlot: TimeData[] = [];
   const sbitzTVLPlot: TimeData[] = [];
-  for (const entry of last30Entires) {
+  for (const entry of last30Entries) {
     sbitzSupplyPlot.push({
       timestamp: entry.timestamp,
       value: +printBN(entry.sbitzSupply, BITZ_SBITZ_DECIMAL),
     });
     bitzStakedPlot.push({
       timestamp: entry.timestamp,
-      value: +printBN(entry.bitzSupply, BITZ_SBITZ_DECIMAL),
+      value: +printBN(entry.bitzStaked, BITZ_SBITZ_DECIMAL),
     });
     sbitzTVLPlot.push({
       timestamp: entry.timestamp,
