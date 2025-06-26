@@ -99,7 +99,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "462Jv897HxksDUnvAH7ZHvmTtXNEeTrikuHrTrz5uZhE", // USDC/USDT 0.1%
     "2YMcH9VEBXKzA4c2DHua487ZpGaZarYeRjgNBXPxHSRj", // USDC/SOL 0.3%
     "2MPKn48cLpMYrqJv3Yucet2LDduZQMi6FBsdqKANvg6X", // tETH/ETH 0.02%
-    "3f8r3ioxkAZViSp5PcA319K9HB2ZF7aSK2CeaL6w1Lho", // USDC/ETH 0.05% 
+    "3f8r3ioxkAZViSp5PcA319K9HB2ZF7aSK2CeaL6w1Lho", // USDC/ETH 0.05%
     "8SwgHaEeN9s8iT1iz6ud2etCNHixiUqRFBN1SJ48rPXC", // USDC/tETH 0.01%
     "5nVk1wDt6TnLXiPvTDmfKzLoRbBJKuHm4pSneTPPWWS2", // SOL/ETH 0.1%
     "3N8EhmmZXdAkQni1wJKKtXe4Z9vGHv47ZfH1zQE3ooNG", // TIA/ETH 0.01%
@@ -120,6 +120,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM", // SOL/ETH 0.09%
     "7owDutq5guBRS94XCbVy1Q1tW6nXNhHeeQPeDTQ1xTYb", // SOL/ETH 0.05%
     "HG7iQMk29cgs74ZhSwrnye3C6SLQwKnfsbXqJVRi1x8H", // BITZ/ETH 1%
+    "9RkzLPufg9RVxRLXZx1drZvf1gXLwgffnhW9oFJSstad", // sBITZ/ETH 1%
   ];
 
   // Tokens which price should be evaluated last, the lower the value the less likely the token is to be the base_currency
