@@ -396,15 +396,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
   }
 
-  const buildLiquidityPlot = (
-    key: Intervals,
-    getAnchorDate: (a: number) => number
-  ) => {
+  const buildPlots = (key: Intervals, getAnchorDate: (a: number) => number) => {
     for (const poolKey of poolKeys) {
-      // if (!whitelistedPools.includes(poolKey)) {
-      //   continue;
-      // }
-
       const intervalsFileName = path.join(
         __dirname,
         `${intervalsPath}${poolKey.toString()}.json`
@@ -427,60 +420,38 @@ export const createSnapshotForNetwork = async (network: Network) => {
           });
         }
       }
-    }
-  };
 
-  buildLiquidityPlot(Intervals.Daily, (a) => a);
-  buildLiquidityPlot(Intervals.Weekly, getWeekNumber);
-  buildLiquidityPlot(Intervals.Monthly, getMonthNumber);
-  buildLiquidityPlot(Intervals.Yearly, getYear);
+      const poolFeesPlot = data.feesPlot;
 
-  const feesHelper = {
-    daily: { current: 0, previous: 0 },
-    weekly: { current: 0, previous: 0 },
-    monthly: { current: 0, previous: 0 },
-    yearly: { current: 0, previous: 0 },
-    all: { current: 0, previous: 0 },
-  };
-  const buildFeesHelper = (key: Intervals) => {
-    const range = getIntervalRange(key);
-    for (const poolKey of poolKeys) {
-      // if (!whitelistedPools.includes(poolKey)) {
-      //   continue;
-      // }
+      for (const plotEntry of poolFeesPlot) {
+        const anchor = getAnchorDate(plotEntry.timestamp);
+        const entryIndex = totalStats[key].feesPlot.findIndex(
+          (entry) => getAnchorDate(entry.timestamp) === anchor
+        );
 
-      const intervalsFileName = path.join(
-        __dirname,
-        `${intervalsPath}${poolKey.toString()}.json`
-      );
-      try {
-        const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"));
-
-        const currentFees = data.daily.feesPlot
-          .slice(0, range)
-          .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
-        const previousFees = data.daily.feesPlot
-          .slice(range, range * 2)
-          .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
-
-        feesHelper[key].current += currentFees;
-        feesHelper[key].previous += previousFees;
-      } catch (error) {
-        console.log(`Error reading file ${intervalsFileName}: ${error}`);
+        if (entryIndex !== -1) {
+          totalStats[key].feesPlot[entryIndex].value += plotEntry.value;
+        } else {
+          totalStats[key].feesPlot.push({
+            timestamp: plotEntry.timestamp,
+            value: plotEntry.value,
+          });
+        }
       }
     }
   };
 
-  buildFeesHelper(Intervals.Daily);
-  buildFeesHelper(Intervals.Weekly);
-  buildFeesHelper(Intervals.Monthly);
-  buildFeesHelper(Intervals.Yearly);
-  buildFeesHelper(Intervals.All);
+  buildPlots(Intervals.Daily, (a) => a);
+  buildPlots(Intervals.Weekly, getWeekNumber);
+  buildPlots(Intervals.Monthly, getMonthNumber);
+  buildPlots(Intervals.Yearly, getYear);
 
   const calculateTotalValues = (key: Intervals) => {
     const range = getIntervalRange(key);
-    const totalFees = feesHelper[key].current;
 
+    const totalFees = totalStats.daily.feesPlot
+      .slice(0, range)
+      .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
     const totalVolume = totalStats.daily.volumePlot
       .slice(0, range)
       .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
@@ -490,7 +461,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
         .slice(0, range)
         .reduce((acc: number, cur: TimeData) => acc + cur.value, 0) / range;
 
-    const previousFees = feesHelper[key].previous;
+    const previousFees = totalStats.daily.feesPlot
+      .slice(range, range * 2)
+      .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
     const previousVolume = totalStats.daily.volumePlot
       .slice(range, range * 2)
       .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
