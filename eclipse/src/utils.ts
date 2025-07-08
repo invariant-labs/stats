@@ -54,6 +54,7 @@ export interface TotalIntervalStats {
   };
   volumePlot: TimeData[];
   liquidityPlot: TimeData[];
+  feesPlot: TimeData[];
   tokensData: (Omit<TokenStatsDataWithString, "volume24"> & {
     volume: number;
   })[];
@@ -773,6 +774,7 @@ export const generateEmptyTotalIntevalStats = (): TotalIntervalStats => ({
   volumePlot: [],
   liquidityPlot: [],
   poolsData: [],
+  feesPlot: [],
   tokensData: [],
 });
 

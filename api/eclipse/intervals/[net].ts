@@ -46,6 +46,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   intervalData.volumePlot = intervalData.volumePlot.slice(0, 30);
   intervalData.liquidityPlot = intervalData.liquidityPlot.slice(0, 30);
+  intervalData.feesPlot = intervalData.feesPlot.slice(0, 30);
 
   const response = {
     timestamp: TIMESTAMP.v,
