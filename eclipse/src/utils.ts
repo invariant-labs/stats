@@ -70,6 +70,10 @@ export interface PoolIntervalPlots {
 }
 
 export interface IntervalPlot {
+  volume: number;
+  tvl: number;
+  fees: number;
+  apy: number;
   volumePlot: TimeData[];
   liquidityPlot: TimeData[];
   feesPlot: TimeData[];
@@ -827,6 +831,27 @@ export const getIntervalRange = (key: Intervals): number => {
   }
 };
 
+export const getEmptyIntervalsData = (): PoolIntervalPlots => {
+  return {
+    daily: getEmptyIntervalData(),
+    weekly: getEmptyIntervalData(),
+    monthly: getEmptyIntervalData(),
+    yearly: getEmptyIntervalData(),
+    all: getEmptyIntervalData(),
+  };
+};
+
+const getEmptyIntervalData = (): IntervalPlot => {
+  return {
+    volumePlot: [],
+    liquidityPlot: [],
+    feesPlot: [],
+    volume: 0,
+    fees: 0,
+    tvl: 0,
+    apy: 0,
+  };
+};
 export type ISbitzData = ISbitzDataEntry[];
 
 export interface ISbitzDataEntry {
