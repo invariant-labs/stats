@@ -34,6 +34,7 @@ import {
   getYear,
   arithmeticAvg,
   getIntervalRange,
+  getEmptyIntervalsData,
 } from "./utils";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
@@ -166,33 +167,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
     const intervalsFileName = `${intervalsPath}${address.toString()}.json`;
 
-    const intervals: PoolIntervalPlots = {
-      daily: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-      weekly: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-      monthly: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-      yearly: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-      all: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-    };
+    const intervals: PoolIntervalPlots = getEmptyIntervalsData();
 
     const associatedSnaps = snaps[address.toString()]?.snapshots ?? [
       {
@@ -329,7 +304,18 @@ export const createSnapshotForNetwork = async (network: Network) => {
               totalStats[key].poolsData[poolIndex].tvl = arithmeticAvg(
                 ...poolStatsHelper[key][address.toString()]
               );
+              intervals[key].apy = totalStats[key].poolsData[poolIndex].apy;
+              intervals[key].volume =
+                totalStats[key].poolsData[poolIndex].volume;
+              intervals[key].tvl = totalStats[key].poolsData[poolIndex].tvl;
+              intervals[key].fees =
+                intervals[key].volume * +printBN(pool.fee, DECIMAL - 2);
             } else {
+              const apy = calculateAPYForInterval(
+                volume,
+                tvl,
+                +printBN(pool.fee, DECIMAL - 2)
+              );
               totalStats[key].poolsData.push({
                 poolAddress: address.toString(),
                 volume,
@@ -338,16 +324,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 liquidityY: snap.liquidityY.usdValue24,
                 lockedX: snap.lockedX?.usdValue24 ?? 0,
                 lockedY: snap.lockedY?.usdValue24 ?? 0,
-                apy: calculateAPYForInterval(
-                  volume,
-                  tvl,
-                  +printBN(pool.fee, DECIMAL - 2)
-                ),
+                apy,
                 fee: +printBN(pool.fee, DECIMAL - 2),
                 tokenX: pool.tokenX.toString(),
                 tokenY: pool.tokenY.toString(),
               });
               poolStatsHelper[key][address.toString()] = [Math.abs(tvl)];
+              intervals[key].apy = apy;
+              intervals[key].volume = volume;
+              intervals[key].tvl = tvl;
+              intervals[key].fees = fees;
             }
 
             const updateTokenData = (x: boolean) => {
