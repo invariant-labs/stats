@@ -357,6 +357,11 @@ export const eclipseMainnetTokensData = {
   "6G61dR9rbcGW4btoLFFFDtebUV8J8LmAobnvvzhdf4Vf": {
     decimals: 6,
   },
+  GnBAskb2SQjrLgpTjtgatz4hEugUsYV7XrWU1idV3oqW: {
+    decimals: 6,
+    coingeckoId: "eclipse-2",
+    ticker: "ES",
+  },
 };
 
 export interface QuotientSnapshot {
