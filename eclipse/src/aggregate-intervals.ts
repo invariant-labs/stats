@@ -309,7 +309,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 totalStats[key].poolsData[poolIndex].volume;
               intervals[key].tvl = totalStats[key].poolsData[poolIndex].tvl;
               intervals[key].fees =
-                intervals[key].volume * +printBN(pool.fee, DECIMAL - 2);
+                intervals[key].volume * +printBN(pool.fee, DECIMAL);
             } else {
               const apy = calculateAPYForInterval(
                 volume,

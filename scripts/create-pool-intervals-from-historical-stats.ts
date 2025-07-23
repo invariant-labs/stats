@@ -93,10 +93,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     all: generateEmptyTotalIntevalStats(),
   };
 
-  // const whitelistedPools = [
-  //   "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce",
-  //   "E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC",
-  // ];
+  //   const whitelistedPools = [
+  //     "6ciuuX2AZ3RFU6fJh2XrzJurZdRWuDeMonNsb7xzztp1",
+  //     "8gSs6K4NVZSh4Rd5ABcNTos5sJ6wVRTR4xr5LgNLMt58 ",
+  //   ];
 
   const poolKeys = Object.keys(snaps);
 
@@ -134,6 +134,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   for (let poolKey of poolKeys) {
     const pool = await market.getPoolByAddress(new PublicKey(poolKey));
+
+    // if (!whitelistedPools.includes(poolKey)) {
+    //   continue;
+    // }
 
     if (TIERS_TO_OMIT.includes(+printBN(pool.fee, DECIMAL - 2))) {
       continue;
@@ -293,7 +297,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 totalStats[key].poolsData[poolIndex].volume;
               intervals[key].tvl = totalStats[key].poolsData[poolIndex].tvl;
               intervals[key].fees =
-                intervals[key].volume * +printBN(pool.fee, DECIMAL - 2);
+                intervals[key].volume * +printBN(pool.fee, DECIMAL);
             } else {
               const apy = calculateAPYForInterval(
                 volume,
@@ -386,6 +390,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const buildPlots = (key: Intervals, getAnchorDate: (a: number) => number) => {
     for (const poolKey of poolKeys) {
+      //   if (!whitelistedPools.includes(poolKey)) {
+      //     continue;
+      //   }
       const intervalsFileName = path.join(
         __dirname,
         `${intervalsPath}${poolKey.toString()}.json`
