@@ -24,7 +24,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
+      const rpcUrl = process.env.ECLIPSE_RPC_URL;
+      if (!rpcUrl) {
+        throw new Error("RPC is not defined");
+      }
+      provider = AnchorProvider.local(rpcUrl);
       fileName = "../data/eclipse/sbitz.json";
       break;
     default:

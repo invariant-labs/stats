@@ -29,7 +29,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
       folderName = "../data/eclipse/ticks/testnet/";
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
+      const rpcUrl = process.env.ECLIPSE_RPC_URL;
+      if (!rpcUrl) {
+        throw new Error("RPC is not defined");
+      }
+      provider = AnchorProvider.local(rpcUrl);
       folderName = "../data/eclipse/ticks/mainnet/";
       break;
     default:
