@@ -69,7 +69,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
       tokensData = eclipseTestnetTokensData;
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
+      const rpcUrl = process.env.ECLIPSE_RPC_URL;
+      if (!rpcUrl) {
+        throw new Error("RPC is not defined");
+      }
+      provider = AnchorProvider.local(rpcUrl);
       fileName = "../data/eclipse/daily_pool_apy_mainnet.json";
       archiveFileName = "../data/eclipse/daily_pool_apy_archive_mainnet.json";
       poolsCacheFileName = "../data/eclipse/cache/mainnet_pools_cache.json";

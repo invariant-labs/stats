@@ -93,6 +93,8 @@ jobs:
           solana --version
           solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
       - name: eclipse snapshot
+        env:
+          ECLIPSE_RPC_URL: ${{ secrets.ECLIPSE_RPC_URL }}
         working-directory: ./eclipse
         run: |
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
