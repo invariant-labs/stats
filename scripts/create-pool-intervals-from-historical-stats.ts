@@ -64,7 +64,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
       fileName = "../data/eclipse/testnet_intervals.json";
       break;
     case Network.MAIN:
-      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
+      // const rpcUrl = process.env.ECLIPSE_RPC_URL;
+      // if (!rpcUrl) {
+      //   throw new Error("RPC is not defined");
+      // }
+      const rpcUrl = 'https://mainnetbeta-rpc.eclipse.xyz';
+      provider = AnchorProvider.local(rpcUrl);
       // @ts-ignore
       snaps = MAINNET_DATA;
       intervalsPath = "../data/eclipse/intervals/mainnet/";
