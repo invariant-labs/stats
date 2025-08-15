@@ -133,10 +133,11 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     ["GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn", 30], // tETH
     ["CEBP3CqAbW4zdZA57H2wfaSG1QNdzQ72GiQEbQXyW9Tm", 40], // USDT
   ]);
-  const rpcUrl = process.env.ECLIPSE_RPC_URL;
-  if (!rpcUrl) {
-    throw new Error("RPC is not defined");
-  }
+  // const rpcUrl = process.env.ECLIPSE_RPC_URL;
+  // if (!rpcUrl) {
+  //   throw new Error("RPC is not defined");
+  // }
+  const rpcUrl = 'https://mainnetbeta-rpc.eclipse.xyz';
   const connection = new Connection(rpcUrl);
 
   const network = Network.MAIN;
