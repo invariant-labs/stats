@@ -28,6 +28,9 @@ import {
   TokenData,
 } from "./utils";
 import { Locker } from "@invariant-labs/locker-eclipse-sdk";
+import { config } from "dotenv";
+
+config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;

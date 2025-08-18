@@ -21,7 +21,9 @@ import {
 } from "./utils";
 import fs from "fs";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
+import { config } from "dotenv";
 
+config();
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
   let fileName: string;

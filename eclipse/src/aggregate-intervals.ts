@@ -39,7 +39,9 @@ import {
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
 import { BN } from "bn.js";
+import { config } from "dotenv";
 
+config();
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
   let intervalsPath: string;
