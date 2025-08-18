@@ -17,7 +17,9 @@ import {
   printBN,
 } from "./utils";
 import { PublicKey } from "@solana/web3.js";
+import { config } from "dotenv";
 
+config();
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
   let fileName: string;

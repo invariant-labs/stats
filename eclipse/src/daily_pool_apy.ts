@@ -30,7 +30,9 @@ import {
 import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import BN from "bn.js";
+import { config } from "dotenv";
 
+config();
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
   let fileName: string;
