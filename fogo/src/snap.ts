@@ -76,6 +76,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   );
 
   const allPools = await market.getAllPools();
+
   const poolsDict: Record<string, PoolStructure> = {};
   const poolLocks: Record<string, PoolLock> = {};
 
@@ -392,6 +393,18 @@ export const createSnapshotForNetwork = async (network: Network) => {
         throw err;
       }
     });
+  }
+
+  if (network === Network.MAIN) {
+    fs.writeFile(
+      "../data/eclipse/timestamp.json",
+      JSON.stringify({ v: timestamp }),
+      (err) => {
+        if (err) {
+          throw err;
+        }
+      }
+    );
   }
 };
 
