@@ -28,7 +28,9 @@ import {
 import { PoolStructure } from "@invariant-labs/sdk-fogo/lib/market";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import BN from "bn.js";
+import { config } from "dotenv";
 
+config();
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
   let fileName: string;
@@ -182,8 +184,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       dailyData[address.toString()] = {
         apy: APY === Infinity ? 1001 : isNaN(+JSON.stringify(APY)) ? 0 : APY,
         totalXAmount: currentXamount,
-        volumeX: currentVolumeXBN.toNumber(),
-        volumeY: currentVolumeYBN.toNumber(),
+        volumeX: volumeX.toNumber(),
+        volumeY: volumeY.toNumber(),
         totalVolumeX: volume,
       };
     } catch (_error) {
@@ -241,15 +243,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
   });
 };
-
-// createSnapshotForNetwork(Network.DEV).then(
-//   () => {
-//     console.log('FOGO: Devnet pool apy snapshot done!')
-//   },
-//   (err) => {
-//     console.log(err)
-//   }
-// )
 
 createSnapshotForNetwork(Network.TEST).then(
   () => {

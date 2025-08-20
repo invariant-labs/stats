@@ -8,10 +8,8 @@ import {
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
-  getFogoTokensData,
   getPoolsFromAdresses,
   getTokensPrices,
-  PoolsApyStatsData,
   PoolStatsData,
   PoolStatsDataWithString,
   PoolWithAddress,

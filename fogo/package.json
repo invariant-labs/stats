@@ -11,8 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
-    "@invariant-labs/locker-fogo-sdk": "^0.0.2",
-    "@invariant-labs/sdk-fogo": "^0.0.2",
+    "@invariant-labs/locker-fogo-sdk": "^0.0.3",
+    "@invariant-labs/sdk-fogo": "^0.0.3",
     "@solana/spl-token": "^0.4.9",
     "@solana/spl-token-registry": "^0.2.4484",
     "@solana/web3.js": "^1.95.4",
