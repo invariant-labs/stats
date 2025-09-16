@@ -249,7 +249,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   Object.entries(tokenPrices).forEach(([addr, { price }]) => {
     if (tokensDataObject[addr]) {
-      tokensDataObject[addr].price = price;
+      tokensDataObject[addr].price = Number(price);
     }
   });
 

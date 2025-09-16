@@ -66,7 +66,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const tokenPrices = Object.entries(await getTokensPrices(network)).reduce(
     (acc, [key, { price }]) => {
-      acc[key] = price;
+      acc[key] = Number(price);
       return acc;
     },
     {} as Record<string, number>

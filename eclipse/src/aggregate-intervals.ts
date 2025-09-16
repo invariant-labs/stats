@@ -506,7 +506,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     totalStats[key].tokensData.forEach((token) => {
       const tokenPrice = tokenPrices[token.address];
       if (tokenPrice) {
-        token.price = tokenPrice.price;
+        token.price = Number(tokenPrice.price);
       }
     });
   };

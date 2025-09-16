@@ -26,7 +26,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      const rpcUrl = process.env.ECLIPSE_RPC_URL;
+      const rpcUrl =
+        "https://invarian-eclipse-1c78.mainnet.eclipse.rpcpool.com/64f1d82d-2006-485f-8ad7-a3942dfe7db2";
       if (!rpcUrl) {
         throw new Error("RPC is not defined");
       }
@@ -95,7 +96,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     bitzStaked: bitzStaked.toString(),
     sBitzTVL:
       +printBN(bitzStaked, BITZ_SBITZ_DECIMAL) *
-      (tokenPrices[BITZ_MINT.toBase58()].price ?? 0),
+      (Number(tokenPrices[BITZ_MINT.toBase58()].price) ?? 0),
     bitzSupply: bitzSupply.value.amount,
     totalBitzStaked: totalBitzStaked.value.amount,
     sbitzHolders,
