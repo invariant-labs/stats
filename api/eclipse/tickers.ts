@@ -123,6 +123,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     "9RkzLPufg9RVxRLXZx1drZvf1gXLwgffnhW9oFJSstad", // sBITZ/ETH 1%
     "8gSs6K4NVZSh4Rd5ABcNTos5sJ6wVRTR4xr5LgNLMt58", // ES/USDC 0.3%
     "6ciuuX2AZ3RFU6fJh2XrzJurZdRWuDeMonNsb7xzztp1", // ES/ETH 0.3%
+    "Fngz7ZYjFRZ16EeUWepxKrXVDtfXfZBiHnvE24wjS2er", // INVT/USDC 1%
   ];
 
   // Tokens which price should be evaluated last, the lower the value the less likely the token is to be the base_currency
@@ -137,7 +138,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
   // if (!rpcUrl) {
   //   throw new Error("RPC is not defined");
   // }
-  const rpcUrl = 'https://mainnetbeta-rpc.eclipse.xyz';
+  const rpcUrl = "https://mainnetbeta-rpc.eclipse.xyz";
   const connection = new Connection(rpcUrl);
 
   const network = Network.MAIN;
