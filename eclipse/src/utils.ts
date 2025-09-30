@@ -362,6 +362,10 @@ export const eclipseMainnetTokensData = {
     coingeckoId: "invt",
     ticker: "INVT",
   },
+  x1NVTS1g8Nv4bLhFjyGvxmMEx9YMze3aW5ReoUNzCC2: {
+    decimals: 4,
+    ticker: "xINVT",
+  },
   GnBAskb2SQjrLgpTjtgatz4hEugUsYV7XrWU1idV3oqW: {
     decimals: 6,
     coingeckoId: "eclipse-2",
