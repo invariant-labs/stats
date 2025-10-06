@@ -160,16 +160,21 @@ export const getJupPricesData = async (
   const requests = chunkedIds.map(
     async (idsChunk) =>
       await axios.get<JupApiPriceData>(
-        `https://lite-api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
+        `https://lite-api.jup.ag/price/v3?ids=${idsChunk.join(",")}`
       )
   );
 
   const responses = await Promise.all(requests);
+
   const concatRes = responses.flatMap((response) => {
     const filteredData = Object.fromEntries(
-      Object.entries(response.data.data).filter(([_, value]) => value !== null)
+      Object.entries(response.data).filter(([_, value]) => value !== null)
     );
-    return Object.values(filteredData).map(({ id, price }) => ({ id, price }));
+
+    return Object.entries(filteredData).map((e) => ({
+      id: e[0],
+      price: e[1].usdPrice,
+    }));
   });
 
   return concatRes.reduce<Record<string, string>>((acc, { id, price }) => {
@@ -573,15 +578,15 @@ export const getJupPricesData2 = async (
   const requests = chunkedIds.map(
     async (idsChunk) =>
       await axios.get<RawJupApiResponse>(
-        `https://lite-api.jup.ag/price/v2?ids=${idsChunk.join(",")}`
+        `https://lite-api.jup.ag/price/v3?ids=${idsChunk.join(",")}`
       )
   );
 
   const responses = await Promise.all(requests);
   const concatRes = responses.flatMap((response) =>
-    Object.values(response.data.data).map((tokenData) => ({
-      id: tokenData?.id ? tokenData.id : "",
-      price: tokenData?.price ? tokenData.price : "0",
+    Object.entries(response.data).map((e) => ({
+      id: e[0],
+      price: e[1].usdPrice ?? "0",
     }))
   );
 
