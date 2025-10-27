@@ -25,7 +25,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const filePath = path.join(
     process.cwd(),
     "data",
-    "eclipse",
+    "fogo",
     "intervals",
     network,
     `${address}.json`
