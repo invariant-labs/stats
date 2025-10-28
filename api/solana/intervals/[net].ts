@@ -5,7 +5,6 @@ import SOLANA_DEVNET_DATA from "../../../data/devnet_intervals.json";
 import SOLANA_MAINNET_DATA from "../../../data/mainnet_intervals.json";
 //@ts-ignore
 import TIMESTAMP from "../../../data/timestamp.json";
-import { mapStringToInterval } from "../../../solana/src/utils";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
@@ -22,7 +21,6 @@ export default function (req: VercelRequest, res: VercelResponse) {
   );
 
   const { net, interval } = req.query;
-
   let data;
 
   if (net === "solana-mainnet") {
@@ -33,10 +31,9 @@ export default function (req: VercelRequest, res: VercelResponse) {
     throw new Error("Invalid network specified");
   }
 
-  //   const interval = mapStringToInterval(rawInterval as string);
-  const dailyData = data.daily;
   const cumulativeVolume = data.all.volume;
   const cumulativeFees = data.all.fees;
+  const dailyData = data.daily;
   const volume24 = dailyData.volume;
   const tvl24 = dailyData.tvl;
   const fees24 = dailyData.fees;
@@ -44,7 +41,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   intervalData.volumePlot = intervalData.volumePlot.slice(0, 30);
   intervalData.liquidityPlot = intervalData.liquidityPlot.slice(0, 30);
-  intervalData.feesPlot = intervalData.feesPlot.slice(0, 30);
+  //   intervalData.feesPlot = intervalData.feesPlot.slice(0, 30);
 
   const response = {
     timestamp: TIMESTAMP.v,
