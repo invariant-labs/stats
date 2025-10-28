@@ -397,7 +397,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   if (network === Network.MAIN) {
     fs.writeFile(
-      "../data/eclipse/timestamp.json",
+      "../data/fogo/timestamp.json",
       JSON.stringify({ v: timestamp }),
       (err) => {
         if (err) {
