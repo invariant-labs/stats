@@ -33,14 +33,22 @@ import {
   arithmeticAvg,
   getIntervalRange,
   getTokensPriceFeed,
+  getEmptyIntervalsData,
 } from "./utils";
 import { DECIMAL } from "@invariant-labs/sdk/lib/utils";
 import { Provider } from "@project-serum/anchor";
 import { PoolStructure } from "@invariant-labs/sdk/lib/market";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("dotenv").config();
 
 const WEEKLY_VOLUME_PLOT_ENTRY_TO_ADD = {
   timestamp: 1744027200000,
   value: 1711443.5,
+};
+
+const WEEKLY_FEES_PLOT_ENTRY_TO_ADD = {
+  timestamp: 1744027200000,
+  value: 17114.435,
 };
 
 const WEEKLY_LIQUIDITY_PLOT_ENTRY_TO_ADD = {
@@ -190,33 +198,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
     const intervalsFileName = `${intervalsPath}${address.toString()}.json`;
 
-    const intervals: PoolIntervalPlots = {
-      daily: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-      weekly: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-      monthly: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-      yearly: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-      all: {
-        volumePlot: [],
-        liquidityPlot: [],
-        feesPlot: [],
-      },
-    };
+    const intervals: PoolIntervalPlots = getEmptyIntervalsData();
 
     const associatedSnaps = archivalSnaps[address.toString()]?.snapshots ?? [
       {
@@ -332,14 +314,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
               totalStats[key].poolsData[poolIndex].volume += volume;
               totalStats[key].poolsData[poolIndex].tvl = Math.abs(tvl);
-              // totalStats[key].poolsData[poolIndex].liquidityX =
-              //   snap.liquidityX.usdValue24;
-              // totalStats[key].poolsData[poolIndex].liquidityY =
-              //   snap.liquidityY.usdValue24;
-              // totalStats[key].poolsData[poolIndex].lockedX =
-              //   snap.lockedX?.usdValue24 ?? 0;
-              // totalStats[key].poolsData[poolIndex].lockedY =
-              //   snap.lockedY?.usdValue24 ?? 0;
+              //   totalStats[key].poolsData[poolIndex].liquidityX =
+              //     snap.liquidityX.usdValue24;
+              //   totalStats[key].poolsData[poolIndex].liquidityY =
+              //     snap.liquidityY.usdValue24;
+              //   totalStats[key].poolsData[poolIndex].lockedX =
+              //     snap.lockedX?.usdValue24 ?? 0;
+              //   totalStats[key].poolsData[poolIndex].lockedY =
+              //     snap.lockedY?.usdValue24 ?? 0;
               totalStats[key].poolsData[poolIndex].apy =
                 calculateAPYForInterval(
                   totalStats[key].poolsData[poolIndex].volume,
@@ -353,7 +335,18 @@ export const createSnapshotForNetwork = async (network: Network) => {
               totalStats[key].poolsData[poolIndex].tvl = arithmeticAvg(
                 ...poolStatsHelper[key][address.toString()]
               );
+              intervals[key].apy = totalStats[key].poolsData[poolIndex].apy;
+              intervals[key].volume =
+                totalStats[key].poolsData[poolIndex].volume;
+              intervals[key].tvl = totalStats[key].poolsData[poolIndex].tvl;
+              intervals[key].fees =
+                intervals[key].volume * +printBN(pool.fee.v, DECIMAL);
             } else {
+              const apy = calculateAPYForInterval(
+                volume,
+                tvl,
+                +printBN(pool.fee.v, DECIMAL - 2)
+              );
               totalStats[key].poolsData.push({
                 poolAddress: address.toString(),
                 volume,
@@ -372,6 +365,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
                 tokenY: pool.tokenY.toString(),
               });
               poolStatsHelper[key][address.toString()] = [Math.abs(tvl)];
+              intervals[key].apy = apy;
+              intervals[key].volume = volume;
+              intervals[key].tvl = tvl;
+              intervals[key].fees = fees;
             }
 
             const updateTokenData = (x: boolean) => {
@@ -439,108 +436,65 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
   }
 
-  const buildLiquidityPlot = (
-    key: Intervals,
-    getAnchorDate: (a: number) => number
-  ) => {
+  const buildPlots = (key: Intervals, getAnchorDate: (a: number) => number) => {
     for (const poolKey of poolKeys) {
-      const pool = poolsMapping.get(poolKey);
-
-      if (!pool) {
-        continue;
-      }
-
-      if (TIERS_TO_OMIT.includes(+printBN(pool.fee.v, DECIMAL - 2))) {
-        continue;
-      }
-
-      // if (!whitelistedPools.includes(poolKey) && whitelistMode) {
-      //   continue;
-      // }
-
       const intervalsFileName = `${intervalsPath}${poolKey.toString()}.json`;
+      try {
+        const data = JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))[
+          key
+        ];
+        const poolLiquidityPlot = data.liquidityPlot;
 
-      const data = fs.existsSync(intervalsFileName)
-        ? JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))
-        : null;
+        for (const plotEntry of poolLiquidityPlot) {
+          const anchor = getAnchorDate(plotEntry.timestamp);
+          const entryIndex = totalStats[key].liquidityPlot.findIndex(
+            (entry) => getAnchorDate(entry.timestamp) === anchor
+          );
 
-      if (!data) {
-        erroredPools.push(poolKey);
-        continue;
-      }
-
-      const poolLiquidityPlot = data[key].liquidityPlot;
-
-      for (const plotEntry of poolLiquidityPlot) {
-        const anchor = getAnchorDate(plotEntry.timestamp);
-        const entryIndex = totalStats[key].liquidityPlot.findIndex(
-          (entry) => getAnchorDate(entry.timestamp) === anchor
-        );
-
-        if (entryIndex !== -1) {
-          totalStats[key].liquidityPlot[entryIndex].value += plotEntry.value;
-        } else {
-          totalStats[key].liquidityPlot.push({
-            timestamp: plotEntry.timestamp,
-            value: plotEntry.value,
-          });
+          if (entryIndex !== -1) {
+            totalStats[key].liquidityPlot[entryIndex].value += plotEntry.value;
+          } else {
+            totalStats[key].liquidityPlot.push({
+              timestamp: plotEntry.timestamp,
+              value: plotEntry.value,
+            });
+          }
         }
-      }
-    }
-  };
 
-  buildLiquidityPlot(Intervals.Daily, (a) => a);
-  buildLiquidityPlot(Intervals.Weekly, getWeekNumber);
-  buildLiquidityPlot(Intervals.Monthly, getMonthNumber);
-  buildLiquidityPlot(Intervals.Yearly, getYear);
+        const poolFeesPlot = data.feesPlot;
 
-  const feesHelper = {
-    daily: { current: 0, previous: 0 },
-    weekly: { current: 0, previous: 0 },
-    monthly: { current: 0, previous: 0 },
-    yearly: { current: 0, previous: 0 },
-    all: { current: 0, previous: 0 },
-  };
-  const buildFeesHelper = (key: Intervals) => {
-    const range = getIntervalRange(key);
-    for (const poolKey of poolKeys) {
-      // if (!whitelistedPools.includes(poolKey) && whitelistMode) {
-      //   continue;
-      // }
+        for (const plotEntry of poolFeesPlot) {
+          const anchor = getAnchorDate(plotEntry.timestamp);
+          const entryIndex = totalStats[key].feesPlot.findIndex(
+            (entry) => getAnchorDate(entry.timestamp) === anchor
+          );
 
-      const intervalsFileName = `${intervalsPath}${poolKey.toString()}.json`;
-
-      const data = fs.existsSync(intervalsFileName)
-        ? JSON.parse(fs.readFileSync(intervalsFileName, "utf-8"))
-        : null;
-
-      if (!data) {
+          if (entryIndex !== -1) {
+            totalStats[key].feesPlot[entryIndex].value += plotEntry.value;
+          } else {
+            totalStats[key].feesPlot.push({
+              timestamp: plotEntry.timestamp,
+              value: plotEntry.value,
+            });
+          }
+        }
+      } catch {
         erroredPools.push(poolKey);
-        continue;
       }
-
-      const currentFees = data.daily.feesPlot
-        .slice(0, range)
-        .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
-      const previousFees = data.daily.feesPlot
-        .slice(range, range * 2)
-        .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
-
-      feesHelper[key].current += currentFees;
-      feesHelper[key].previous += previousFees;
     }
   };
 
-  buildFeesHelper(Intervals.Daily);
-  buildFeesHelper(Intervals.Weekly);
-  buildFeesHelper(Intervals.Monthly);
-  buildFeesHelper(Intervals.Yearly);
-  buildFeesHelper(Intervals.All);
+  buildPlots(Intervals.Daily, (a) => a);
+  buildPlots(Intervals.Weekly, getWeekNumber);
+  buildPlots(Intervals.Monthly, getMonthNumber);
+  buildPlots(Intervals.Yearly, getYear);
 
   const calculateTotalValues = (key: Intervals) => {
     const range = getIntervalRange(key);
-    const totalFees = feesHelper[key].current;
 
+    const totalFees = totalStats.daily.feesPlot
+      .slice(0, range)
+      .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
     const totalVolume = totalStats.daily.volumePlot
       .slice(0, range)
       .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
@@ -550,7 +504,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
         .slice(0, range)
         .reduce((acc: number, cur: TimeData) => acc + cur.value, 0) / range;
 
-    const previousFees = feesHelper[key].previous;
+    const previousFees = totalStats.daily.feesPlot
+      .slice(range, range * 2)
+      .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
     const previousVolume = totalStats.daily.volumePlot
       .slice(range, range * 2)
       .reduce((acc: number, cur: TimeData) => acc + cur.value, 0);
@@ -572,7 +528,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       change: liquidityChange,
     };
   };
-
   calculateTotalValues(Intervals.Daily);
   calculateTotalValues(Intervals.Weekly);
   calculateTotalValues(Intervals.Monthly);
@@ -618,6 +573,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       0,
       WEEKLY_VOLUME_PLOT_ENTRY_TO_ADD
     );
+    totalStats.weekly.feesPlot.splice(index, 0, WEEKLY_FEES_PLOT_ENTRY_TO_ADD);
     totalStats.weekly.liquidityPlot.splice(
       index,
       0,

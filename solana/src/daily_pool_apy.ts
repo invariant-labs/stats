@@ -29,6 +29,8 @@ import { PoolStructure } from "@invariant-labs/sdk/lib/market";
 
 import BN from "bn.js";
 import { Provider } from "@project-serum/anchor";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: Provider;

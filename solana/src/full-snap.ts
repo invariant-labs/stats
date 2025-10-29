@@ -16,6 +16,8 @@ import {
 } from "./utils";
 import fs from "fs";
 import { DECIMAL } from "@invariant-labs/sdk/lib/utils";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("dotenv").config();
 
 export const createSnapshotForNetwork = async (network: Network) => {
   let provider: Provider;
