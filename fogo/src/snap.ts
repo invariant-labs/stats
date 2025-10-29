@@ -395,17 +395,17 @@ export const createSnapshotForNetwork = async (network: Network) => {
     });
   }
 
-  if (network === Network.MAIN) {
-    fs.writeFile(
-      "../data/fogo/timestamp.json",
-      JSON.stringify({ v: timestamp }),
-      (err) => {
-        if (err) {
-          throw err;
-        }
+  //   if (network === Network.MAIN) {
+  fs.writeFile(
+    "../data/fogo/timestamp.json",
+    JSON.stringify({ v: timestamp }),
+    (err) => {
+      if (err) {
+        throw err;
       }
-    );
-  }
+    }
+  );
+  //   }
 };
 
 createSnapshotForNetwork(Network.TEST).then(
