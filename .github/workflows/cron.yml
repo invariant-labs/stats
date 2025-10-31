@@ -58,6 +58,7 @@ jobs:
           path: |
             ./data/*.json
             ./data/ticks/
+            ./data/intervals/
   eclipse-snap:
     runs-on: ubuntu-latest
     steps:
