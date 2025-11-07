@@ -26,6 +26,7 @@ import {
   readPoolsFromCache,
   readReservesFromCache,
   TokenData,
+  withRetry,
 } from "./utils";
 import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
 import { AnchorProvider } from "@coral-xyz/anchor";
@@ -99,7 +100,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const allPools = useCache
     ? readPoolsFromCache(poolsCacheFileName)
-    : await market.getAllPools();
+    : await withRetry(() => market.getAllPools());
 
   const reserveAddresses = allPools
     .map((pool) => [pool.tokenXReserve, pool.tokenYReserve])
@@ -107,7 +108,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const reserves = useCache
     ? readReservesFromCache(reservesCacheFileName)
-    : await getParsedTokenAccountsFromAddresses(connection, reserveAddresses);
+    : await withRetry(() =>
+        getParsedTokenAccountsFromAddresses(connection, reserveAddresses)
+      );
 
   const dailyData: Record<string, DailyApyData> = {};
   const apy: Record<string, number> = {};

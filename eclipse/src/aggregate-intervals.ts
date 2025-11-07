@@ -35,6 +35,7 @@ import {
   arithmeticAvg,
   getIntervalRange,
   getEmptyIntervalsData,
+  withRetry,
 } from "./utils";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
@@ -103,7 +104,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const allPools = useCache
     ? readPoolsFromCache(poolsCacheFileName)
-    : await market.getAllPools();
+    : await withRetry(() => market.getAllPools());
 
   const totalStats: IntervalStats = {
     daily: generateEmptyTotalIntevalStats(),
