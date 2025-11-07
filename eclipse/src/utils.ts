@@ -881,3 +881,21 @@ export interface ISbitzDataEntry {
 }
 
 export const BITZ_SBITZ_DECIMAL = 11;
+
+export const withRetry = async (
+  fn: () => Promise<any>,
+  retries = 3,
+  delayMs = 10000 // 10 seconds
+) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i < retries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      } else {
+        throw error;
+      }
+    }
+  }
+};

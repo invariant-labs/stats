@@ -26,6 +26,7 @@ import {
   PoolStatsData,
   supportedTokens,
   TokenData,
+  withRetry,
 } from "./utils";
 import { Locker } from "@invariant-labs/locker-eclipse-sdk";
 import { config } from "dotenv";
@@ -100,7 +101,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     new PublicKey(getMarketAddress(network))
   );
 
-  const allPools = await market.getAllPools();
+  const allPools = await withRetry(() => market.getAllPools());
 
   const poolsDict: Record<string, PoolStructure> = {};
   const poolLocks: Record<string, PoolLock> = {};
@@ -112,7 +113,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
       connection
     );
 
-    const allLocks = await locker.getAllLockedPositions(market);
+    const allLocks = await withRetry(() =>
+      locker.getAllLockedPositions(market)
+    );
 
     allLocks.forEach((lock) => {
       const pool = lock.pool.toString();

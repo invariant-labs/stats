@@ -18,6 +18,7 @@ import {
   supportedTokens,
   TimeData,
   TokenStatsDataWithString,
+  withRetry,
 } from "./utils";
 import fs from "fs";
 import { DECIMAL } from "@invariant-labs/sdk-eclipse/lib/utils";
@@ -106,9 +107,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
       };
     }
   } else {
-    const allPoolsData = await getPoolsFromAdresses(
-      Object.keys(data).map((addr) => new PublicKey(addr)),
-      market
+    const allPoolsData = await withRetry(() =>
+      getPoolsFromAdresses(
+        Object.keys(data).map((addr) => new PublicKey(addr)),
+        market
+      )
     );
 
     allPoolsData.forEach((pool) => {
