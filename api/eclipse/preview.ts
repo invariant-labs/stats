@@ -34,7 +34,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const get24hValue = (plot: any[]) => {
     const now = plot[0].value;
     const prev = plot[1].value;
-    const change = (now * 100) / prev;
+    const change = ((now - prev) / prev) * 100;
     return { value: now, change };
   };
   const volume24 = get24hValue(volumePlot);
@@ -49,8 +49,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
     volume: volume24,
     tvl: tvl24,
     fees: fees24,
-    cumulativeVolume,
-    cumulativeFees,
+    cumulativeVolume: { value: cumulativeVolume, change: null },
+    cumulativeFees: { value: cumulativeFees, change: null },
     volumePlot: volumePlot.slice(0, 30),
     liquidityPlot: liquidityPlot.slice(0, 30),
     feesPlot: feesPlot.slice(0, 30),
