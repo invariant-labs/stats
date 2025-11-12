@@ -51,9 +51,9 @@ export default function (req: VercelRequest, res: VercelResponse) {
     fees: fees24,
     cumulativeVolume,
     cumulativeFees,
-    volumePlot,
-    liquidityPlot,
-    feesPlot,
+    volumePlot: volumePlot.slice(0, 30),
+    liquidityPlot: liquidityPlot.slice(0, 30),
+    feesPlot: feesPlot.slice(0, 30),
     poolsData: data.daily.poolsData,
     tokensData: data.daily.tokensData,
   };
