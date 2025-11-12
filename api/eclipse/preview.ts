@@ -50,7 +50,6 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const tvl24 = get24hValue(liquidityPlot);
   const fees24 = get24hValue(feesPlot);
 
-  const poolsData = data.daily.poolsData;
   const poolParams = (address: string, fee: number) => {
     const filePath = path.join(
       process.cwd(),
@@ -61,30 +60,34 @@ export default function (req: VercelRequest, res: VercelResponse) {
       `${address}.json`
     );
 
-    const data = fs.existsSync(filePath)
+    const poolData = fs.existsSync(filePath)
       ? JSON.parse(fs.readFileSync(filePath, "utf-8"))
       : null;
-    if (!data) {
+    if (!poolData) {
       throw new Error(`Data not found for address: ${address}`);
     }
 
-    const volumePlot = data.daily.volumePlot.filter(predicate);
-    const liquidityPlot = data.daily.liquidityPlot.filter(predicate);
-    const feesPlot = data.daily.feesPlot.filter(predicate);
+    const volumePlot = poolData.daily.volumePlot.filter(predicate);
+    const liquidityPlot = poolData.daily.liquidityPlot.filter(predicate);
+    const feesPlot = poolData.daily.feesPlot.filter(predicate);
     const volume = volumePlot[0]?.value || 0;
     const tvl = liquidityPlot[0]?.value || 0;
-    // const fees = feesPlot[0]?.value || 0;
     const apy = calculateAPYForInterval(volume, tvl, fee);
-    const index = poolsData.findIndex((item: any) => item.address === address);
-    poolsData[index] = {
-      ...poolsData[index],
+
+    return {
+      address,
       volume,
       tvl,
       apy,
     };
   };
 
-  pools.forEach((pool) => poolParams(pool.address, pool.fee));
+  const updatedPools = pools.map((pool) => poolParams(pool.address, pool.fee));
+
+  const poolsData = data.daily.poolsData.map((pool: any) => {
+    const updated = updatedPools.find((p) => p.address === pool.address);
+    return updated ? { ...pool, ...updated } : pool;
+  });
 
   const response = {
     timestamp: volumePlot[0]?.timestamp || 0,
