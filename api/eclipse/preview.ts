@@ -4,6 +4,7 @@ import ECLIPSE_MAINNET_DATA from "../../data/eclipse/mainnet_intervals.json";
 import path from "path";
 import fs from "fs";
 import { calculateAPYForInterval } from "../../eclipse/src/utils";
+import { printBN } from "../utils";
 
 const pools = [
   { address: "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce", fee: 900000000 },
@@ -72,7 +73,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     const feesPlot = poolData.daily.feesPlot.filter(predicate);
     const volume = volumePlot[0]?.value || 0;
     const tvl = liquidityPlot[0]?.value || 0;
-    const apy = calculateAPYForInterval(volume, tvl, fee);
+    const apy = calculateAPYForInterval(volume, tvl, +printBN(fee, 10));
 
     return {
       address,
@@ -85,7 +86,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const updatedPools = pools.map((pool) => poolParams(pool.address, pool.fee));
 
   const poolsData = data.daily.poolsData.map((pool: any) => {
-    const updated = updatedPools.find((p) => p.address === pool.address);
+    const updated = updatedPools.find((p) => p.address === pool.poolAddress);
     return updated ? { ...pool, ...updated } : pool;
   });
 
