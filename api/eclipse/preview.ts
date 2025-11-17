@@ -11,6 +11,30 @@ const pools = [
   { address: "FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9", fee: 100000000 },
   { address: "E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC", fee: 900000000 },
   { address: "86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM", fee: 900000000 },
+  { address: "HHHGD7BZ7H5fPLh3DNEPFezpLoYBJ16WsmbwRJXXEFSg", fee: 100000000 },
+  { address: "HG7iQMk29cgs74ZhSwrnye3C6SLQwKnfsbXqJVRi1x8H", fee: 10000000000 },
+  { address: "1Zxv7bYYzMuK8eey85ZSowa24S8B7QNfDx3GQpKQ4Bf", fee: 100000000 },
+  { address: "DA75rd2KfPyYJY286qgwtYMfwfjTY6T53sM5Hto9FWfi", fee: 100000000 },
+  { address: "DXSJENyZAsrSTESpKGtC2YsEsBEauns47Qt46tN8p9NF", fee: 200000000 },
+  { address: "6ip62Wj6FYpe1rJm7Wo3ebPCDivWi5hjqRBYGnn8Ee7Q", fee: 500000000 },
+  { address: "1Zxv7bYYzMuK8eey85ZSowa24S8B7QNfDx3GQpKQ4Bf", fee: 900000000 },
+  { address: "5N5j6yMzazQVPa9fycC2rjqHaj8f1mZJbLVS6A7CJ1iF", fee: 10000000 }, // ETH/USDC 0.1
+  { address: "2YMcH9VEBXKzA4c2DHua487ZpGaZarYeRjgNBXPxHSRj", fee: 30000000 }, // ETH/USDC 0.3
+  { address: "GuXMNMmmrP1MgYMCm4RcKV7R1jef5LZBjJSxX7c3YH7R", fee: 10000000000 }, // ETH/USDC 1
+  { address: "G8Skt6kgqVL9ocYn4aYVGs3gUg8EfQrTJAkA2qt3gcs8", fee: 100000000 }, // ETH/USDC 0.01
+  { address: "FdEcxaJ9cDW5Y3AZ79eDtzdvK7uaxSEfn5vPb47ew5yg", fee: 200000000 }, // ETH/USDC 0.02
+  { address: "3f8r3ioxkAZViSp5PcA319K9HB2ZF7aSK2CeaL6w1Lho", fee: 500000000 }, // ETH/USDC 0.05
+  { address: "HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce", fee: 900000000 }, // ETH/USDC 0.09
+  { address: "8wTVWkMitZZBAgH8fAxwUc9qxVdCxZdMpw554xUKksym", fee: 10000000 }, // ETH/USDC 0.1
+  { address: "JC2Uyumt8zpwAkwHawwSds8cCTL8M2ESceg4DpPApznb", fee: 30000000 }, // ETH/USDC 0.3
+  { address: "5WFyCtryxTK3v7LMS1169m1Vz1xUauxJYHfRyMh8uhoH", fee: 10000000000 }, // ETH/USDC 1
+  { address: "6AL6jcaDUfeg3NrybF2PpmFjyKc8XPqcu8MDXAjoyjjM", fee: 100000000 }, // ETH/USDC 0.011
+  { address: "FSBb5Atma2HpUhembdBT1edYw1kmVPHVqvtR1Q11jBGL", fee: 200000000 }, // ETH/USDC 0.02
+  { address: "7owDutq5guBRS94XCbVy1Q1tW6nXNhHeeQPeDTQ1xTYb", fee: 500000000 }, // ETH/USDC 0.05
+  { address: "86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM", fee: 900000000 }, // ETH/USDC 0.09
+  { address: "5nVk1wDt6TnLXiPvTDmfKzLoRbBJKuHm4pSneTPPWWS2", fee: 10000000 }, // ETH/USDC 0.1
+  { address: "DSPSc9ManiurhdDBJA3XgZvc1MDibeocrKBB4MukDouE", fee: 30000000 }, // ETH/USDC 0.3
+  { address: "4x7P9KXWm9QdueFFvoVY5Sd8B4YKsGUBB7xQ3iDQQQoa", fee: 10000000000 }, // ETH/USDC 1
 ];
 
 export default function (req: VercelRequest, res: VercelResponse) {
