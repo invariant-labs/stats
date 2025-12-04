@@ -496,6 +496,7 @@ export const jsonArrayToTicks = (address: string, data: any[]) => {
 };
 
 export interface PoolApyArchiveSnapshot extends DailyApyData {
+  range?: Range;
   timestamp: number;
   weeklyFactor?: number[];
   tokenX?: {

@@ -25,14 +25,14 @@ export default function (req: VercelRequest, res: VercelResponse) {
   let data: Record<string, PoolStatsData>;
 
   if (net === "devnet") {
-    data = DEVNET_DATA;
+    data = Object.assign({}, DEVNET_DATA);
   } else if (net === "mainnet") {
-    data = MAINNET_DATA;
+    data = Object.assign({}, MAINNET_DATA);
   }
   if (net === "eclipse-devnet") {
-    data = ECLIPSE_DEVNET_DATA;
+    data = Object.assign({}, ECLIPSE_DEVNET_DATA);
   } else if (net === "eclipse-mainnet") {
-    data = ECLIPSE_MAINNET_DATA;
+    data = Object.assign({}, ECLIPSE_MAINNET_DATA);
   } else {
     res.status(400).send("INVALID NETWORK");
     return;

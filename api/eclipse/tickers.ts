@@ -16,7 +16,7 @@ import {
   PoolStatsDataWithString,
   TimeData,
   TokenStatsDataWithString,
-} from "../../svm/src/utils";
+} from "../../eclipse/src/utils";
 
 type NewType = TimeData;
 

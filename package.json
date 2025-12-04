@@ -25,10 +25,10 @@
   },
   "overrides": {
     "@invariant-labs/sdk-eclipse": {
-      "@solana/web3.js": "web3-eclipse"
+      "@solana/web3.js": "^1.95.4"
     },
     "spl-token-eclipse": {
-      "@solana/web3.js": "web3-eclipse"
+      "@solana/web3.js": "^1.95.4"
     }
   },
   "devDependencies": {
