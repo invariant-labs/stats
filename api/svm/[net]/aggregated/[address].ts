@@ -42,17 +42,17 @@ export default function (req: VercelRequest, res: VercelResponse) {
   let apyArchive: Record<string, PoolApyArchiveSnapshot[]>;
 
   if (net === "devnet") {
-    data = DEVNET_DATA;
-    apyArchive = DEVNET_APY;
+    data = Object.assign({}, DEVNET_DATA);
+    apyArchive = Object.assign({}, DEVNET_APY);
   } else if (net === "mainnet") {
-    data = MAINNET_DATA;
-    apyArchive = MAINNET_APY;
+    data = Object.assign({}, MAINNET_DATA);
+    apyArchive = Object.assign({}, MAINNET_APY);
   } else if (net === "eclipse-devnet") {
-    data = ECLIPSE_DEVNET_DATA;
-    apyArchive = ECLIPSE_DEVNET_APY;
+    data = Object.assign({}, ECLIPSE_DEVNET_DATA);
+    apyArchive = Object.assign({}, ECLIPSE_DEVNET_APY);
   } else if (net === "eclipse-mainnet") {
-    data = ECLIPSE_MAINNET_DATA;
-    apyArchive = ECLIPSE_MAINNET_APY;
+    data = Object.assign({}, ECLIPSE_MAINNET_DATA);
+    apyArchive = Object.assign({}, ECLIPSE_MAINNET_APY);
   } else {
     res.status(400).send("INVALID NETWORK");
     return;
