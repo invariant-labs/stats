@@ -445,14 +445,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
 //   }
 // );
 
-createSnapshotForNetwork(Network.TEST).then(
-  () => {
-    console.log("Eclipse: Testnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+// createSnapshotForNetwork(Network.TEST).then(
+//   () => {
+//     console.log("Eclipse: Testnet snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {

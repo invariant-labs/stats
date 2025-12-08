@@ -107,98 +107,98 @@ jobs:
           name: eclipse-snapshot-${{ github.run_id }}
           path: |
             ./data/eclipse/
-  soon-snap:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-      - name: install global mocha
-        run: |
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          npm install -g mocha
-          npm install -g ts-mocha
-          npm install -g typescript
-          npm install -g @project-serum/anchor
-          ts-mocha -h
-      - name: install essential
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config build-essential libudev-dev
-      - name: install solana
-        run: |
-          sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.solana_version }}/install)"
-          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          solana --version
-      - name: setup solana
-        run: |
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          solana --version
-          solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
-      - name: soon snapshot
-        working-directory: ./soon
-        run: |
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
-          npm install
-          npm run snap
-      - uses: actions/upload-artifact@v4
-        with:
-          name: soon-snapshot-${{ github.run_id }}
-          path: |
-            ./data/soon/
-  sonic-snap:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-      - name: install global mocha
-        run: |
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          npm install -g mocha
-          npm install -g ts-mocha
-          npm install -g typescript
-          npm install -g @project-serum/anchor
-          ts-mocha -h
-      - name: install essential
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config build-essential libudev-dev
-      - name: install solana
-        run: |
-          sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.solana_version }}/install)"
-          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          solana --version
-      - name: setup solana
-        run: |
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          solana --version
-          solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
-      - name: sonic snapshot
-        working-directory: ./sonic
-        run: |
-          export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
-          export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
-          npm install
-          npm run snap
-      - uses: actions/upload-artifact@v4
-        with:
-          name: sonic-snapshot-${{ github.run_id }}
-          path: |
-            ./data/sonic/
+  # soon-snap:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: "16"
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         override: true
+  #     - name: install global mocha
+  #       run: |
+  #         export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+  #         npm install -g mocha
+  #         npm install -g ts-mocha
+  #         npm install -g typescript
+  #         npm install -g @project-serum/anchor
+  #         ts-mocha -h
+  #     - name: install essential
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y pkg-config build-essential libudev-dev
+  #     - name: install solana
+  #       run: |
+  #         sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.solana_version }}/install)"
+  #         echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+  #         export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+  #         solana --version
+  #     - name: setup solana
+  #       run: |
+  #         export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+  #         solana --version
+  #         solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
+  #     - name: soon snapshot
+  #       working-directory: ./soon
+  #       run: |
+  #         export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+  #         export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
+  #         npm install
+  #         npm run snap
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: soon-snapshot-${{ github.run_id }}
+  #         path: |
+  #           ./data/soon/
+  # sonic-snap:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: "16"
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         override: true
+  #     - name: install global mocha
+  #       run: |
+  #         export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+  #         npm install -g mocha
+  #         npm install -g ts-mocha
+  #         npm install -g typescript
+  #         npm install -g @project-serum/anchor
+  #         ts-mocha -h
+  #     - name: install essential
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y pkg-config build-essential libudev-dev
+  #     - name: install solana
+  #       run: |
+  #         sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.solana_version }}/install)"
+  #         echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+  #         export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+  #         solana --version
+  #     - name: setup solana
+  #       run: |
+  #         export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+  #         solana --version
+  #         solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
+  #     - name: sonic snapshot
+  #       working-directory: ./sonic
+  #       run: |
+  #         export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
+  #         export ANCHOR_WALLET="/home/runner/.config/solana/id.json"
+  #         npm install
+  #         npm run snap
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: sonic-snapshot-${{ github.run_id }}
+  #         path: |
+  #           ./data/sonic/
   fogo-snap:
     runs-on: ubuntu-latest
     steps:
@@ -315,8 +315,8 @@ jobs:
         sol-snap,
         eclipse-snap,
         # vara-snap,
-        soon-snap,
-        sonic-snap,
+        # soon-snap,
+        # sonic-snap,
         fogo-snap,
       ]
     if: ${{ always() }}
@@ -346,18 +346,18 @@ jobs:
         with:
           name: eclipse-snapshot-${{ github.run_id }}
           path: ./data/eclipse/
-      - name: Download soon snapshot
-        uses: actions/download-artifact@v4
-        with:
-          name: soon-snapshot-${{ github.run_id }}
-          path: ./data/soon/
-        continue-on-error: true
-      - name: Download sonic snapshot
-        uses: actions/download-artifact@v4
-        with:
-          name: sonic-snapshot-${{ github.run_id }}
-          path: ./data/sonic/
-        continue-on-error: true
+      # - name: Download soon snapshot
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: soon-snapshot-${{ github.run_id }}
+      #     path: ./data/soon/
+      #   continue-on-error: true
+      # - name: Download sonic snapshot
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: sonic-snapshot-${{ github.run_id }}
+      #     path: ./data/sonic/
+      #   continue-on-error: true
       - name: Download fogo snapshot
         uses: actions/download-artifact@v4
         with:
