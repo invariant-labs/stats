@@ -88,7 +88,23 @@ export const createSnapshotForNetwork = async (network: Network) => {
     new PublicKey(getMarketAddress(network))
   );
 
-  const allPools = await market.getAllPools();
+  const allPoolsFull = await market.getAllPools();
+
+  // Omit pool to see what happens
+  const allPools: PoolStructure[] = [];
+  for (const pool of allPoolsFull) {
+    const pair = new Pair(pool.tokenX, pool.tokenY, {
+      fee: pool.fee.v,
+      tickSpacing: pool.tickSpacing,
+    });
+    const address = await pair.getAddress(market.program.programId);
+    if (address.toString() !== "Aoa3FhXZ6jgFzMHBtG2Z7ekdsCt9XCcn7hk95HA5FoB") {
+      allPools.push(pool);
+    }
+  }
+
+  console.log("All pools:", allPoolsFull.length);
+  console.log("After excluding:", allPools.length);
 
   const poolsDict: Record<string, PoolStructure> = {};
 
