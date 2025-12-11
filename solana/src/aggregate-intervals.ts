@@ -36,7 +36,7 @@ import {
   getEmptyIntervalsData,
 } from "./utils";
 import { DECIMAL } from "@invariant-labs/sdk/lib/utils";
-import { Provider } from "@project-serum/anchor";
+import { BN, Provider } from "@project-serum/anchor";
 import { PoolStructure } from "@invariant-labs/sdk/lib/market";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -184,7 +184,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
     //   continue;
     // }
 
-    const pool = poolsMapping.get(poolKey);
+    const pool:
+      | {
+          tokenX: PublicKey;
+          tokenY: PublicKey;
+          tickSpacing: number;
+          fee: { v: BN };
+        }
+      | undefined = getPoolKeySignature(poolsMapping, poolKey);
 
     if (!pool) {
       continue;
@@ -584,6 +591,26 @@ export const createSnapshotForNetwork = async (network: Network) => {
   addStaticPlotEntires();
 
   fs.writeFileSync(fileName, JSON.stringify(totalStats), "utf-8");
+};
+
+const getPoolKeySignature = (
+  poolsMapping: Map<string, PoolStructure>,
+  poolKey: string
+) => {
+  const pool = poolsMapping.get(poolKey);
+  if (pool) {
+    return pool;
+  }
+  // HERE: Check the historical repository for pool data first before skipping
+  // for now mocked to be the pool skipped on purpose
+  if (poolKey == "Aoa3FhXZ6jgFzMHBtG2Z7ekdsCt9XCcn7hk95HA5FoB") {
+    return {
+      tokenX: new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+      tokenY: new PublicKey("So11111111111111111111111111111111111111112"),
+      tickSpacing: 1,
+      fee: { v: new BN(100000000) },
+    };
+  }
 };
 
 // createSnapshotForNetwork(Network.DEV).then(
