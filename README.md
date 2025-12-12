@@ -45,6 +45,25 @@ interface TokenAmount {
 }
 ```
 
+# Include data of a removed pool
+
+Only supported on Solana.
+By default removed pools are not added to aggregated TVL, Volume, Fee intervals.
+To include them add an entry in `data/removed_pools_mainnet.json` following the format:
+Adding pools that not have been removed to the file has no adverse effect on them, it exists to supply information not available on-chain after removal.
+
+```
+{
+  "poolAddress": {
+    "tokenX": string,
+    "tokenY": string,
+    "tickSpacing": number,
+    "fee": string
+  }
+}
+
+```
+
 # Generated data
 
 List of snapshot files:
