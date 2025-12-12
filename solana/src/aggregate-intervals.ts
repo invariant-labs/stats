@@ -12,6 +12,7 @@ import ARCHIVAL_DATA from "../../data/archive/solana_mainnet.json";
 import MAINNET_DATA from "../../data/mainnet.json";
 import DEVNET_APY_ARCHIVE from "../../data/daily_pool_apy_devnet.json";
 import MAINNET_APY_ARCHIVE from "../../data/daily_pool_apy_mainnet.json";
+import MAINNET_REMOVED_POOLS from "../../data/removed_pools_mainnet.json";
 import {
   isSameWeek,
   PoolStatsData,
@@ -34,6 +35,7 @@ import {
   getIntervalRange,
   getTokensPriceFeed,
   getEmptyIntervalsData,
+  PoolSignature,
 } from "./utils";
 import { DECIMAL } from "@invariant-labs/sdk/lib/utils";
 import { BN, Provider } from "@project-serum/anchor";
@@ -63,6 +65,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let snaps: Record<string, PoolStatsData>;
   let archivalSnaps: Record<string, PoolStatsData>;
   let apy: Record<string, number>;
+  let removedPools: Record<string, PoolSignature>;
   let poolsCacheFileName: string;
 
   const args = process.argv.slice(2);
@@ -75,6 +78,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       snaps = DEVNET_DATA;
       archivalSnaps = {};
       apy = DEVNET_APY_ARCHIVE;
+      removedPools = {};
       poolsCacheFileName = "../data/cache/devnet_pools_cache.json";
       intervalsPath = "../data/intervals/devnet/";
       fileName = "../data/devnet_intervals.json";
@@ -92,6 +96,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       // @ts-ignore
       archivalSnaps = ARCHIVAL_DATA;
       apy = MAINNET_APY_ARCHIVE;
+      removedPools = MAINNET_REMOVED_POOLS;
       intervalsPath = "../data/intervals/mainnet/";
       fileName = "../data/mainnet_intervals.json";
       break;
@@ -191,7 +196,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
           tickSpacing: number;
           fee: { v: BN };
         }
-      | undefined = getPoolKeySignature(poolsMapping, poolKey);
+      | undefined = getPoolKeySignature(poolsMapping, removedPools, poolKey);
 
     if (!pool) {
       continue;
@@ -595,20 +600,21 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
 const getPoolKeySignature = (
   poolsMapping: Map<string, PoolStructure>,
+  removedPools: Record<string, PoolSignature>,
   poolKey: string
 ) => {
   const pool = poolsMapping.get(poolKey);
   if (pool) {
     return pool;
   }
-  // HERE: Check the historical repository for pool data first before skipping
-  // for now mocked to be the pool skipped on purpose
-  if (poolKey == "Aoa3FhXZ6jgFzMHBtG2Z7ekdsCt9XCcn7hk95HA5FoB") {
+
+  if (removedPools[poolKey]) {
+    const poolSig = removedPools[poolKey];
     return {
-      tokenX: new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-      tokenY: new PublicKey("So11111111111111111111111111111111111111112"),
-      tickSpacing: 1,
-      fee: { v: new BN(100000000) },
+      tokenX: new PublicKey(poolSig.tokenX),
+      tokenY: new PublicKey(poolSig.tokenY),
+      tickSpacing: poolSig.tickSpacing,
+      fee: { v: new BN(poolSig.fee) },
     };
   }
 };

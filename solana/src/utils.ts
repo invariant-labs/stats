@@ -107,6 +107,13 @@ export interface PoolStatsData {
   };
 }
 
+export interface PoolSignature {
+  tokenX: string;
+  tokenY: string;
+  tickSpacing: number;
+  fee: string;
+}
+
 export interface PoolsApyStatsData {
   apy: number;
   weeklyFacetor: number[];
