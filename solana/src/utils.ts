@@ -5,7 +5,7 @@ import { Market, PoolStructure, Tick } from "@invariant-labs/sdk/lib/market";
 import { Market as EclipseMarket } from "@invariant-labs/sdk-eclipse/lib/market";
 import { DECIMAL, Range } from "@invariant-labs/sdk/lib/utils";
 import BN from "bn.js";
-import { Connection, ParsedAccountData, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import axios, { AxiosResponse } from "axios";
 // @ts-ignore
 import MAINNET_TOKENS from "../../data/mainnet_tokens.json";
@@ -105,6 +105,16 @@ export interface PoolStatsData {
     address: string;
     decimals: number;
   };
+}
+
+export interface PoolSignature {
+  tokenX: string;
+
+  tokenY: string;
+
+  tickSpacing: number;
+
+  fee: string;
 }
 
 export interface PoolsApyStatsData {
