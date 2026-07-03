@@ -382,15 +382,16 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: main
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - name: Deploy to Production
-        uses: amondnet/vercel-action@v20
-        id: deploy-vercel-production
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod"
-          scope: ${{ secrets.VERCEL_ORG_ID }}
+      # Vercel deploy temporarily disabled
+      # - uses: actions/setup-node@v2
+      #   with:
+      #     node-version: "16"
+      # - name: Deploy to Production
+      #   uses: amondnet/vercel-action@v20
+      #   id: deploy-vercel-production
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      #     vercel-args: "--prod"
+      #     scope: ${{ secrets.VERCEL_ORG_ID }}
