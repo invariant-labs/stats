@@ -1,8 +1,8 @@
 name: "Create snapshot of stats"
 
 on:
-  schedule:
-    - cron: "30 11 * * *"
+  # schedule:
+  #   - cron: "30 11 * * *"
   workflow_dispatch:
 
 env:
